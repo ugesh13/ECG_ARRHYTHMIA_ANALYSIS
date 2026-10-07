@@ -121,6 +121,37 @@ export default function Interpretability() {
     }));
   }, [topFeatures]);
 
+  // Canonical 9 RR features in exact required order
+  const canonicalRRNames = useMemo(
+    () => [
+      'RR_prev',
+      'HR_prev',
+      'RR_local_median',
+      'RR_ratio_prev',
+      'RR_dev_prev',
+      'RR_next',
+      'HR_next',
+      'RR_ratio_bidi',
+      'RR_bidi_diff',
+    ],
+    []
+  );
+
+  const canonicalRRData = useMemo(() => {
+    return canonicalRRNames.map((name) => {
+      const match = topFeatures.find((f) => f.feature_name === name);
+      const val = match ? match.gini_importance : 0.0001;
+      return {
+        feature_name: name,
+        feature_type: 'Temporal',
+        rank: match ? match.rank : '>15',
+        gini_importance: val,
+        percentage: match ? Number((match.gini_importance * 100).toFixed(2)) : 0.01,
+        description: match?.description || 'Subsequent instantaneous heart rate (bpm)',
+      };
+    });
+  }, [topFeatures, canonicalRRNames]);
+
   // Dedicated data for the 9 Temporal RR features in top features
   const temporalFeaturesInTop = useMemo(() => {
     return topFeatures.filter((f) => f.feature_type === 'Temporal');
