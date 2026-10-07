@@ -1,0 +1,18 @@
+\begin{table*}[t]
+\centering
+\caption{Experimental Progression and Milestone Evaluation Design}
+\label{tab:experimental_design}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllllllll}
+\hline
+\textbf{Phase} & \textbf{Experiment} & \textbf{Dataset} & \textbf{Records} & \textbf{Features} & \textbf{Dim} & \textbf{Model} & \textbf{Selection Criterion} & \textbf{Evaluation Set} & \textbf{Primary Purpose} \\
+\hline
+Phase 5 & Morphology Baseline & MIT-BIH Non-Paced & 16 Train / 6 Val & 200 raw ECG amplitudes & 200 & LR / RF / HistGB & Balanced Acc / Macro F1 & DS1 Val (12,930 beats) & Raw morphological baseline across models \\
+Phase 6 & Causal RR Augmented & MIT-BIH Non-Paced & 16 Train / 6 Val & 200 Morph + 5 Retrospective RR & 205 & LR / RF / HistGB & Macro F1 gain over morph & DS1 Val Matched (12,924 beats) & Evaluate causal timing for supraventricular ambiguity \\
+Phase 6 & Bidirectional RR Augmented & MIT-BIH Non-Paced & 16 Train / 6 Val & 200 Morph + 9 Bidirectional RR & 209 & LR / RF / HistGB & Macro F1 gain over causal RR & DS1 Val Matched (12,918 beats) & Quantify compensatory pause and coupling asymmetry \\
+Phase 7 & Hyperparameter Optimization & MIT-BIH Non-Paced & 16 Train (4-Fold GroupKFold) & 200 Morph + 9 Bidirectional RR & 209 & Grid Search (LR / RF / HistGB) & Validation Macro F1 & DS1 Val (12,918 beats) & Regularize tree depth and min-leaf parameters \\
+Phase 8 & Final Frozen Test Benchmark & MIT-BIH Non-Paced & 22 Held-Out Test Records & 200 Morph + 9 Bidirectional RR & 209 & Frozen RF ($n{=}200, d{=}30, s{=}5, l{=}2$) & Zero Post-Test Tuning (Locked) & DS2 Held-Out (49,639 beats) & Single independent test on 22 unseen patient records \\
+\hline
+\end{tabular}%
+}
+\end{table*}

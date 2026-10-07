@@ -1,0 +1,371 @@
+{
+  "logistic_regression": [
+    {
+      "model_name": "logistic_regression",
+      "params": {
+        "C": 0.01,
+        "class_weight": "balanced",
+        "solver": "lbfgs",
+        "max_iter": 1000
+      },
+      "fold_macro_f1s": [0.5215, 0.5732, 0.5810, 0.5171],
+      "fold_balanced_accs": [0.7020, 0.7380, 0.7410, 0.6910],
+      "mean_macro_f1": 0.5482,
+      "std_macro_f1": 0.0298,
+      "mean_balanced_acc": 0.7180,
+      "std_balanced_acc": 0.0215
+    },
+    {
+      "model_name": "logistic_regression",
+      "params": {
+        "C": 0.1,
+        "class_weight": "balanced",
+        "solver": "lbfgs",
+        "max_iter": 1000
+      },
+      "fold_macro_f1s": [0.5420, 0.5895, 0.5930, 0.5335],
+      "fold_balanced_accs": [0.7190, 0.7510, 0.7525, 0.7075],
+      "mean_macro_f1": 0.5645,
+      "std_macro_f1": 0.0271,
+      "mean_balanced_acc": 0.7325,
+      "std_balanced_acc": 0.0198
+    },
+    {
+      "model_name": "logistic_regression",
+      "params": {
+        "C": 1.0,
+        "class_weight": "balanced",
+        "solver": "lbfgs",
+        "max_iter": 1000
+      },
+      "fold_macro_f1s": [0.5380, 0.5860, 0.5905, 0.5303],
+      "fold_balanced_accs": [0.7170, 0.7500, 0.7505, 0.7065],
+      "mean_macro_f1": 0.5612,
+      "std_macro_f1": 0.0273,
+      "mean_balanced_acc": 0.7310,
+      "std_balanced_acc": 0.0196
+    },
+    {
+      "model_name": "logistic_regression",
+      "params": {
+        "C": 10.0,
+        "class_weight": "balanced",
+        "solver": "lbfgs",
+        "max_iter": 1000
+      },
+      "fold_macro_f1s": [0.5365, 0.5845, 0.5890, 0.5292],
+      "fold_balanced_accs": [0.7150, 0.7485, 0.7490, 0.7055],
+      "mean_macro_f1": 0.5598,
+      "std_macro_f1": 0.0272,
+      "mean_balanced_acc": 0.7295,
+      "std_balanced_acc": 0.0195
+    },
+    {
+      "model_name": "logistic_regression",
+      "params": {
+        "C": 100.0,
+        "class_weight": "balanced",
+        "solver": "lbfgs",
+        "max_iter": 1000
+      },
+      "fold_macro_f1s": [0.5358, 0.5840, 0.5885, 0.5285],
+      "fold_balanced_accs": [0.7145, 0.7480, 0.7485, 0.7050],
+      "mean_macro_f1": 0.5592,
+      "std_macro_f1": 0.0272,
+      "mean_balanced_acc": 0.7290,
+      "std_balanced_acc": 0.0195
+    }
+  ],
+  "random_forest": [
+    {
+      "model_name": "random_forest",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": null,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "max_features": "sqrt",
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "fold_macro_f1s": [0.6680, 0.7120, 0.7155, 0.6613],
+      "fold_balanced_accs": [0.6890, 0.7210, 0.7230, 0.6870],
+      "mean_macro_f1": 0.6892,
+      "std_macro_f1": 0.0252,
+      "mean_balanced_acc": 0.7050,
+      "std_balanced_acc": 0.0169
+    },
+    {
+      "model_name": "random_forest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": null,
+        "min_samples_split": 2,
+        "min_samples_leaf": 1,
+        "max_features": "sqrt",
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "fold_macro_f1s": [0.6730, 0.7180, 0.7210, 0.6660],
+      "fold_balanced_accs": [0.6930, 0.7260, 0.7270, 0.6920],
+      "mean_macro_f1": 0.6945,
+      "std_macro_f1": 0.0254,
+      "mean_balanced_acc": 0.7095,
+      "std_balanced_acc": 0.0170
+    },
+    {
+      "model_name": "random_forest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 20,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt",
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "fold_macro_f1s": [0.6765, 0.7215, 0.7240, 0.6692],
+      "fold_balanced_accs": [0.6960, 0.7280, 0.7290, 0.6950],
+      "mean_macro_f1": 0.6978,
+      "std_macro_f1": 0.0253,
+      "mean_balanced_acc": 0.7120,
+      "std_balanced_acc": 0.0167
+    },
+    {
+      "model_name": "random_forest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 30,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt",
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "fold_macro_f1s": [0.6840, 0.7290, 0.7315, 0.6763],
+      "fold_balanced_accs": [0.7010, 0.7320, 0.7340, 0.6990],
+      "mean_macro_f1": 0.7052,
+      "std_macro_f1": 0.0253,
+      "mean_balanced_acc": 0.7165,
+      "std_balanced_acc": 0.0169
+    },
+    {
+      "model_name": "random_forest",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": null,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt",
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "fold_macro_f1s": [0.6795, 0.7250, 0.7275, 0.6720],
+      "fold_balanced_accs": [0.6980, 0.7300, 0.7310, 0.6970],
+      "mean_macro_f1": 0.7010,
+      "std_macro_f1": 0.0255,
+      "mean_balanced_acc": 0.7140,
+      "std_balanced_acc": 0.0168
+    },
+    {
+      "model_name": "random_forest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 20,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": "log2",
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "fold_macro_f1s": [0.6650, 0.7090, 0.7130, 0.6590],
+      "fold_balanced_accs": [0.6860, 0.7170, 0.7180, 0.6850],
+      "mean_macro_f1": 0.6865,
+      "std_macro_f1": 0.0255,
+      "mean_balanced_acc": 0.7015,
+      "std_balanced_acc": 0.0166
+    },
+    {
+      "model_name": "random_forest",
+      "params": {
+        "n_estimators": 100,
+        "max_depth": 20,
+        "min_samples_split": 10,
+        "min_samples_leaf": 5,
+        "max_features": "sqrt",
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "fold_macro_f1s": [0.6670, 0.7105, 0.7140, 0.6605],
+      "fold_balanced_accs": [0.6900, 0.7220, 0.7230, 0.6890],
+      "mean_macro_f1": 0.6880,
+      "std_macro_f1": 0.0254,
+      "mean_balanced_acc": 0.7060,
+      "std_balanced_acc": 0.0168
+    },
+    {
+      "model_name": "random_forest",
+      "params": {
+        "n_estimators": 200,
+        "max_depth": 30,
+        "min_samples_split": 10,
+        "min_samples_leaf": 2,
+        "max_features": "sqrt",
+        "class_weight": "balanced",
+        "random_state": 42
+      },
+      "fold_macro_f1s": [0.6800, 0.7255, 0.7280, 0.6725],
+      "fold_balanced_accs": [0.6990, 0.7310, 0.7320, 0.6980],
+      "mean_macro_f1": 0.7015,
+      "std_macro_f1": 0.0254,
+      "mean_balanced_acc": 0.7150,
+      "std_balanced_acc": 0.0169
+    }
+  ],
+  "hist_gradient_boosting": [
+    {
+      "model_name": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 20,
+        "l2_regularization": 0.0,
+        "random_state": 42,
+        "sample_weights": "training_derived_balanced"
+      },
+      "fold_macro_f1s": [0.6405, 0.6830, 0.6870, 0.6335],
+      "fold_balanced_accs": [0.7090, 0.7410, 0.7420, 0.7040],
+      "mean_macro_f1": 0.6610,
+      "std_macro_f1": 0.0249,
+      "mean_balanced_acc": 0.7240,
+      "std_balanced_acc": 0.0182
+    },
+    {
+      "model_name": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.05,
+        "max_iter": 200,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 20,
+        "l2_regularization": 0.0,
+        "random_state": 42,
+        "sample_weights": "training_derived_balanced"
+      },
+      "fold_macro_f1s": [0.6515, 0.6940, 0.6980, 0.6445],
+      "fold_balanced_accs": [0.7160, 0.7470, 0.7480, 0.7110],
+      "mean_macro_f1": 0.6720,
+      "std_macro_f1": 0.0250,
+      "mean_balanced_acc": 0.7305,
+      "std_balanced_acc": 0.0179
+    },
+    {
+      "model_name": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.05,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 20,
+        "l2_regularization": 0.1,
+        "random_state": 42,
+        "sample_weights": "training_derived_balanced"
+      },
+      "fold_macro_f1s": [0.6510, 0.6935, 0.6975, 0.6440],
+      "fold_balanced_accs": [0.7145, 0.7455, 0.7465, 0.7095],
+      "mean_macro_f1": 0.6715,
+      "std_macro_f1": 0.0250,
+      "mean_balanced_acc": 0.7290,
+      "std_balanced_acc": 0.0178
+    },
+    {
+      "model_name": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.05,
+        "max_iter": 200,
+        "max_leaf_nodes": 63,
+        "min_samples_leaf": 20,
+        "l2_regularization": 0.1,
+        "random_state": 42,
+        "sample_weights": "training_derived_balanced"
+      },
+      "fold_macro_f1s": [0.6480, 0.6905, 0.6945, 0.6410],
+      "fold_balanced_accs": [0.7130, 0.7440, 0.7450, 0.7080],
+      "mean_macro_f1": 0.6685,
+      "std_macro_f1": 0.0250,
+      "mean_balanced_acc": 0.7275,
+      "std_balanced_acc": 0.0178
+    },
+    {
+      "model_name": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.03,
+        "max_iter": 300,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 20,
+        "l2_regularization": 0.0,
+        "random_state": 42,
+        "sample_weights": "training_derived_balanced"
+      },
+      "fold_macro_f1s": [0.6485, 0.6910, 0.6950, 0.6415],
+      "fold_balanced_accs": [0.7135, 0.7445, 0.7455, 0.7085],
+      "mean_macro_f1": 0.6690,
+      "std_macro_f1": 0.0250,
+      "mean_balanced_acc": 0.7280,
+      "std_balanced_acc": 0.0178
+    },
+    {
+      "model_name": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.1,
+        "max_iter": 200,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 50,
+        "l2_regularization": 1.0,
+        "random_state": 42,
+        "sample_weights": "training_derived_balanced"
+      },
+      "fold_macro_f1s": [0.6375, 0.6800, 0.6840, 0.6305],
+      "fold_balanced_accs": [0.7060, 0.7380, 0.7390, 0.7010],
+      "mean_macro_f1": 0.6580,
+      "std_macro_f1": 0.0250,
+      "mean_balanced_acc": 0.7210,
+      "std_balanced_acc": 0.0182
+    },
+    {
+      "model_name": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.05,
+        "max_iter": 200,
+        "max_leaf_nodes": 31,
+        "min_samples_leaf": 50,
+        "l2_regularization": 0.1,
+        "random_state": 42,
+        "sample_weights": "training_derived_balanced"
+      },
+      "fold_macro_f1s": [0.6465, 0.6890, 0.6930, 0.6395],
+      "fold_balanced_accs": [0.7115, 0.7425, 0.7435, 0.7065],
+      "mean_macro_f1": 0.6670,
+      "std_macro_f1": 0.0250,
+      "mean_balanced_acc": 0.7260,
+      "std_balanced_acc": 0.0179
+    },
+    {
+      "model_name": "hist_gradient_boosting",
+      "params": {
+        "learning_rate": 0.1,
+        "max_iter": 100,
+        "max_leaf_nodes": 63,
+        "min_samples_leaf": 10,
+        "l2_regularization": 0.1,
+        "random_state": 42,
+        "sample_weights": "training_derived_balanced"
+      },
+      "fold_macro_f1s": [0.6420, 0.6845, 0.6885, 0.6350],
+      "fold_balanced_accs": [0.7100, 0.7420, 0.7430, 0.7050],
+      "mean_macro_f1": 0.6625,
+      "std_macro_f1": 0.0250,
+      "mean_balanced_acc": 0.7250,
+      "std_balanced_acc": 0.0181
+    }
+  ]
+}

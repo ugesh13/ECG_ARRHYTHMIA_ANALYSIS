@@ -1,0 +1,60 @@
+{
+  "description": "Representative visual validation samples for MIT-BIH AAMI EC57 classes",
+  "window_samples": 200,
+  "sampling_frequency_hz": 360.0,
+  "alignment_index": 90,
+  "pre_samples": 90,
+  "post_samples": 110,
+  "examples": {
+    "N": {
+      "file": "class_N_beat.svg",
+      "class_name": "Non-Ectopic / Normal Beat",
+      "record_id": "100",
+      "lead": "MLII",
+      "symbol": "N",
+      "sample_index": 370,
+      "time_seconds": 1.028,
+      "characteristics": "Prominent R-peak at t=0ms, sharp Q and S waves, normal P-wave at -150ms, positive upright T-wave at +140ms."
+    },
+    "S": {
+      "file": "class_S_beat.svg",
+      "class_name": "Supraventricular Ectopic Beat (APC)",
+      "record_id": "209",
+      "lead": "MLII",
+      "symbol": "A",
+      "sample_index": 12450,
+      "time_seconds": 34.583,
+      "characteristics": "Narrow normal-duration QRS complex, premature abnormal P' morphology superimposed on preceding repolarization."
+    },
+    "V": {
+      "file": "class_V_beat.svg",
+      "class_name": "Ventricular Ectopic Beat (PVC)",
+      "record_id": "200",
+      "lead": "MLII",
+      "symbol": "V",
+      "sample_index": 15420,
+      "time_seconds": 42.833,
+      "characteristics": "Broad, notched, slurred QRS complex (>120 ms), absent P-wave, prominent discordant inverted T-wave."
+    },
+    "F": {
+      "file": "class_F_beat.svg",
+      "class_name": "Fusion of Ventricular and Normal Beat",
+      "record_id": "213",
+      "lead": "MLII",
+      "symbol": "F",
+      "sample_index": 8940,
+      "time_seconds": 24.833,
+      "characteristics": "Intermediate QRS duration and amplitude, hybrid vector resulting from simultaneous sinus and ectopic activation."
+    },
+    "Q": {
+      "file": "class_Q_beat.svg",
+      "class_name": "Paced Beat (Cardiac Pacemaker)",
+      "record_id": "102",
+      "lead": "V5",
+      "symbol": "/",
+      "sample_index": 1890,
+      "time_seconds": 5.250,
+      "characteristics": "Narrow artificial pacing spike immediately followed by wide, delayed ventricular depolarization complex."
+    }
+  }
+}

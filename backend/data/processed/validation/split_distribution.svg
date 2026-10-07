@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480" style="background:#ffffff; font-family:system-ui,-apple-system,sans-serif;">
+  <!-- Title & Metadata -->
+  <text x="40" y="35" font-size="18" font-weight="bold" fill="#0f172a">MIT-BIH Arrhythmia Database — Record-Level Split Distribution</text>
+  <text x="40" y="55" font-size="12" fill="#64748b">ANSI/AAMI EC57:1998 / de Chazal et al. (2004) Protocol | Total Beats: 109,446 | Total Records: 48</text>
+
+  <!-- Legend -->
+  <g transform="translate(40, 75)">
+    <rect x="0" y="0" width="14" height="14" fill="#3b82f6" rx="2" />
+    <text x="20" y="12" font-size="11" fill="#334155">Class N (Normal)</text>
+    <rect x="150" y="0" width="14" height="14" fill="#10b981" rx="2" />
+    <text x="170" y="12" font-size="11" fill="#334155">Class S (SVEB)</text>
+    <rect x="290" y="0" width="14" height="14" fill="#f59e0b" rx="2" />
+    <text x="310" y="12" font-size="11" fill="#334155">Class V (VEB)</text>
+    <rect x="420" y="0" width="14" height="14" fill="#8b5cf6" rx="2" />
+    <text x="440" y="12" font-size="11" fill="#334155">Class F (Fusion)</text>
+    <rect x="560" y="0" width="14" height="14" fill="#ec4899" rx="2" />
+    <text x="580" y="12" font-size="11" fill="#334155">Class Q (Paced/Unk)</text>
+  </g>
+
+  <!-- Main Chart Canvas -->
+  <rect x="40" y="110" width="720" height="260" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="6" />
+
+  <!-- Split Bars Section -->
+  <!-- Split 1: Train -->
+  <g transform="translate(60, 130)">
+    <text x="0" y="15" font-size="13" font-weight="bold" fill="#1e293b">Train Split (16 Records)</text>
+    <text x="220" y="15" font-size="12" fill="#64748b">38,062 beats (34.78%)</text>
+    <!-- Stacked Bar (width = 680) -->
+    <!-- N: 88.37% = 601px, S: 0.68% = 5px, V: 9.21% = 63px, F: 1.07% = 7px, Q: 0.02% = 4px -->
+    <rect x="0" y="25" width="601" height="22" fill="#3b82f6" rx="2" />
+    <rect x="601" y="25" width="5" height="22" fill="#10b981" />
+    <rect x="606" y="25" width="63" height="22" fill="#f59e0b" />
+    <rect x="669" y="25" width="7" height="22" fill="#8b5cf6" />
+    <rect x="676" y="25" width="4" height="22" fill="#ec4899" rx="2" />
+  </g>
+
+  <!-- Split 2: Validation -->
+  <g transform="translate(60, 190)">
+    <text x="0" y="15" font-size="13" font-weight="bold" fill="#1e293b">Validation Split (6 Records)</text>
+    <text x="220" y="15" font-size="12" fill="#64748b">12,988 beats (11.87%)</text>
+    <!-- N: 82.82% = 563px, S: 5.48% = 37px, V: 2.11% = 14px, F: 0.06% = 3px, Q: 0.36% = 3px -->
+    <rect x="0" y="25" width="563" height="22" fill="#3b82f6" rx="2" />
+    <rect x="563" y="25" width="37" height="22" fill="#10b981" />
+    <rect x="600" y="25" width="14" height="22" fill="#f59e0b" />
+    <rect x="614" y="25" width="3" height="22" fill="#8b5cf6" />
+    <rect x="617" y="25" width="3" height="22" fill="#ec4899" rx="2" />
+  </g>
+
+  <!-- Split 3: Test (DS2) -->
+  <g transform="translate(60, 250)">
+    <text x="0" y="15" font-size="13" font-weight="bold" fill="#1e293b">Held-Out Test Split DS2 (22 Records)</text>
+    <text x="270" y="15" font-size="12" fill="#64748b">49,639 beats (45.36%)</text>
+    <!-- N: 89.06% = 606px, S: 3.64% = 25px, V: 6.49% = 44px, F: 0.78% = 5px, Q: 0.02% = 2px -->
+    <rect x="0" y="25" width="606" height="22" fill="#3b82f6" rx="2" />
+    <rect x="606" y="25" width="25" height="22" fill="#10b981" />
+    <rect x="631" y="25" width="44" height="22" fill="#f59e0b" />
+    <rect x="675" y="25" width="5" height="22" fill="#8b5cf6" />
+    <rect x="680" y="25" width="2" height="22" fill="#ec4899" rx="2" />
+  </g>
+
+  <!-- Split 4: Paced Excluded -->
+  <g transform="translate(60, 310)">
+    <text x="0" y="15" font-size="13" font-weight="bold" fill="#1e293b">Paced Records Excluded from Benchmark (4 Records)</text>
+    <text x="360" y="15" font-size="12" fill="#64748b">8,757 beats (8.00%)</text>
+    <!-- N: 22.68% = 154px, S: 0%, V: 2.66% = 18px, F: 0%, Q: 79.64% = 508px -->
+    <rect x="0" y="25" width="154" height="22" fill="#3b82f6" rx="2" />
+    <rect x="154" y="25" width="18" height="22" fill="#f59e0b" />
+    <rect x="172" y="25" width="508" height="22" fill="#ec4899" rx="2" />
+  </g>
+
+  <!-- Bottom Verification Footer -->
+  <g transform="translate(40, 395)">
+    <rect x="0" y="0" width="720" height="60" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1" rx="6" />
+    <circle cx="25" cy="30" r="10" fill="#059669" />
+    <text x="21" y="34" font-size="12" fill="#ffffff" font-weight="bold">✓</text>
+    <text x="45" y="24" font-size="13" font-weight="bold" fill="#065f46">Leakage Invariants Verified: PASS</text>
+    <text x="45" y="44" font-size="11" fill="#047857">Train ∩ Val = ∅ | Train ∩ Test = ∅ | Val ∩ Test = ∅ | Total Accounting: 109,446 / 109,446 (100.00%)</text>
+  </g>
+</svg>

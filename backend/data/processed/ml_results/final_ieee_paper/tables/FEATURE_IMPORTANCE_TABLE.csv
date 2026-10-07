@@ -1,0 +1,16 @@
+rank,feature_name,feature_type,gini_importance,description
+1,RR_ratio_prev,Temporal,0.0582,Preceding prematurity coupling ratio (RR_prev / RR_local_median)
+2,RR_ratio_bidi,Temporal,0.0491,Bidirectional interval coupling ratio (RR_prev / RR_next)
+3,ECG_092,Morphology,0.0324,R-peak apex amplitude
+4,ECG_091,Morphology,0.0298,Rapid QRS upstroke
+5,RR_prev,Temporal,0.0285,Absolute preceding interval duration in seconds
+6,ECG_093,Morphology,0.0276,Rapid QRS downstroke
+7,RR_dev_prev,Temporal,0.0265,Fractional deviation from running median
+8,ECG_090,Morphology,0.0245,Pre-QRS isoelectric baseline
+9,RR_next,Temporal,0.0231,Compensatory pause duration in seconds
+10,ECG_094,Morphology,0.0218,ST-segment junction
+11,ECG_089,Morphology,0.0205,P-R segment termination
+12,HR_prev,Temporal,0.0198,Instantaneous heart rate in bpm
+13,RR_bidi_diff,Temporal,0.0184,Interval asymmetry (RR_next - RR_prev)
+14,RR_local_median,Temporal,0.0162,Background autonomic rate in seconds
+15,ECG_095,Morphology,0.0154,Early T-wave repolarization

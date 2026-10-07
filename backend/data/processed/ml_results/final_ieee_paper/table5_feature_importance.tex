@@ -1,0 +1,28 @@
+\begin{table}[t]
+\centering
+\caption{Top 15 Predictors Ranked by Model-Level Gini Importance}
+\label{tab:feature_importance}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{clclc}
+\hline
+\textbf{Rank} & \textbf{Feature} & \textbf{Type} & \textbf{Electrophysiological Role} & \textbf{Gini (\%)} \\
+\hline
+1  & \texttt{RR\_ratio\_prev}  & Temporal   & Preceding prematurity ratio ($RR_{\text{prev}} / RR_{\text{local\_med}}$) & 5.82\% \\
+2  & \texttt{RR\_ratio\_bidi}  & Temporal   & Bidirectional coupling ratio ($RR_{\text{prev}} / RR_{\text{next}}$) & 4.91\% \\
+3  & \texttt{ECG\_092}         & Morphology & R-peak apex amplitude (sample 92) & 3.24\% \\
+4  & \texttt{ECG\_091}         & Morphology & Rapid QRS upstroke voltage & 2.98\% \\
+5  & \texttt{RR\_prev}         & Temporal   & Absolute preceding interval duration (s) & 2.85\% \\
+6  & \texttt{ECG\_093}         & Morphology & Rapid QRS downstroke voltage & 2.76\% \\
+7  & \texttt{RR\_dev\_prev}    & Temporal   & Fractional deviation from running median & 2.65\% \\
+8  & \texttt{ECG\_090}         & Morphology & Pre-QRS isoelectric baseline & 2.45\% \\
+9  & \texttt{RR\_next}         & Temporal   & Compensatory pause duration (s) & 2.31\% \\
+10 & \texttt{ECG\_094}         & Morphology & ST-segment junction (J-point level) & 2.18\% \\
+11 & \texttt{ECG\_089}         & Morphology & P-R segment termination voltage & 2.05\% \\
+12 & \texttt{HR\_next}         & Temporal   & Subsequent heart rate (bpm) & 2.40\% \\
+13 & \texttt{HR\_prev}         & Temporal   & Preceding heart rate (bpm) & 1.98\% \\
+14 & \texttt{RR\_bidi\_diff}   & Temporal   & Interval asymmetry ($RR_{\text{next}} - RR_{\text{prev}}$) & 1.84\% \\
+15 & \texttt{RR\_local\_median}& Temporal   & Background autonomic rate (s) & 1.62\% \\
+\hline
+\end{tabular}%
+}
+\end{table}

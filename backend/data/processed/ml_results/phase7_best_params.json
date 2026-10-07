@@ -1,0 +1,26 @@
+{
+  "logistic_regression": {
+    "C": 0.1,
+    "class_weight": "balanced",
+    "solver": "lbfgs",
+    "max_iter": 1000
+  },
+  "random_forest": {
+    "n_estimators": 200,
+    "max_depth": 30,
+    "min_samples_split": 5,
+    "min_samples_leaf": 2,
+    "max_features": "sqrt",
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "hist_gradient_boosting": {
+    "learning_rate": 0.05,
+    "max_iter": 200,
+    "max_leaf_nodes": 31,
+    "min_samples_leaf": 20,
+    "l2_regularization": 0.0,
+    "random_state": 42,
+    "sample_weights": "training_derived_balanced"
+  }
+}

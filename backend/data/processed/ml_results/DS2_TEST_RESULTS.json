@@ -1,0 +1,82 @@
+{
+  "model_name": "RandomForestClassifier",
+  "phase": 8,
+  "evaluation_partition": "DS2 (22 Held-Out Test Records)",
+  "evaluated_beats_count": 49639,
+  "class_supports": {
+    "N": 44197,
+    "S": 1835,
+    "V": 3220,
+    "F": 388
+  },
+  "accuracy": 0.9093,
+  "balanced_accuracy": 0.7000,
+  "macro_precision": 0.6348,
+  "macro_recall": 0.7000,
+  "macro_f1": 0.6403,
+  "weighted_f1": 0.9174,
+  "roc_auc_ovr_macro": 0.9425,
+  "pr_auc_ovr_macro": 0.6280,
+  "per_class": {
+    "N": {
+      "precision": 0.9771,
+      "recall": 0.9242,
+      "f1_score": 0.9499,
+      "support": 44197
+    },
+    "S": {
+      "precision": 0.3845,
+      "recall": 0.7564,
+      "f1_score": 0.5098,
+      "support": 1835
+    },
+    "V": {
+      "precision": 0.6975,
+      "recall": 0.8720,
+      "f1_score": 0.7750,
+      "support": 3220
+    },
+    "F": {
+      "precision": 0.4800,
+      "recall": 0.2474,
+      "f1_score": 0.3265,
+      "support": 388
+    }
+  },
+  "confusion_matrix": [
+    [40845, 2154, 1126, 72],
+    [382, 1388, 58, 7],
+    [334, 52, 2808, 26],
+    [242, 16, 34, 96]
+  ],
+  "top_15_features": [
+    {"feature": "RR_ratio_prev", "importance": 0.0582},
+    {"feature": "RR_ratio_bidi", "importance": 0.0491},
+    {"feature": "ECG_092", "importance": 0.0324},
+    {"feature": "ECG_091", "importance": 0.0298},
+    {"feature": "RR_prev", "importance": 0.0285},
+    {"feature": "ECG_093", "importance": 0.0276},
+    {"feature": "RR_dev_prev", "importance": 0.0265},
+    {"feature": "ECG_090", "importance": 0.0245},
+    {"feature": "RR_next", "importance": 0.0231},
+    {"feature": "ECG_094", "importance": 0.0218},
+    {"feature": "ECG_089", "importance": 0.0205},
+    {"feature": "HR_prev", "importance": 0.0198},
+    {"feature": "RR_bidi_diff", "importance": 0.0184},
+    {"feature": "RR_local_median", "importance": 0.0162},
+    {"feature": "ECG_095", "importance": 0.0154}
+  ],
+  "temporal_features_total_importance": 0.2638,
+  "generalization_gap": {
+    "validation_macro_f1": 0.7095,
+    "test_macro_f1": 0.6403,
+    "macro_f1_gap": -0.0692,
+    "validation_balanced_accuracy": 0.7079,
+    "test_balanced_accuracy": 0.7000,
+    "balanced_accuracy_gap": -0.0079,
+    "validation_accuracy": 0.9668,
+    "test_accuracy": 0.9093,
+    "accuracy_gap": -0.0575
+  },
+  "evaluated_at_utc": "2026-10-04T16:26:00Z"
+}

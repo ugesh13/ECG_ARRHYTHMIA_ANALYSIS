@@ -1,0 +1,54 @@
+{
+  "validation_status": "PASS",
+  "protocol": "ANSI/AAMI EC57 / de Chazal et al. (2004)",
+  "random_seed": 42,
+  "accounting_checks": {
+    "total_records_examined": 48,
+    "total_records_sum": 48,
+    "records_overlap_detected": false,
+    "total_usable_beats": 109446,
+    "splits_beats_sum": 109446,
+    "beats_reconciled": true,
+    "total_class_N": 90589,
+    "total_class_S": 2779,
+    "total_class_V": 7235,
+    "total_class_F": 803,
+    "total_class_Q": 8040,
+    "classes_sum": 109446,
+    "classes_reconciled": true
+  },
+  "split_breakdown": {
+    "train": {
+      "records_count": 16,
+      "total_beats": 38062,
+      "class_counts": { "N": 33636, "S": 260, "V": 3506, "F": 406, "Q": 8 },
+      "class_percentages": { "N": 88.37, "S": 0.68, "V": 9.21, "F": 1.07, "Q": 0.02 }
+    },
+    "validation": {
+      "records_count": 6,
+      "total_beats": 12988,
+      "class_counts": { "N": 10757, "S": 712, "V": 274, "F": 8, "Q": 47 },
+      "class_percentages": { "N": 82.82, "S": 5.48, "V": 2.11, "F": 0.06, "Q": 0.36 }
+    },
+    "test": {
+      "records_count": 22,
+      "total_beats": 49639,
+      "class_counts": { "N": 44210, "S": 1807, "V": 3222, "F": 389, "Q": 11 },
+      "class_percentages": { "N": 89.06, "S": 3.64, "V": 6.49, "F": 0.78, "Q": 0.02 }
+    },
+    "paced_excluded": {
+      "records_count": 4,
+      "total_beats": 8757,
+      "class_counts": { "N": 1986, "S": 0, "V": 233, "F": 0, "Q": 6974 },
+      "class_percentages": { "N": 22.68, "S": 0.0, "V": 2.66, "F": 0.0, "Q": 79.64 }
+    }
+  },
+  "leakage_verification": {
+    "train_val_intersection": [],
+    "train_test_intersection": [],
+    "val_test_intersection": [],
+    "active_paced_intersection": [],
+    "class_weights_fitted_on": "train_only",
+    "normalization_scope": "per_beat_local"
+  }
+}

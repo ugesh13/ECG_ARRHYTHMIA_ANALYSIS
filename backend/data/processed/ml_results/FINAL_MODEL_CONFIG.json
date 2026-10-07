@@ -1,0 +1,83 @@
+{
+  "task": "N/S/V/F",
+  "classes": ["N", "S", "V", "F"],
+  "standard_reference": "ANSI/AAMI EC57:1998",
+  "frozen_at_utc": "2026-10-04T16:25:00Z",
+  "status": "LOCKED_FOR_EVALUATION",
+  "model_family": "RandomForestClassifier",
+  "primary_metric": "Macro F1",
+  "random_seed": 42,
+  "feature_representation": {
+    "name": "morphology_plus_bidirectional_rr",
+    "total_dimension": 209,
+    "morphology_samples": 200,
+    "morphology_window_config": {
+      "sampling_rate_hz": 360.0,
+      "window_size_samples": 200,
+      "pre_r_samples": 90,
+      "post_r_samples": 110,
+      "baseline_removal": "moving_average_filter (217 samples, ~0.6 s, reflection padding)",
+      "amplitude_normalization": "per_beat_zscore"
+    },
+    "rr_variant": "bidirectional",
+    "rr_features_count": 9,
+    "rr_feature_names": [
+      "RR_prev",
+      "HR_prev",
+      "RR_local_median",
+      "RR_ratio_prev",
+      "RR_dev_prev",
+      "RR_next",
+      "HR_next",
+      "RR_ratio_bidi",
+      "RR_bidi_diff"
+    ],
+    "edge_beat_exclusion_policy": "Beat 0 (first in record) and Beat N-1 (last in record) excluded due to undefined temporal boundary intervals"
+  },
+  "dataset_partitions": {
+    "training_records": [
+      "101", "106", "109", "112", "115", "116", "119", "122",
+      "124", "203", "205", "207", "208", "215", "223", "230"
+    ],
+    "training_record_count": 16,
+    "training_sample_count": 38029,
+    "validation_records": ["108", "114", "118", "201", "209", "220"],
+    "validation_record_count": 6,
+    "validation_sample_count": 12918,
+    "test_records_ds2": [
+      "100", "103", "105", "111", "113", "117", "121", "123",
+      "200", "202", "210", "212", "213", "214", "219", "221",
+      "222", "228", "231", "232", "233", "234"
+    ],
+    "test_record_count": 22,
+    "test_expected_4class_raw_beats": 49683,
+    "test_expected_bidirectional_usable_beats": 49639,
+    "excluded_paced_records": ["102", "104", "107", "217"]
+  },
+  "selected_hyperparameters": {
+    "n_estimators": 200,
+    "max_depth": 30,
+    "min_samples_split": 5,
+    "min_samples_leaf": 2,
+    "max_features": "sqrt",
+    "class_weight": "balanced",
+    "random_state": 42,
+    "n_jobs": -1
+  },
+  "phase7_ds1_validation_results": {
+    "accuracy": 0.9668,
+    "balanced_accuracy": 0.7079,
+    "macro_precision": 0.7166,
+    "macro_recall": 0.7079,
+    "macro_f1": 0.7095,
+    "weighted_f1": 0.9664,
+    "class_supports": {
+      "N": 11919,
+      "S": 716,
+      "V": 275,
+      "F": 8,
+      "total": 12918
+    }
+  },
+  "test_lock_policy": "FROZEN_BEFORE_DS2_EVALUATION. No post-test modification or tuning permitted."
+}

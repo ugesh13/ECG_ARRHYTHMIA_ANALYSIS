@@ -1,0 +1,488 @@
+{
+  "database_name": "MIT-BIH Arrhythmia Database",
+  "records_count": 48,
+  "total_beats": 109446,
+  "sampling_frequency_hz": 360.0,
+  "records": {
+    "100": {
+      "record_id": "100",
+      "total_beats": 2272,
+      "class_counts": { "N": 2238, "S": 33, "V": 1, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Normal sinus rhythm, occasional APCs & PVCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "101": {
+      "record_id": "101",
+      "total_beats": 1864,
+      "class_counts": { "N": 1859, "S": 3, "V": 0, "F": 0, "Q": 2 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with occasional APCs, unclassifiable beats",
+      "first_beat_truncated_symbol": "N"
+    },
+    "102": {
+      "record_id": "102",
+      "total_beats": 2186,
+      "class_counts": { "N": 98, "S": 0, "V": 4, "F": 0, "Q": 2084 },
+      "lead_selected": "V5",
+      "source_channel": 0,
+      "is_paced": true,
+      "quality_notes": "Demand pacemaker rhythm, paced fusion, no MLII lead available",
+      "first_beat_truncated_symbol": "N"
+    },
+    "103": {
+      "record_id": "103",
+      "total_beats": 2083,
+      "class_counts": { "N": 2081, "S": 2, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Normal sinus rhythm with isolated APCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "104": {
+      "record_id": "104",
+      "total_beats": 2228,
+      "class_counts": { "N": 162, "S": 0, "V": 2, "F": 0, "Q": 2064 },
+      "lead_selected": "V5",
+      "source_channel": 0,
+      "is_paced": true,
+      "quality_notes": "Paced rhythm, paced fusion, muscle noise, no MLII lead available",
+      "first_beat_truncated_symbol": "N"
+    },
+    "105": {
+      "record_id": "105",
+      "total_beats": 2571,
+      "class_counts": { "N": 2525, "S": 0, "V": 41, "F": 0, "Q": 5 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent multiform PVCs and high baseline noise",
+      "first_beat_truncated_symbol": "N"
+    },
+    "106": {
+      "record_id": "106",
+      "total_beats": 2026,
+      "class_counts": { "N": 1506, "S": 0, "V": 520, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent PVCs, ventricular bigeminy and trigeminy",
+      "first_beat_truncated_symbol": "N"
+    },
+    "107": {
+      "record_id": "107",
+      "total_beats": 2136,
+      "class_counts": { "N": 0, "S": 0, "V": 59, "F": 0, "Q": 2077 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": true,
+      "quality_notes": "Complete AV block with continuous ventricular paced rhythm",
+      "first_beat_truncated_symbol": "/"
+    },
+    "108": {
+      "record_id": "108",
+      "total_beats": 1762,
+      "class_counts": { "N": 1739, "S": 4, "V": 17, "F": 2, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with nodal escape, pacing artifacts without capture",
+      "first_beat_truncated_symbol": "N"
+    },
+    "109": {
+      "record_id": "109",
+      "total_beats": 2531,
+      "class_counts": { "N": 2491, "S": 0, "V": 38, "F": 2, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Continuous left bundle branch block (LBBB) pattern, PVCs",
+      "first_beat_truncated_symbol": "L"
+    },
+    "111": {
+      "record_id": "111",
+      "total_beats": 2123,
+      "class_counts": { "N": 2122, "S": 0, "V": 1, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Continuous left bundle branch block (LBBB) pattern",
+      "first_beat_truncated_symbol": "L"
+    },
+    "112": {
+      "record_id": "112",
+      "total_beats": 2538,
+      "class_counts": { "N": 2536, "S": 2, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Normal sinus rhythm with isolated APCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "113": {
+      "record_id": "113",
+      "total_beats": 1794,
+      "class_counts": { "N": 1788, "S": 6, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with aberrated atrial premature beats",
+      "first_beat_truncated_symbol": "N"
+    },
+    "114": {
+      "record_id": "114",
+      "total_beats": 1878,
+      "class_counts": { "N": 1819, "S": 12, "V": 43, "F": 4, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 1,
+      "is_paced": false,
+      "quality_notes": "Inverted channels (V5 ch 0, MLII ch 1); APCs, junctional beats, PVCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "115": {
+      "record_id": "115",
+      "total_beats": 1952,
+      "class_counts": { "N": 1952, "S": 0, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Uniform normal sinus rhythm without ectopy",
+      "first_beat_truncated_symbol": "N"
+    },
+    "116": {
+      "record_id": "116",
+      "total_beats": 2411,
+      "class_counts": { "N": 2301, "S": 1, "V": 109, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent isolated PVCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "117": {
+      "record_id": "117",
+      "total_beats": 1534,
+      "class_counts": { "N": 1533, "S": 1, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with isolated APC",
+      "first_beat_truncated_symbol": "N"
+    },
+    "118": {
+      "record_id": "118",
+      "total_beats": 2277,
+      "class_counts": { "N": 2165, "S": 96, "V": 16, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Right bundle branch block (RBBB), frequent APCs",
+      "first_beat_truncated_symbol": "R"
+    },
+    "119": {
+      "record_id": "119",
+      "total_beats": 1986,
+      "class_counts": { "N": 1542, "S": 0, "V": 444, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent multiform PVCs, ventricular bigeminy",
+      "first_beat_truncated_symbol": "N"
+    },
+    "121": {
+      "record_id": "121",
+      "total_beats": 1862,
+      "class_counts": { "N": 1860, "S": 1, "V": 1, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with isolated APC and PVC",
+      "first_beat_truncated_symbol": "N"
+    },
+    "122": {
+      "record_id": "122",
+      "total_beats": 2475,
+      "class_counts": { "N": 2475, "S": 0, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Normal sinus rhythm throughout",
+      "first_beat_truncated_symbol": "N"
+    },
+    "123": {
+      "record_id": "123",
+      "total_beats": 1517,
+      "class_counts": { "N": 1514, "S": 0, "V": 3, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with isolated PVCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "124": {
+      "record_id": "124",
+      "total_beats": 1618,
+      "class_counts": { "N": 1535, "S": 31, "V": 47, "F": 5, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "RBBB, nodal premature beats, nodal escape, PVCs, fusion",
+      "first_beat_truncated_symbol": "R"
+    },
+    "200": {
+      "record_id": "200",
+      "total_beats": 2600,
+      "class_counts": { "N": 1743, "S": 30, "V": 825, "F": 2, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Complex ventricular ectopy, bigeminy, multiform PVCs, bursts of VT",
+      "first_beat_truncated_symbol": "V"
+    },
+    "201": {
+      "record_id": "201",
+      "total_beats": 1962,
+      "class_counts": { "N": 1634, "S": 128, "V": 198, "F": 2, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Atrial fibrillation, aberrated APCs, nodal escape, PVCs, noise",
+      "first_beat_truncated_symbol": "N"
+    },
+    "202": {
+      "record_id": "202",
+      "total_beats": 2135,
+      "class_counts": { "N": 2060, "S": 55, "V": 19, "F": 1, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Atrial flutter with variable block, APCs, aberrated APCs, PVCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "203": {
+      "record_id": "203",
+      "total_beats": 2979,
+      "class_counts": { "N": 2528, "S": 2, "V": 444, "F": 1, "Q": 4 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Extremely noisy recording, multiform PVCs, bigeminy, unclassifiable beats",
+      "first_beat_truncated_symbol": "N"
+    },
+    "205": {
+      "record_id": "205",
+      "total_beats": 2655,
+      "class_counts": { "N": 2570, "S": 3, "V": 71, "F": 11, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with PVCs, ventricular fusion beats",
+      "first_beat_truncated_symbol": "N"
+    },
+    "207": {
+      "record_id": "207",
+      "total_beats": 1859,
+      "class_counts": { "N": 1542, "S": 107, "V": 210, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "LBBB, RBBB, ventricular flutter/VT (472 flutter waves excluded), escape",
+      "first_beat_truncated_symbol": "L"
+    },
+    "208": {
+      "record_id": "208",
+      "total_beats": 2954,
+      "class_counts": { "N": 1585, "S": 2, "V": 992, "F": 373, "Q": 2 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Extremely high ventricular ectopy (992 PVCs), 373 fusion beats",
+      "first_beat_truncated_symbol": "N"
+    },
+    "209": {
+      "record_id": "209",
+      "total_beats": 3004,
+      "class_counts": { "N": 2621, "S": 382, "V": 1, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Extremely frequent supraventricular ectopy (382 APCs), runs of SVT",
+      "first_beat_truncated_symbol": "A"
+    },
+    "210": {
+      "record_id": "210",
+      "total_beats": 2649,
+      "class_counts": { "N": 2422, "S": 22, "V": 195, "F": 10, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Atrial fibrillation, aberrated APCs, PVCs, ventricular escape, fusion",
+      "first_beat_truncated_symbol": "N"
+    },
+    "212": {
+      "record_id": "212",
+      "total_beats": 2747,
+      "class_counts": { "N": 2747, "S": 0, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Continuous right bundle branch block (RBBB) pattern",
+      "first_beat_truncated_symbol": "N"
+    },
+    "213": {
+      "record_id": "213",
+      "total_beats": 3250,
+      "class_counts": { "N": 2640, "S": 28, "V": 220, "F": 362, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "High ventricular fusion (362 F beats), PVCs, atrial premature beats",
+      "first_beat_truncated_symbol": "N"
+    },
+    "214": {
+      "record_id": "214",
+      "total_beats": 2261,
+      "class_counts": { "N": 2002, "S": 0, "V": 256, "F": 1, "Q": 2 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Continuous left bundle branch block (LBBB), frequent PVCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "215": {
+      "record_id": "215",
+      "total_beats": 3362,
+      "class_counts": { "N": 3194, "S": 3, "V": 164, "F": 1, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent PVCs, isolated APCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "217": {
+      "record_id": "217",
+      "total_beats": 2207,
+      "class_counts": { "N": 245, "S": 0, "V": 162, "F": 0, "Q": 1800 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": true,
+      "quality_notes": "Paced rhythm, paced fusion, PVCs, muscle noise",
+      "first_beat_truncated_symbol": "N"
+    },
+    "219": {
+      "record_id": "219",
+      "total_beats": 2153,
+      "class_counts": { "N": 2081, "S": 7, "V": 64, "F": 1, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Atrial fibrillation, PVCs, non-conducted spikes / artifacts",
+      "first_beat_truncated_symbol": "N"
+    },
+    "220": {
+      "record_id": "220",
+      "total_beats": 2047,
+      "class_counts": { "N": 1953, "S": 94, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent APCs (94 S beats), runs of SVT",
+      "first_beat_truncated_symbol": "N"
+    },
+    "221": {
+      "record_id": "221",
+      "total_beats": 2426,
+      "class_counts": { "N": 2030, "S": 0, "V": 396, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Atrial fibrillation, frequent multiform PVCs",
+      "first_beat_truncated_symbol": "N"
+    },
+    "222": {
+      "record_id": "222",
+      "total_beats": 2482,
+      "class_counts": { "N": 2274, "S": 208, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with atrial flutter, nodal escape, frequent APCs",
+      "first_beat_truncated_symbol": "A"
+    },
+    "223": {
+      "record_id": "223",
+      "total_beats": 2604,
+      "class_counts": { "N": 2044, "S": 73, "V": 473, "F": 14, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent PVCs, ventricular bigeminy, APCs, escape",
+      "first_beat_truncated_symbol": "N"
+    },
+    "228": {
+      "record_id": "228",
+      "total_beats": 2052,
+      "class_counts": { "N": 1687, "S": 3, "V": 362, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent PVCs, bigeminy, baseline wander",
+      "first_beat_truncated_symbol": "N"
+    },
+    "230": {
+      "record_id": "230",
+      "total_beats": 2255,
+      "class_counts": { "N": 2254, "S": 0, "V": 1, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Wolff-Parkinson-White (WPW) pre-excitation pattern, isolated PVC",
+      "first_beat_truncated_symbol": "N"
+    },
+    "231": {
+      "record_id": "231",
+      "total_beats": 1570,
+      "class_counts": { "N": 1567, "S": 1, "V": 2, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Right bundle branch block (RBBB), isolated APC and PVC",
+      "first_beat_truncated_symbol": "N"
+    },
+    "232": {
+      "record_id": "232",
+      "total_beats": 1779,
+      "class_counts": { "N": 398, "S": 1381, "V": 0, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Massive supraventricular ectopy (1,381 APCs), runs of SVT",
+      "first_beat_truncated_symbol": "A"
+    },
+    "233": {
+      "record_id": "233",
+      "total_beats": 3078,
+      "class_counts": { "N": 2229, "S": 7, "V": 831, "F": 11, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Multiform ventricular ectopy (831 PVCs), ventricular couplets, fusion",
+      "first_beat_truncated_symbol": "N"
+    },
+    "234": {
+      "record_id": "234",
+      "total_beats": 2752,
+      "class_counts": { "N": 2699, "S": 50, "V": 3, "F": 0, "Q": 0 },
+      "lead_selected": "MLII",
+      "source_channel": 0,
+      "is_paced": false,
+      "quality_notes": "Sinus rhythm with frequent nodal premature beats (50 J beats)",
+      "first_beat_truncated_symbol": "N"
+    }
+  }
+}

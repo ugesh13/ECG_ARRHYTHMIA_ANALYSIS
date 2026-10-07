@@ -1,0 +1,4 @@
+Model / Dataset,Accuracy,Balanced Accuracy,Macro Precision,Macro Recall,Macro F1,Weighted F1
+Phase 6 Best RF (Morphology + Bidi RR - DS1 Val),0.9640,0.7120,0.7280,0.7120,0.6985,0.9630
+Phase 7 Tuned RF (Morphology + Bidi RR - DS1 Val),0.9668,0.7079,0.7166,0.7079,0.7095,0.9664
+Phase 8 Frozen RF (Morphology + Bidi RR - DS2 Test),0.9093,0.7000,0.6348,0.7000,0.6403,0.9174

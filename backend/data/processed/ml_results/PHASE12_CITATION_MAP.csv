@@ -1,0 +1,31 @@
+Citation Number,Reference,Manuscript Section,Claim Supported,Verification Status,Notes
+[1],Sörnmo & Laguna (2005),Section 1 (Introduction),ECG as primary non-invasive diagnostic modality for cardiac electrical activity,VERIFIED,Textbook reference on bioelectrical signal processing
+[2],Mark et al. (1982),Section 1 (Introduction),Ambulatory Holter monitoring data volume and manual inspection fatigue,VERIFIED,Original paper introducing MIT-BIH Arrhythmia Database
+[3],Luz et al. (2016),Section 1 (Introduction),Severe class imbalance in ambulatory ECG (>89% normal beats),VERIFIED,Comprehensive survey of ECG heartbeat classification
+[4],Josephson (2015),Section 1 (Introduction),Supraventricular ectopics originating above His bundle bifurcation with normal His-Purkinje conduction,VERIFIED,Foundational clinical cardiac electrophysiology textbook
+[1],Sörnmo & Laguna (2005),Section 1 (Introduction),Inter-subject ECG variability from thoracic anatomy electrode placement and autonomic tone,VERIFIED,Textbook discussion of physiological and physical variability
+[5],de Chazal et al. (2004),Section 1 (Introduction),Intra-patient data leakage from random beat partitioning causing inflated metrics,VERIFIED,Canonical paper establishing inter-patient benchmark
+[4],Josephson (2015),Section 1 (Introduction),Prematurity of ectopics and compensatory pauses following ventricular beats,VERIFIED,Clinical electrophysiology description of ectopic mechanisms
+[6],ANSI/AAMI EC57 (1998),Section 1 (Introduction),Evaluation framework and testing standards for cardiac rhythm algorithms,VERIFIED,ANSI-approved standard for ECG algorithm reporting
+[5],de Chazal et al. (2004),Section 1 (Contributions),Canonical 44-record inter-patient partitioning protocol dividing DS1 and DS2,VERIFIED,Record-level split definition
+[2],Mark et al. (1982),Section 2.1 (Related Work),Establishment and annotation of the MIT-BIH Arrhythmia Database,VERIFIED,Historical database description
+[7],Goldberger et al. (2000),Section 2.1 (Related Work),Public accessibility of MIT-BIH via the PhysioNet research platform,VERIFIED,Canonical PhysioNet platform publication
+[6],ANSI/AAMI EC57 (1998),Section 2.1 (Related Work),Standardized heartbeat grouping categories and performance metrics,VERIFIED,AAMI reporting standards
+[5],de Chazal et al. (2004),Section 2.2 (Related Work),Intra-patient leakage critique and canonical DS1/DS2 split,VERIFIED,Inter-patient evaluation methodology
+[8],Llamedo & Martínez (2011),Section 2.2 (Related Work),Database generalization and inter-patient feature selection,VERIFIED,Exact title verified with criteria suffix
+[3],Luz et al. (2016),Section 2.2 (Related Work),Survey of data leakage and patient-independent evaluation in ECG ML,VERIFIED,Survey paper covering 2004-2015 literature
+[5],de Chazal et al. (2004),Section 2.2 (Related Work),Introduction of 44-record non-paced DS1/DS2 division,VERIFIED,Canonical benchmark protocol
+[9],Köhler et al. (2002),Section 2.3 (Related Work),Segmenting localized voltage waveforms around QRS fiducial markers,VERIFIED,Review of digital software QRS detection
+[3],Luz et al. (2016),Section 2.3 (Related Work),Survey of raw amplitudes wavelets Hermite polynomials and HOS features,VERIFIED,Consolidates morphology feature representations
+[1],Sörnmo & Laguna (2005),Section 2.3 (Related Work),Baseline wander removal via moving average and digital filtering,VERIFIED,Signal processing foundation for baseline drift removal
+[4],Josephson (2015),Section 2.4 (Related Work),Electrophysiological pause dynamics and ectopic prematurity,VERIFIED,Physiological mechanisms of pauses and extrasystoles
+[10],Hu et al. (1997),Section 2.4 (Related Work),Early implementation of local pre- and post-RR interval ratio features,VERIFIED,Patient-adaptable mixture of experts formulation
+[5],de Chazal et al. (2004),Section 2.4 (Related Work),RR interval features normalizing heart rate variability across patients,VERIFIED,Interval feature integration in AAMI framework
+[11],Breiman (2001),Section 2.5 (Related Work),Random Forests ensemble algorithm bagging and random feature subspaces,VERIFIED,Foundational machine learning algorithm reference
+[12],Mondéjar-Guerra et al. (2019),Section 2.5 (Related Work),Ensemble classifiers combining temporal and morphological features for ECG,VERIFIED,Evaluated Random Forests on MIT-BIH under AAMI EC57
+[3],Luz et al. (2016),Section 2.6 (Related Work),Extreme natural class imbalance in ambulatory ECG archives,VERIFIED,Imbalance statistics across multiple databases
+[13],King & Zeng (2001),Section 2.6 (Related Work),Cost-sensitive loss weighting and prior correction for rare events,VERIFIED,Statistical methodology for imbalanced class weighting
+[7],Goldberger et al. (2000),Section 3.1 (Methodology),PhysioNet MIT-BIH Arrhythmia Database repository description,VERIFIED,Official platform citation
+[6],ANSI/AAMI EC57 (1998),Section 3.2 (Methodology),Guidelines for isolating paced recordings from intrinsic rhythm evaluation,VERIFIED,Mandates separate handling of pacemaker records
+[5],de Chazal et al. (2004),Section 3.9 (Methodology),Record-level partitioning dividing 44 non-paced records into DS1 and DS2,VERIFIED,Exact record partition specification
+[14],Brodersen et al. (2010),Section 3.12 (Methodology),Mathematical definition of Balanced Accuracy under class imbalance,VERIFIED,Foundational paper defining balanced accuracy

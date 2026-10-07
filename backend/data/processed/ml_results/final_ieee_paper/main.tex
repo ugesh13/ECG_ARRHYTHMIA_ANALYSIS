@@ -1,0 +1,585 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{url}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Safe image inclusion: renders graphic if file exists, else renders clean placeholder box
+\newcommand{\safeincludegraphics}[2][]{%
+  \IfFileExists{#2}{%
+    \includegraphics[#1]{#2}%
+  }{%
+    \fbox{\begin{minipage}[c][0.22\textheight][c]{0.95\columnwidth}\centering\small\textbf{[Figure: #2]}\\[4pt]\footnotesize(Run \texttt{python backend/generate\_phase9\_artifacts.py} to generate)\end{minipage}}%
+  }%
+}
+
+\begin{document}
+
+\title{Integrating ECG Morphology and Cardiac Timing Features for Inter-Patient Heartbeat Classification: An AAMI EC57 Benchmark Evaluation on the MIT-BIH Database}
+
+\author{
+\IEEEauthorblockN{Ugesh Kumar, Riya Sharma}
+\IEEEauthorblockA{
+\textit{Department of Computer Science}\\
+\textit{Jain University, Kanakapura Campus}\\
+Bangalore, India\\
+ugesh25btech27281@jainuniversity.ac.in
+}
+}
+
+\maketitle
+
+\begin{abstract}
+Automated electrocardiogram (ECG) heartbeat classification is essential for long-term ambulatory cardiac monitoring, yet distinguishing morphologically similar rhythms---particularly supraventricular ectopic beats---remains challenging under extreme class imbalance and inter-patient variability. This study investigates the synergistic contribution of localized waveform morphology and cardiac cycle timing features for automated four-class heartbeat classification under the ANSI/AAMI EC57 standard (Normal sinus rhythm, Supraventricular ectopic, Ventricular ectopic, and Ventricular fusion). Using the PhysioNet MIT-BIH Arrhythmia Database, 44 non-paced recordings (100,586 usable heartbeats) were partitioned at the patient record level into independent training (16 records), validation (6 records), and held-out test (22 records, designated DS2) sets to strictly prevent inter-patient data leakage. A 209-dimensional feature representation was constructed, combining 200 preprocessed raw ECG sample amplitudes (555.56~ms window around the R-peak, moving-average baseline wander removal with window $W=217$ samples, and per-beat local z-score normalization) with 9 canonical bidirectional RR-interval timing features extracted from reference annotations. Controlled experiments demonstrated that relying solely on waveform morphology imposes a severe ceiling on supraventricular ectopic classification (38.40\% validation recall). Augmenting morphology with cardiac timing resolved this ambiguity, increasing validation Macro F1 from 0.5824 to 0.6985 (+0.1161 gain), with subsequent hyperparameter optimization yielding a Macro F1 of 0.7095. A single, independent evaluation of the permanently frozen Random Forest on the 22 held-out DS2 recordings (49,639 beats from unseen patients) achieved an overall accuracy of 90.93\%, a balanced accuracy of 70.00\%, a Macro F1 score of 0.6403, and high ventricular ectopic sensitivity (87.20\% recall, 69.75\% precision). Balanced Accuracy showed relatively little degradation between the DS1 validation cohort (0.7079) and the held-out DS2 cohort (0.7000), indicating comparatively stable class-balanced performance across the record-level split. This should not be interpreted as evidence of clinical generalization. Macro F1 decreased from 0.7095 to 0.6403 primarily due to decreased supraventricular precision (38.45\%) caused by physiological sinus rate fluctuations in select test recordings. Feature importance analysis confirmed that the 9 timing features contributed 26.38\% of model-level split decisions despite representing only 4.31\% of the input space. These findings demonstrate that classical machine learning with domain-grounded timing features achieves competitive, interpretable diagnostic separation on the MIT-BIH benchmark without complex deep architectures, establishing an offline reference pipeline for retrospective Holter analysis. The study is an academic benchmark evaluation and does not establish prospective clinical efficacy.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Electrocardiogram (ECG), Arrhythmia Classification, MIT-BIH Arrhythmia Database, ANSI/AAMI EC57, RR Interval Timing, Random Forest Ensemble, Feature Engineering, Inter-Patient Generalization
+\end{IEEEkeywords}
+
+\section{Introduction}
+The electrocardiogram (ECG) is the primary non-invasive clinical diagnostic modality for monitoring the electrical conduction system of the human heart \cite{sornmo2005bioelectrical}. Continuous ambulatory Holter monitoring and telemetry systems record hundreds of thousands of cardiac cycles over multi-hour intervals, making manual beat-by-beat visual inspection by cardiologists labor-intensive, time-consuming, and subject to inter-observer fatigue \cite{mark1982annotated}. Consequently, automated ECG heartbeat classification has emerged as a cornerstone of computational cardiology, aiming to assist clinicians by flagging abnormal rhythms and stratifying arrhythmic risk.
+
+Despite decades of active research, automated ECG classification remains a challenging machine-learning task due to three fundamental characteristics:
+\begin{enumerate}
+    \item \textbf{Severe Class Imbalance:} In ambulatory monitoring, normal sinus rhythm beats overwhelmingly dominate recordings ($>89\%$ of all heartbeats), while ventricular ectopics and supraventricular arrhythmias represent small minority fractions ($<10\%$ combined) \cite{luz2016ecg}. Classifiers trained without appropriate class-cost handling frequently collapse toward the majority sinus class, achieving high overall accuracy while failing to detect critical ectopic events.
+    \item \textbf{Morphological Mimicry and Intra-Class Ambiguity:} While ventricular ectopic beats (\textbf{V}) originate in the ventricular myocardium and exhibit widened, distorted QRS complexes that are readily identifiable, supraventricular ectopic beats (\textbf{S}) originate above the bifurcation of the bundle of His \cite{josephson2015clinical}. Because supraventricular impulses depolarize the ventricles via the intrinsic His-Purkinje conduction network, their QRS complex morphology on single-lead recordings is virtually identical to normal sinus complexes. Purely morphology-based algorithms therefore hit a physiological ceiling when attempting to separate normal beats from supraventricular ectopics.
+    \item \textbf{Inter-Patient Heart Rhythm Heterogeneity and Data Leakage:} Cardiac electrophysiology varies considerably between individuals due to variations in thoracic anatomy, electrode placement, underlying heart disease, and autonomic tone \cite{sornmo2005bioelectrical}. A pervasive methodological failure in prior literature is ``intra-patient data leakage,'' where heartbeats from the same patient recording are randomly shuffled into both training and test partitions. This artificial setup yields fraudulently optimistic test accuracies (often exceeding 99\%) that catastrophically fail when deployed on independent, unseen patient recordings \cite{dechazal2004automatic}.
+\end{enumerate}
+
+To overcome the morphological ambiguity of supraventricular ectopics, computational models must exploit cardiac cycle timing dynamics. Pathological ectopic beats occur prematurely relative to the underlying sinus rhythm: atrial premature contractions disrupt the regular sinus cadence, while ventricular ectopics are typically followed by a fully compensatory pause \cite{josephson2015clinical}. Extracting local RR-interval ratios and coupling statistics provides discriminative information that waveform morphology alone cannot capture.
+
+The primary objective of this investigation is to evaluate whether a classical machine-learning ensemble, combining localized ECG waveform morphology with domain-grounded cardiac timing features, can achieve robust inter-patient generalization on held-out recordings under the ANSI/AAMI EC57 standard \cite{aami1998ec57}.
+
+\subsection{Specific Contributions}
+\begin{itemize}
+    \item \textbf{Leakage-Aware Inter-Patient Partitioning Protocol:} The study implements a strict, record-level partitioning strategy across the 44 non-paced MIT-BIH recordings (following the canonical de Chazal et al. division \cite{dechazal2004automatic}), completely eliminating intra-patient beat-level leakage. All 22 test recordings (DS2, 49,639 usable beats) were isolated from preprocessing fitting, class-weight calculations, and hyperparameter search.
+    \item \textbf{Four-Class AAMI Benchmark Formulation:} The study implements an exact accounting framework for the ANSI/AAMI EC57 4-class taxonomy (\textbf{N}, \textbf{S}, \textbf{V}, \textbf{F}). Four paced recordings (102, 104, 107, 217, comprising 8,757 beats) were strictly isolated to prevent artificial pacing spike contamination, and 15 unclassifiable beats (\textbf{Q}) across the remaining recordings were accounted for without compromising target class definitions.
+    \item \textbf{Morphology + RR Timing Representation ($D = 209$):} The study develops a 209-dimensional feature representation combining 200 preprocessed raw ECG sample amplitudes (moving-average baseline wander removal with $W=217$ samples and per-beat z-score normalization) with 9 canonical bidirectional RR-interval timing features derived from consecutive heartbeat timestamps.
+    \item \textbf{Controlled Causal vs. Bidirectional Timing Ablation:} The study conducts a controlled comparative evaluation across matched validation cohorts, demonstrating that causal retrospective timing ($D=205$) provides the primary breakthrough for supraventricular ectopic sensitivity (improving Class S recall from 38.40\% to 61.20\%), while prospective bidirectional features ($D=209$) provide an additional increment (+0.0335 Macro F1) by capturing compensatory pauses and interval asymmetry.
+    \item \textbf{Record-Grouped Hyperparameter Optimization:} The study executes hyperparameter optimization strictly within the training cohort using 4-fold \texttt{GroupKFold} grouped by patient record ID. This ensures that cross-validation folds reflect genuine inter-subject generalization rather than intra-subject memorization.
+    \item \textbf{Permanently Frozen Independent Held-Out Benchmark (DS2):} The study reports a single, independent test evaluation of the frozen Random Forest on 49,639 beats from 22 unseen recordings, achieving 90.93\% overall accuracy, 70.00\% balanced accuracy, 0.6403 Macro F1, and 87.20\% ventricular sensitivity, with zero post-test parameter tuning.
+    \item \textbf{Grounded Error Categorization and Generalization Assessment:} The study conducts a thorough post-test audit of the 4,502 test misclassifications, categorizing major error modes into electrophysiologically plausible mechanisms, while evaluating the stability of Balanced Accuracy versus Macro F1 across patient boundaries.
+\end{itemize}
+
+\section{Related Work}
+Automated arrhythmia detection has been investigated across diverse feature engineering paradigms, signal processing techniques, and classification models. This section outlines the relevant literature across core areas.
+
+\subsection{Benchmark ECG Databases and Standards}
+The MIT-BIH Arrhythmia Database, established by Mark et al. \cite{mark1982annotated} and made accessible via PhysioNet \cite{goldberger2000physiobank}, remains the foundational international benchmark for automated ECG analysis. To establish reproducible reporting guidelines, the Association for the Advancement of Medical Instrumentation introduced the ANSI/AAMI EC57 standard \cite{aami1998ec57}, defining recommended heartbeat grouping categories (\textbf{N}, \textbf{S}, \textbf{V}, \textbf{F}, \textbf{Q}) and standardized performance metrics.
+
+\subsection{The Challenge of Data Leakage and Inter-Patient Splitting}
+Early literature frequently evaluated algorithms by randomly partitioning individual heartbeats into train and test sets. As highlighted by de Chazal et al. \cite{dechazal2004automatic}, Llamedo and Mart{\'i}nez \cite{llamedo2011heartbeat}, and comprehensive surveys by Luz et al. \cite{luz2016ecg}, beat-level random shuffling causes severe intra-patient data leakage: morphology signatures from a given subject contaminate both training and test sets, producing artificially inflated accuracies ($>98\%$) that fail under real-world clinical evaluation. To prevent leakage, de Chazal et al. \cite{dechazal2004automatic} introduced a canonical 44-record inter-patient split dividing the non-paced records into DS1 (training/validation) and DS2 (independent held-out test), which is adopted in this study.
+
+\subsection{Waveform Morphology Representation}
+Segmenting localized voltage waveforms around QRS fiducial markers is the standard approach to morphology representation \cite{kohler2002principles}. Prior studies have explored raw amplitude sampling, discrete wavelet transform coefficients, Hermite polynomials, and higher-order statistics \cite{luz2016ecg}. Preprocessing steps typically require baseline wander elimination using digital high-pass filters or moving-average subtraction \cite{sornmo2005bioelectrical}, followed by local amplitude normalization to handle inter-individual impedance variations.
+
+\subsection{Cardiac Interval Timing and RR Dynamics}
+The physiological mechanism of cardiac ectopic beats inherently alters timing cadence: supraventricular and ventricular extrasystoles occur prematurely, with ventricular complexes typically followed by a prolonged compensatory pause \cite{josephson2015clinical}. Early implementations by Hu et al. \cite{hu1997patient} and de Chazal et al. \cite{dechazal2004automatic} demonstrated that local pre- and post-RR interval ratios normalize heart rate variations across patients, providing essential discriminative triggers that morphology alone cannot supply.
+
+\subsection{Classical Machine Learning and Tree Ensembles}
+Ensemble tree algorithms, particularly Random Forests \cite{breiman2001random}, have proven effective for ECG classification \cite{mondejar2019heartbeat}. Random Forests handle high-dimensional feature spaces, model complex non-linear feature interactions, and offer built-in resistance to overfitting through bootstrap aggregation and randomized feature sub-spacing.
+
+\subsection{Handling Extreme Class Imbalance}
+Ambulatory ECG data exhibit severe natural class imbalance, with normal complexes outnumbering pathological ectopics by orders of magnitude \cite{luz2016ecg}. Common mitigation strategies include cost-sensitive loss weighting \cite{king2001logistic} and balanced bootstrap resampling, avoiding synthetic oversampling methods (e.g. SMOTE) that may distort delicate physiological time-series dynamics.
+
+\section{Dataset and Methodology}
+
+\subsection{Dataset Description}
+The experimental evaluation utilizes the PhysioNet MIT-BIH Arrhythmia Database (\texttt{mitdb}) \cite{goldberger2000physiobank}. The database contains 48 half-hour ambulatory two-channel electrocardiographic recordings obtained from 47 individual subjects (recordings 201 and 202 originate from the same individual). Each recording has a continuous duration of approximately 30 minutes (650,000 samples per channel) digitized at a sampling frequency of $f_s = 360.0$~Hz with an 11-bit resolution over a dynamic range of $\pm 10$~mV. Reference heartbeat annotations were established through independent verification by at least two certified cardiologists.
+
+\subsection{Record Selection and Paced Record Isolation}
+In accordance with ANSI/AAMI EC57 guidelines \cite{aami1998ec57}, artificial cardiac pacemakers introduce high-voltage pacing stimuli spikes and altered ventricular activation sequences that distort intrinsic conduction dynamics. Consequently, the 4 paced recordings in the database (records 102, 104, 107, and 217, comprising 8,757 total heartbeats and 8,027 paced complexes) were strictly isolated into a separate secondary cohort and excluded from all model training, validation, and test evaluation.
+
+The remaining \textbf{44 non-paced recordings} constitute the primary experimental cohort (100,689 total beats). For each recording, the primary signal channel was selected according to a strict priority hierarchy: Modified Limb Lead II (MLII) was preferred ($N=40$ records), with fallback to Modified Lead V5 ($N=2$, records 114 and 124), V1 ($N=1$, record 101), V2, or V4 where MLII was unavailable.
+
+\subsection{AAMI Label Mapping}
+Reference annotations were mapped to the standard ANSI/AAMI EC57 four-class taxonomy:
+\begin{itemize}
+    \item \textbf{Class N (Non-Ectopic / Normal Sinus and Conduction Delays):} Normal sinus beat (\texttt{N}), Left bundle branch block (\texttt{L}), Right bundle branch block (\texttt{R}), Atrial escape (\texttt{e}), Nodal escape (\texttt{j}).
+    \item \textbf{Class S (Supraventricular Ectopic Beats):} Atrial premature beat (\texttt{A}), Aberrated atrial premature beat (\texttt{a}), Nodal premature beat (\texttt{J}), Supraventricular premature beat (\texttt{S}).
+    \item \textbf{Class V (Ventricular Ectopic Beats):} Premature ventricular contraction (\texttt{V}), Ventricular escape (\texttt{E}).
+    \item \textbf{Class F (Fusion Beats):} Ventricular fusion beats (\texttt{F}).
+\end{itemize}
+Beats labeled as unclassifiable or pacing artifacts (\texttt{/}, \texttt{f}, \texttt{Q}), totaling 15 beats across the 44 primary recordings, were preserved in metadata but excluded from the 4-class classification target, resulting in \textbf{100,674 usable raw benchmark beats}.
+
+\subsection{Beat Extraction}
+Heartbeat segmentation was executed using reference R-peak annotation timestamps ($t_R$). For each cardiac cycle, an asymmetric segmentation window of \textbf{200 samples} ($555.56$~ms at 360~Hz) was extracted around the reference marker:
+\begin{itemize}
+    \item \textbf{Pre-R interval:} 90 samples ($250.0$~ms) capturing the P-wave and PR segment.
+    \item \textbf{Post-R interval:} 110 samples ($305.56$~ms) capturing the QRS complex, J-point, ST segment, and T-wave.
+\end{itemize}
+
+\subsection{ECG Preprocessing}
+Raw analog ECG recordings are vulnerable to low-frequency baseline drift caused by respiration and patient motion. Baseline wander removal was implemented using a linear moving-average filter:
+\begin{enumerate}
+    \item A temporal window of $W = 217$ samples ($\approx 602.8$~ms at 360~Hz) was applied across the continuous recording.
+    \item Signal boundaries were padded with symmetric reflection padding of length $W // 2 = 108$ samples to eliminate edge attenuation.
+    \item The estimated low-frequency baseline was subtracted from the raw lead signal:
+    \begin{equation}
+        x_{\text{filtered}}(t) = x_{\text{raw}}(t) - \bar{x}_W(t)
+    \end{equation}
+\end{enumerate}
+
+\subsection{Morphology Representation ($D = 200$)}
+To render morphology features invariant to inter-subject skin-electrode impedance and amplifier gain variations while preserving intra-beat waveform shape, each extracted 200-sample segment was normalized using local per-beat z-score standardization:
+\begin{equation}
+    z_i = \frac{x_i - \mu_{\text{beat}}}{\sigma_{\text{beat}} + \epsilon}, \quad i \in [0, 199]
+\end{equation}
+where $\mu_{\text{beat}}$ and $\sigma_{\text{beat}}$ denote the sample mean and standard deviation of the individual 200-point segment, and $\epsilon = 10^{-8}$ prevents numerical division instability.
+
+\subsection{RR Timing Features ($D = 9$)}
+Cardiac arrhythmias alter not only waveform morphology but also cardiac cycle timing. Heartbeat timing features were computed from consecutive valid heartbeat annotation timestamps:
+\begin{enumerate}
+    \item \texttt{RR\_prev}: Time interval from the preceding beat to the current beat ($s$):
+    \begin{equation}
+        RR_{\text{prev}} = t_i - t_{i-1}
+    \end{equation}
+    \item \texttt{HR\_prev}: Preceding instantaneous heart rate:
+    \begin{equation}
+        HR_{\text{prev}} = \frac{60.0}{RR_{\text{prev}}} \quad (\text{bpm})
+    \end{equation}
+    \item \texttt{RR\_local\_median}: Running median of strictly prior valid intervals within the recording (up to $W=10$ prior beats; minimum history initialized to 1 beat).
+    \item \texttt{RR\_ratio\_prev}: Preceding prematurity coupling ratio:
+    \begin{equation}
+        RR_{\text{ratio\_prev}} = \frac{RR_{\text{prev}}}{RR_{\text{local\_median}}}
+    \end{equation}
+    \item \texttt{RR\_dev\_prev}: Fractional deviation from the running median:
+    \begin{equation}
+        RR_{\text{dev\_prev}} = \frac{RR_{\text{prev}} - RR_{\text{local\_median}}}{RR_{\text{local\_median}}}
+    \end{equation}
+    \item \texttt{RR\_next}: Time interval from the current beat to the subsequent valid beat ($s$):
+    \begin{equation}
+        RR_{\text{next}} = t_{i+1} - t_i
+    \end{equation}
+    \item \texttt{HR\_next}: Succeeding instantaneous heart rate:
+    \begin{equation}
+        HR_{\text{next}} = \frac{60.0}{RR_{\text{next}}} \quad (\text{bpm})
+    \end{equation}
+    \item \texttt{RR\_ratio\_bidi}: Bidirectional interval coupling ratio:
+    \begin{equation}
+        RR_{\text{ratio\_bidi}} = \frac{RR_{\text{prev}}}{RR_{\text{next}}}
+    \end{equation}
+    \item \texttt{RR\_bidi\_diff}: Interval asymmetry difference:
+    \begin{equation}
+        RR_{\text{bidi\_diff}} = RR_{\text{next}} - RR_{\text{prev}} \quad (\text{s})
+    \end{equation}
+\end{enumerate}
+
+\noindent\textbf{Retrospective / Offline Scope:} The bidirectional RR representation is retrospective/offline because \texttt{RR\_next} depends on future temporal information and reference annotation timestamps. It is not formulated as a causal real-time streaming detector.
+
+\subsection{Boundary Beat Exclusion Policy}
+Computing bidirectional intervals requires both a preceding beat ($t_{i-1}$) and a subsequent beat ($t_{i+1}$). Consequently, boundary heartbeats lacking complete temporal context (Beat 0 and Beat $N-1$ in each recording) were excluded from temporal modeling. Across the 44 primary recordings, this accounts for exactly 88 excluded edge beats (all belonging to Class \textbf{N}), yielding \textbf{100,586 usable bidirectional beats}.
+
+\subsection{Record-Level Data Partitioning (Inter-Patient Split)}
+To strictly prevent data leakage and guarantee that models are evaluated on unseen human subjects, the 44 records were partitioned at the patient level following the canonical de Chazal et al. (2004) split \cite{dechazal2004automatic}:
+\begin{itemize}
+    \item \textbf{Training Partition (DS1 --- 16 Records):} 101, 106, 109, 112, 115, 116, 119, 122, 124, 203, 205, 207, 208, 215, 223, 230 (38,029 usable bidirectional beats; $N=33,882; S=227; V=3,513; F=407$).
+    \item \textbf{Validation Partition (DS1 --- 6 Records):} 108, 114, 118, 201, 209, 220 (12,918 usable bidirectional beats; $N=11,919; S=716; V=275; F=8$).
+    \item \textbf{Held-Out Test Partition (DS2 --- 22 Records):} 100, 103, 105, 111, 113, 117, 121, 123, 200, 202, 210, 212, 213, 214, 219, 221, 222, 228, 231, 232, 233, 234 (49,639 usable bidirectional beats; $N=44,197; S=1,835; V=3,220; F=388$).
+\end{itemize}
+
+% Table 6 Inlined Directly
+\begin{table*}[t]
+\centering
+\caption{Heartbeat Accounting and Class Distribution Across Partitions}
+\label{tab:dataset_distribution}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccc}
+\hline
+\textbf{Partition} & \textbf{Records} & \textbf{Usable Beats} & \textbf{Class N (\%)} & \textbf{Class S (\%)} & \textbf{Class V (\%)} & \textbf{Class F (\%)} & \textbf{Isolated Q} \\
+\hline
+Training (DS1)         & 16 & 38,029  & 33,882 (89.10\%) & 227 (0.60\%)  & 3,513 (9.24\%) & 407 (1.07\%) & 8 \\
+Validation (DS1)       & 6  & 12,918  & 11,919 (92.27\%) & 716 (5.54\%)  & 275 (2.13\%)   & 8 (0.06\%)   & 0 \\
+Held-Out Test (DS2)    & 22 & 49,639  & 44,197 (89.04\%) & 1,835 (3.70\%) & 3,220 (6.49\%) & 388 (0.78\%) & 7 \\
+\hline
+\textbf{Total Benchmark Cohort} & \textbf{44} & \textbf{100,586} & \textbf{89,998 (89.47\%)} & \textbf{2,778 (2.76\%)} & \textbf{7,008 (6.97\%)} & \textbf{803 (0.80\%)} & \textbf{15} \\
+\hline
+\textit{Paced Cohort (Isolated)} & \textit{4} & \textit{8,757} & \textit{503 (5.74\%)} & \textit{0 (0.00\%)} & \textit{227 (2.59\%)} & \textit{0 (0.00\%)} & \textit{8,027} \\
+\hline
+\end{tabular}%
+}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/dataset_class_distribution.png}
+\caption{ANSI/AAMI EC57 Class Distribution Across Experimental Partitions. Heartbeat counts plotted on a logarithmic scale across the Training partition (DS1, 16 records, 38,029 usable beats), Validation partition (DS1, 6 records, 12,918 usable beats), and Held-Out Test partition (DS2, 22 records, 49,639 usable beats). The plot illustrates the severe class imbalance characteristic of ambulatory ECG archives, where Normal sinus rhythm (N) exceeds 89\% of all cycles, while Supraventricular ectopics (S, 0.6\%--5.5\%), Ventricular ectopics (V, 2.1\%--9.2\%), and Ventricular fusion beats (F, 0.06\%--1.1\%) represent small fractions of total data. Paced recordings (102, 104, 107, 217) were isolated prior to partitioning.}
+\label{fig:class_distribution}
+\end{figure}
+
+\subsection{Machine Learning Models and Class Weighting}
+To counter severe class imbalance without synthetic data corruption (e.g. SMOTE), models utilized inverse-frequency class weights computed strictly from training partition label frequencies:
+\begin{equation}
+    w_c = \frac{N_{\text{train}}}{K \cdot N_{c, \text{train}}}, \quad c \in \{N, S, V, F\}
+\end{equation}
+where $K=4$, $N_{\text{train}} = 38,029$, and $N_{c, \text{train}}$ is the support of class $c$ in the training partition.
+
+Three classical model families were evaluated:
+\begin{enumerate}
+    \item \textbf{L2-Regularized Logistic Regression:} Scaled via training-fitted \texttt{StandardScaler}, optimized using L-BFGS.
+    \item \textbf{Random Forest Classifier:} Scikit-learn ensemble of decision trees with balanced bootstrap weighting.
+    \item \textbf{Histogram-Based Gradient Boosting:} Scaled gradient boosting trees operating on binned feature histograms.
+\end{enumerate}
+
+\subsection{Hyperparameter Optimization}
+Hyperparameter optimization was conducted strictly within the 16-record training partition using \textbf{4-fold record-grouped cross-validation} (\texttt{GroupKFold} grouped by patient record ID) to prevent intra-subject leakage across folds. Optimization maximized Macro F1. The selected Random Forest parameters were: \texttt{n\_estimators=200}, \texttt{max_depth=30}, \texttt{min_samples_split=5}, \texttt{min_samples_leaf=2}, \texttt{max_features='sqrt'}, \texttt{class_weight='balanced'}, \texttt{random_state=42}.
+
+\subsection{Evaluation Metrics}
+Due to extreme class imbalance ($N > 89\%$), overall accuracy is uninformative. Performance is evaluated primarily via class-balanced and macro-averaged metrics:
+\begin{itemize}
+    \item \textbf{Balanced Accuracy:} $\frac{1}{K} \sum_{c=1}^K \text{Recall}_c$ (unweighted mean class sensitivity) \cite{brodersen2010balanced}.
+    \item \textbf{Macro Precision:} $\frac{1}{K} \sum_{c=1}^K \text{Precision}_c$.
+    \item \textbf{Macro Recall:} $\frac{1}{K} \sum_{c=1}^K \text{Recall}_c$.
+    \item \textbf{Macro F1 Score:} $\frac{1}{K} \sum_{c=1}^K \text{F1}_c$ (primary ranking criterion).
+    \item \textbf{Weighted F1 Score:} $\sum_{c=1}^K \frac{N_c}{N_{\text{total}}} \text{F1}_c$.
+    \item \textbf{Macro Multi-Class ROC-AUC (OvR)} and \textbf{Macro Multi-Class PR-AUC (OvR)}.
+\end{itemize}
+
+\section{Experimental Design}
+The research progressed through five controlled experimental milestones:
+\begin{itemize}
+    \item \textbf{Phase 5:} Morphology-only baseline ($D=200$) across Logistic Regression, Random Forest, and Gradient Boosting.
+    \item \textbf{Phase 6:} Feature ablation comparing Causal RR ($D=205$) and Bidirectional RR ($D=209$).
+    \item \textbf{Phase 7:} Record-grouped hyperparameter tuning on the 16 training records.
+    \item \textbf{Phase 8:} Single, independent, locked evaluation on the 22 held-out DS2 test records.
+\end{itemize}
+
+% Table 1 Inlined Directly
+\begin{table*}[t]
+\centering
+\caption{Experimental Progression and Milestone Evaluation Design}
+\label{tab:experimental_design}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllllllll}
+\hline
+\textbf{Phase} & \textbf{Experiment} & \textbf{Dataset} & \textbf{Records} & \textbf{Features} & \textbf{Dim} & \textbf{Model} & \textbf{Selection Criterion} & \textbf{Evaluation Set} & \textbf{Primary Purpose} \\
+\hline
+Phase 5 & Morphology Baseline & MIT-BIH Non-Paced & 16 Train / 6 Val & 200 raw ECG amplitudes & 200 & LR / RF / HistGB & Balanced Acc / Macro F1 & DS1 Val (12,930 beats) & Raw morphological baseline across models \\
+Phase 6 & Causal RR Augmented & MIT-BIH Non-Paced & 16 Train / 6 Val & 200 Morph + 5 Retrospective RR & 205 & LR / RF / HistGB & Macro F1 gain over morph & DS1 Val Matched (12,924 beats) & Evaluate causal timing for supraventricular ambiguity \\
+Phase 6 & Bidirectional RR Augmented & MIT-BIH Non-Paced & 16 Train / 6 Val & 200 Morph + 9 Bidirectional RR & 209 & LR / RF / HistGB & Macro F1 gain over causal RR & DS1 Val Matched (12,918 beats) & Quantify compensatory pause and coupling asymmetry \\
+Phase 7 & Hyperparameter Optimization & MIT-BIH Non-Paced & 16 Train (4-Fold GroupKFold) & 200 Morph + 9 Bidirectional RR & 209 & Grid Search (LR / RF / HistGB) & Validation Macro F1 & DS1 Val (12,918 beats) & Regularize tree depth and min-leaf parameters \\
+Phase 8 & Final Frozen Test Benchmark & MIT-BIH Non-Paced & 22 Held-Out Test Records & 200 Morph + 9 Bidirectional RR & 209 & Frozen RF ($n{=}200, d{=}30, s{=}5, l{=}2$) & Zero Post-Test Tuning (Locked) & DS2 Held-Out (49,639 beats) & Single independent test on 22 unseen patient records \\
+\hline
+\end{tabular}%
+}
+\end{table*}
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/macro_f1_progression.png}
+\caption{Experimental Milestone Progression of Macro F1 Score Across Phases 5 through 8. Evolution of the primary evaluation metric (Macro F1) on the DS1 validation cohort and final DS2 test partition. Progressing from the raw morphology baseline ($D=200$, Macro F1 = 0.5824) to causal RR interval features ($D=205$, Macro F1 = 0.6650) and bidirectional RR interval features ($D=209$, Macro F1 = 0.6985) yielded a substantial feature engineering gain of +0.1161. Subsequent tree depth and leaf regularization during hyperparameter optimization contributed an incremental gain of +0.0110 (Macro F1 = 0.7095). Evaluation of the frozen model on the independent 22-record DS2 test cohort yielded a Macro F1 of 0.6403, establishing an inter-record generalization gap of -0.0692.}
+\label{fig:macro_f1_progression}
+\end{figure}
+
+\section{Results}
+
+\subsection{Morphology Baseline Performance (Phase 5)}
+In the baseline morphology experiment, models were trained and evaluated exclusively on 200 raw voltage samples per beat ($D=200$). On the 6-record DS1 validation cohort (12,930 beats), the baseline Random Forest achieved an overall accuracy of \textbf{94.21\%}, a balanced accuracy of \textbf{59.82\%}, and a Macro F1 score of \textbf{0.5824} (Macro Precision: 58.91\%, Weighted F1: 93.85\%).
+
+Although the morphology baseline attained high recall on normal sinus rhythm (N recall = 97.80\%) and ventricular ectopy (V recall = 84.20\%), it exhibited severe limitations on supraventricular premature contractions (S recall = 38.40\%) and ventricular fusion beats (F recall = 12.50\%). Because supraventricular ectopic beats conduct along the normal His-Purkinje pathway, their ventricular depolarization morphology closely resembles sinus complexes, imposing a strict physiological ceiling on pure morphology classifiers.
+
+\subsection{Effect of RR Timing Features (Phase 6)}
+Incorporating cardiac timing features extracted from reference annotations substantially resolved this morphological ambiguity across matched-cohort controls:
+\begin{itemize}
+    \item \textbf{Variant A (Causal Timing, $D=205$):} Adding 5 retrospective interval features (\texttt{RR\_prev}, \texttt{HR\_prev}, \texttt{RR\_local\_median}, \texttt{RR\_ratio\_prev}, \texttt{RR\_dev\_prev}) to the Random Forest increased validation Macro F1 from \textbf{0.5824 to 0.6650} (+0.0826 gain), lifted balanced accuracy from \textbf{59.82\% to 68.45\%}, and increased Class S recall from \textbf{38.40\% to 61.20\%} (+22.80\% sensitivity gain).
+    \item \textbf{Variant B (Bidirectional Timing, $D=209$):} Adding 4 prospective and coupling interval features (\texttt{RR\_next}, \texttt{HR\_next}, \texttt{RR\_ratio\_bidi}, \texttt{RR\_bidi\_diff}) further elevated validation Macro F1 to \textbf{0.6985} (+0.1161 over morphology baseline), balanced accuracy to \textbf{71.20\%}, and Class S recall to \textbf{68.40\%}.
+\end{itemize}
+
+The inclusion of post-ectopic pause durations ($RR_{\text{next}}$) and coupling asymmetry ratios ($RR_{\text{prev}} / RR_{\text{next}}$) directly captured compensatory pause dynamics, providing discriminative separation for premature complexes.
+
+\subsection{Hyperparameter Optimization (Phase 7)}
+In Phase 7, 4-fold record-grouped cross-validation on the 16 training recordings identified optimal Random Forest hyperparameters: an ensemble of 200 trees (\texttt{n\_estimators=200}), constrained tree depth (\texttt{max\_depth=30}), minimum samples per split of 5 (\texttt{min\_samples\_split=5}), and minimum samples per leaf of 2 (\texttt{min\_samples\_leaf=2}).
+
+When re-evaluated on the DS1 validation cohort (12,918 usable beats), the tuned Random Forest achieved:
+\begin{itemize}
+    \item \textbf{Overall Accuracy:} \textbf{96.68\%}
+    \item \textbf{Balanced Accuracy:} \textbf{70.79\%}
+    \item \textbf{Macro Precision:} \textbf{71.66\%}
+    \item \textbf{Macro Recall:} \textbf{70.79\%}
+    \item \textbf{Macro F1 Score:} \textbf{0.7095} (+0.0110 gain over untuned bidirectional RF)
+    \item \textbf{Weighted F1 Score:} \textbf{96.64\%}
+    \item \textbf{Multi-Class ROC-AUC (OvR):} \textbf{0.9782}
+    \item \textbf{Multi-Class PR-AUC (OvR):} \textbf{0.7321}
+\end{itemize}
+
+The improvement from RR feature engineering was substantially larger than the subsequent gain from hyperparameter optimization, indicating that feature representation contributed more to the observed validation improvement than the tuning step.
+
+\subsection{Final Held-Out Test Performance (DS2 Benchmark)}
+The finalized model pipeline was frozen and evaluated on the 22 held-out DS2 test recordings (49,639 usable beats from completely unseen patients).
+
+% Table 2 Inlined Directly
+\begin{table*}[t]
+\centering
+\caption{Final Diagnostic Performance Comparison Across Progression Milestones}
+\label{tab:final_performance}
+\begin{tabular}{lcccccc}
+\hline
+\textbf{Model / Dataset Partition} & \textbf{Accuracy} & \textbf{Balanced Accuracy} & \textbf{Macro Precision} & \textbf{Macro Recall} & \textbf{Macro F1} & \textbf{Weighted F1} \\
+\hline
+Phase 6 Best RF (Morphology + Bidi RR -- DS1 Val) & 0.9640 & 0.7120 & 0.7280 & 0.7120 & 0.6985 & 0.9630 \\
+Phase 7 Tuned RF (Morphology + Bidi RR -- DS1 Val) & 0.9668 & 0.7079 & 0.7166 & 0.7079 & 0.7095 & 0.9664 \\
+Phase 8 Frozen RF (Morphology + Bidi RR -- \textbf{DS2 Test}) & \textbf{0.9093} & \textbf{0.7000} & \textbf{0.6348} & \textbf{0.7000} & \textbf{0.6403} & \textbf{0.9174} \\
+\hline
+\end{tabular}
+\end{table*}
+
+On DS2, the frozen model achieved a Multi-Class ROC-AUC (OvR) of \textbf{0.9425} and a Multi-Class PR-AUC (OvR) of \textbf{0.6280}.
+
+\subsection{Class-Wise Classification Performance}
+Classification performance across the four ANSI/AAMI EC57 classes on the 49,639 held-out DS2 test beats is presented in Table~\ref{tab:classwise_ds2}.
+
+% Table 3 Inlined Directly
+\begin{table}[t]
+\centering
+\caption{Detailed Class-Wise Performance on the Held-Out DS2 Test Set (49,639 Beats)}
+\label{tab:classwise_ds2}
+\begin{tabular}{clcccc}
+\hline
+\textbf{Class} & \textbf{Diagnostic Description} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} & \textbf{Support} \\
+\hline
+\textbf{N} & Normal / Conduction Blocks & 97.71\% & 92.42\% & 0.9499 & 44,197 \\
+\textbf{S} & Supraventricular Ectopic   & 38.45\% & 75.64\% & 0.5098 & 1,835 \\
+\textbf{V} & Ventricular Ectopic        & 69.75\% & 87.20\% & 0.7750 & 3,220 \\
+\textbf{F} & Ventricular Fusion         & 48.00\% & 24.74\% & 0.3265 & 388 \\
+\hline
+\textbf{Macro} & \textbf{Unweighted Average} & \textbf{63.48\%} & \textbf{70.00\%} & \textbf{0.6403} & \textbf{49,639} \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/DS2_class_performance.png}
+\caption{Per-Class Diagnostic Precision, Recall, and F1-Score on the Held-Out DS2 Cohort. Grouped bar chart detailing class-wise performance for classes N, S, V, and F on the 49,639 DS2 test beats. Class N demonstrated high precision (97.71\%) and recall (92.42\%, F1 = 0.9499). Class V exhibited robust sensitivity (87.20\%) and precision (69.75\%, F1 = 0.7750). Class S achieved strong sensitivity (75.64\%) but lower precision (38.45\%, F1 = 0.5098) due to false-positive alarms on sinus rate variations. Class F demonstrated moderate precision (48.00\%) but limited sensitivity (24.74\%, F1 = 0.3265) due to dominant sinus wavefront capture.}
+\label{fig:class_performance}
+\end{figure}
+
+\subsection{Confusion Matrix Analysis}
+The primary confusion matrix for the 49,639 DS2 test beats is:
+\begin{equation}
+\mathbf{C}_{\text{DS2}} = \begin{bmatrix}
+40845 & 2154 & 1126 & 72 \\
+382 & 1388 & 58 & 7 \\
+334 & 52 & 2808 & 26 \\
+242 & 16 & 34 & 96
+\end{bmatrix}
+\end{equation}
+Rows correspond to Reference Truth; columns correspond to Model Predictions in canonical order $[\mathbf{N}, \mathbf{S}, \mathbf{V}, \mathbf{F}]$. Exactly \textbf{45,137 beats} were correctly classified (\textbf{90.93\% accuracy}), and \textbf{4,502 beats} were misclassified (\textbf{9.07\% error rate}).
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/DS2_confusion_matrix.png}
+\caption{Absolute Confusion Matrix for the Held-Out DS2 Test Set ($N=49,639$ Beats). Primary 4x4 confusion matrix depicting absolute beat counts on the 22 independent DS2 recordings evaluated by the frozen Random Forest. Rows denote cardiologist reference annotations; columns denote model predictions. Class ordering: Normal sinus rhythm (N), Supraventricular ectopic (S), Ventricular ectopic (V), and Ventricular fusion (F). Exactly 45,137 beats were correctly classified (90.93\% overall accuracy), with 4,502 total misclassifications (9.07\% error rate).}
+\label{fig:confusion_matrix}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/DS2_confusion_matrix_normalized.png}
+\caption{Row-Normalized Confusion Matrix for the Held-Out DS2 Test Set. Row-normalized confusion matrix showing per-class sensitivity (recall) percentages alongside absolute counts on the 49,639 held-out DS2 beats. Diagonal elements report diagnostic recall for each AAMI rhythm: Class N = 92.42\% (40,845/44,197), Class S = 75.64\% (1,388/1,835), Class V = 87.20\% (2,808/3,220), and Class F = 24.74\% (96/388). Off-diagonal cells illustrate major confusion pathways, including 2,154 normal beats misclassified as S (4.87\% of N) and 242 fusion beats misclassified as N (62.37\% of F).}
+\label{fig:confusion_matrix_normalized}
+\end{figure}
+
+\subsection{Generalization from DS1 to DS2}
+Evaluating the frozen model on 22 unseen patient recordings revealed distinct generalization behaviors between sensitivity and precision, summarized in Table~\ref{tab:ds1_ds2_comparison}.
+
+% Table 4 Inlined Directly
+\begin{table}[t]
+\centering
+\caption{Comprehensive Generalization Comparison: DS1 Validation vs. Held-Out DS2 Test}
+\label{tab:ds1_ds2_comparison}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Metric} & \textbf{DS1 Val} & \textbf{DS2 Test} & \textbf{Delta ($\Delta$)} & \textbf{Rel. Chg} \\
+\hline
+Balanced Accuracy & 0.7079 & 0.7000 & -0.0079 & -1.12\% \\
+Macro F1          & 0.7095 & 0.6403 & -0.0692 & -9.75\% \\
+Overall Accuracy  & 0.9668 & 0.9093 & -0.0575 & -5.95\% \\
+Weighted F1       & 0.9664 & 0.9174 & -0.0490 & -5.07\% \\
+Macro Precision   & 0.7166 & 0.6348 & -0.0818 & -11.42\% \\
+Macro Recall      & 0.7079 & 0.7000 & -0.0079 & -1.12\% \\
+Macro ROC-AUC     & 0.9782 & 0.9425 & -0.0357 & -3.65\% \\
+Macro PR-AUC      & 0.7321 & 0.6280 & -0.1041 & -14.22\% \\
+Class S Recall    & 0.6983 & 0.7564 & +0.0581 & +8.32\% \\
+Class V Recall    & 0.8982 & 0.8720 & -0.0262 & -2.92\% \\
+Class N Recall    & 0.9850 & 0.9242 & -0.0608 & -6.17\% \\
+Class F Recall    & 0.2500 & 0.2474 & -0.0026 & -1.04\% \\
+Class S Precision & 0.7634 & 0.3845 & -0.3789 & -49.63\% \\
+Class V Precision & 0.7866 & 0.6975 & -0.0891 & -11.33\% \\
+Class N Precision & 0.9830 & 0.9771 & -0.0059 & -0.60\% \\
+Class F Precision & 0.3333 & 0.4800 & +0.1467 & +44.01\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/DS1_vs_DS2_generalization.png}
+\caption{Diagnostic Generalization Comparison: DS1 Validation vs. Held-Out DS2 Benchmark. Comparison of performance metrics between the 6-record DS1 validation cohort (12,918 beats) and the 22-record held-out DS2 test cohort (49,639 beats). Balanced Accuracy showed minimal degradation between validation (0.7079) and test (0.7000, $\Delta = -0.0079$), indicating comparatively stable class-balanced performance across the record-level split. In contrast, Macro F1 dropped from 0.7095 to 0.6403 ($\Delta = -0.0692$), driven predominantly by a decline in Class S precision caused by non-pathological sinus rate acceleration in unseen patients.}
+\label{fig:generalization}
+\end{figure}
+
+Balanced Accuracy showed relatively little degradation between the DS1 validation cohort (0.7079) and the held-out DS2 cohort (0.7000), indicating comparatively stable class-balanced performance across the record-level split. This should not be interpreted as evidence of clinical generalization. Macro F1 decreased ($0.7095 \to 0.6403$, $\Delta = -0.0692$) primarily due to patient-specific autonomic rate fluctuations impacting precision.
+
+\subsection{Model-Level Feature Importance}
+In the frozen Random Forest, the 9 temporal features represent only \textbf{4.31\%} of the 209-dimensional feature vector, yet they account for \textbf{26.38\%} of total Gini split importance, as detailed in Table~\ref{tab:feature_importance}.
+
+% Table 5 Inlined Directly
+\begin{table}[t]
+\centering
+\caption{Top 15 Predictors Ranked by Model-Level Gini Importance}
+\label{tab:feature_importance}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{clclc}
+\hline
+\textbf{Rank} & \textbf{Feature} & \textbf{Type} & \textbf{Electrophysiological Role} & \textbf{Gini (\%)} \\
+\hline
+1  & \texttt{RR\_ratio\_prev}  & Temporal   & Preceding prematurity ratio ($RR_{\text{prev}} / RR_{\text{local\_med}}$) & 5.82\% \\
+2  & \texttt{RR\_ratio\_bidi}  & Temporal   & Bidirectional coupling ratio ($RR_{\text{prev}} / RR_{\text{next}}$) & 4.91\% \\
+3  & \texttt{ECG\_092}         & Morphology & R-peak apex amplitude (sample 92) & 3.24\% \\
+4  & \texttt{ECG\_091}         & Morphology & Rapid QRS upstroke voltage & 2.98\% \\
+5  & \texttt{RR\_prev}         & Temporal   & Absolute preceding interval duration (s) & 2.85\% \\
+6  & \texttt{ECG\_093}         & Morphology & Rapid QRS downstroke voltage & 2.76\% \\
+7  & \texttt{RR\_dev\_prev}    & Temporal   & Fractional deviation from running median & 2.65\% \\
+8  & \texttt{ECG\_090}         & Morphology & Pre-QRS isoelectric baseline & 2.45\% \\
+9  & \texttt{RR\_next}         & Temporal   & Compensatory pause duration (s) & 2.31\% \\
+10 & \texttt{ECG\_094}         & Morphology & ST-segment junction (J-point level) & 2.18\% \\
+11 & \texttt{ECG\_089}         & Morphology & P-R segment termination voltage & 2.05\% \\
+12 & \texttt{HR\_next}         & Temporal   & Subsequent heart rate (bpm) & 2.40\% \\
+13 & \texttt{HR\_prev}         & Temporal   & Preceding heart rate (bpm) & 1.98\% \\
+14 & \texttt{RR\_bidi\_diff}   & Temporal   & Interval asymmetry ($RR_{\text{next}} - RR_{\text{prev}}$) & 1.84\% \\
+15 & \texttt{RR\_local\_median}& Temporal   & Background autonomic rate (s) & 1.62\% \\
+\hline
+\end{tabular}%
+}
+\end{table}
+
+\noindent\textit{Important Note:} Feature importances represent model-level split statistics and must not be interpreted as independent causal biological drivers.
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/top15_feature_importance.png}
+\caption{Top 15 Predictors Ranked by Model-Level Gini Importance in the Frozen Random Forest. Horizontal bar chart displaying the 15 most important features by mean Gini impurity reduction across the 200 ensemble trees. Features are color-coded to differentiate temporal timing features (blue, 7 features in the top 15) from raw ECG morphology amplitudes (gray, 8 features in the top 15). The preceding prematurity coupling ratio (\texttt{RR\_ratio\_prev}, 5.82\%) and bidirectional coupling ratio (\texttt{RR\_ratio\_bidi}, 4.91\%) occupy the top two ranks, followed by R-peak apex amplitudes (\texttt{ECG\_092}, 3.24\%) and QRS upstroke voltages (\texttt{ECG\_091}, 2.98\%).}
+\label{fig:top15_importance}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/temporal_feature_importance.png}
+\caption{Model-Level Gini Importance Breakdown of All 9 Canonical Temporal Features. Horizontal bar chart showing the individual Gini importance values for all 9 canonical bidirectional RR timing features extracted from reference annotations. While temporal features constitute only 4.31\% of the 209-dimensional feature space, they collectively account for 26.38\% of total ensemble split decisions. Top temporal predictors include interval coupling ratios (\texttt{RR\_ratio\_prev} = 5.82\%, \texttt{RR\_ratio\_bidi} = 4.91\%), absolute preceding interval (\texttt{RR\_prev} = 2.85\%), and running median deviation (\texttt{RR\_dev\_prev} = 2.65\%). Importance metrics reflect model-level split statistics and do not denote independent causal biological drivers.}
+\label{fig:temporal_importance}
+\end{figure}
+
+\subsection{Error Analysis}
+Across the 4,502 test misclassifications on DS2, 5 major error categories accounted for \textbf{94.14\%} of all errors:
+\begin{itemize}
+    \item \textbf{$\text{N} \to \text{S}$ (2,154 beats, 47.85\% of errors):} Normal sinus beats classified as supraventricular ectopic. One plausible explanation is that normal sinus rate acceleration or respiratory sinus arrhythmia can cause transient interval shortening ($RR_{\text{ratio\_prev}} < 0.85$) that triggers prematurity splits without true ectopic origin.
+    \item \textbf{$\text{N} \to \text{V}$ (1,126 beats, 25.01\% of errors):} Normal beats classified as ventricular ectopic. Directly supported: Record 214 contains intermittent intraventricular conduction delays (left bundle branch block) that widen the normal QRS complex, leading morphological tree splits to detect wide waveforms characteristic of ventricular ectopy. High baseline noise in Record 221 also contributed.
+    \item \textbf{$\text{S} \to \text{N}$ (382 beats, 8.48\% of errors):} Supraventricular beats missed as normal. Because supraventricular premature contractions originate above the bundle of His, their ventricular activation wavefront is narrow and morphologically similar to sinus rhythm; when prematurity is subtle ($RR_{\text{ratio}} \approx 0.95$), the model lacks discriminative timing and morphological triggers.
+    \item \textbf{$\text{V} \to \text{N}$ (334 beats, 7.42\% of errors):} Ventricular beats missed as normal. Missed ventricular beats may be associated with interpolated PVCs that lack a compensatory pause (thus preserving normal $RR_{\text{next}}$ timing) or ectopic foci originating near the interventricular septum that produce narrower QRS duration.
+    \item \textbf{$\text{F} \to \text{N}$ (242 beats, 5.38\% of errors):} Ventricular fusion beats classified as normal. Ventricular fusion beats represent a continuous physiological continuum of wavefront collision. When supraventricular depolarization activates the major myocardial mass, the resulting waveform closely resembles normal conduction.
+\end{itemize}
+
+\begin{figure}[t]
+\centering
+\safeincludegraphics[width=\columnwidth]{figures/DS2_record_performance.png}
+\caption{Inter-Record Classification Accuracy Variation Across All 22 Held-Out DS2 Patients. Horizontal bar chart illustrating diagnostic accuracy across each of the 22 held-out patient recordings in DS2, ordered by accuracy. The vertical dashed line indicates aggregate DS2 accuracy (90.93\%). Clean recordings with standard sinus rhythm and minimal baseline wander (e.g. Records 103, 111, 117, 212) achieved accuracies exceeding 99.5\%, whereas recordings characterized by dense ectopic runs (Record 232 with 1,381 APCs, accuracy = 76.87\%) or high fusion concentration (Record 213 with 362 F beats, accuracy = 83.22\%) exhibited lower record-level agreement.}
+\label{fig:record_performance}
+\end{figure}
+
+\section{Discussion}
+
+\subsection{Main Findings}
+This investigation evaluated the integration of localized ECG waveform morphology with cardiac cycle timing features for automated four-class heartbeat classification under the ANSI/AAMI EC57 standard. Conducted on the PhysioNet MIT-BIH Arrhythmia Database using strict inter-patient record-level partitioning, the primary findings are:
+\begin{enumerate}
+    \item \textbf{Morphological Ceiling:} Classifying heartbeats using pure waveform morphology ($D=200$) imposes a severe performance ceiling on supraventricular ectopic beats (\textbf{S}), achieving only 38.40\% sensitivity on validation data.
+    \item \textbf{Timing Synergy:} Augmenting morphology with 9 canonical bidirectional RR interval features ($D=209$) substantially improved minority-class discrimination, increasing validation Macro F1 from 0.5824 to 0.6985 (+0.1161 gain).
+    \item \textbf{Hyperparameter Regularization:} The improvement from RR feature engineering was substantially larger than the subsequent gain from hyperparameter optimization, indicating that feature representation contributed more to the observed validation improvement than the tuning step.
+    \item \textbf{Held-Out Test Performance:} On the 22 held-out DS2 recordings (49,639 beats), the frozen model achieved an overall accuracy of \textbf{90.93\%}, a balanced accuracy of \textbf{70.00\%}, and a Macro F1 score of \textbf{0.6403}.
+\end{enumerate}
+
+\subsection{Contribution of ECG Morphology}
+Preprocessed 200-sample voltage waveforms (555.56~ms centered on R-peaks) provided effective discriminative capability for distinguishing normal sinus rhythm (\textbf{N}) from ventricular ectopic beats (\textbf{V}). Because premature ventricular contractions originate within the ventricular myocardium, their conduction bypassed the specialized His-Purkinje network, producing widened QRS complexes and discordant T-waves that tree splits easily separated from narrow normal complexes. However, morphology alone was insufficient to distinguish supraventricular ectopics (\textbf{S}) from sinus rhythm (\textbf{N}) because both propagate antegradely through the His bundle, producing nearly identical QRS complexes on single-lead recordings.
+
+\subsection{Contribution of RR Timing Features}
+The introduction of cardiac interval features resolved this morphological deadlock. In particular, the preceding prematurity coupling ratio ($RR_{\text{prev}} / RR_{\text{local\_median}}$) and bidirectional coupling ratio ($RR_{\text{prev}} / RR_{\text{next}}$) emerged as the two most important features in the entire Random Forest ensemble (accounting for 5.82\% and 4.91\% of Gini importance, respectively). Preceding prematurity identified early depolarizations, while subsequent intervals captured the compensatory pause characteristic of ectopic contractions. In aggregate, the 9 temporal features contributed \textbf{26.38\%} of total tree split importance despite comprising only \textbf{4.31\%} of the input feature space.
+
+\subsection{Effect of Hyperparameter Optimization}
+Controlled hyperparameter tuning demonstrated that tree regularization (setting \texttt{max\_depth=30} and \texttt{min\_samples\_leaf=2}) yielded modest gains on validation Macro F1 ($0.6985 \to 0.7095$, $+0.0110$). The improvement from RR feature engineering was substantially larger than the subsequent gain from hyperparameter optimization, indicating that feature representation contributed more to the observed validation improvement than the tuning step.
+
+\subsection{Held-Out Inter-Record Generalization within the MIT-BIH Dataset}
+Evaluating the finalized model on the held-out DS2 test partition demonstrated held-out inter-record generalization within the MIT-BIH dataset:
+\begin{itemize}
+    \item Balanced Accuracy showed relatively little degradation between the DS1 validation cohort (0.7079) and the held-out DS2 cohort (0.7000), indicating comparatively stable class-balanced performance across the record-level split. This should not be interpreted as evidence of clinical generalization.
+    \item Macro F1 decreased from 0.7095 to 0.6403 ($-0.0692$). This decline was predominantly driven by Class S precision ($76.34\% \to 38.45\%$), caused by autonomic heart rate variability in specific test recordings.
+    \item Ventricular sensitivity remained consistently high (89.82\% on DS1 validation vs 87.20\% on DS2 test), confirming robust identification of ventricular ectopy across unseen patients in this benchmark.
+\end{itemize}
+
+\subsection{Minority-Class Performance Considerations}
+\begin{enumerate}
+    \item \textbf{Class S (Supraventricular Ectopy):} Achieved 75.64\% sensitivity on DS2, capturing 1,388 of 1,835 APCs. However, precision was low (38.45\%), yielding 2,222 false-positive detections. In clinical Holter workflows, this trade-off favors sensitivity over specificity to ensure potential supraventricular tachyarrhythmias are flagged for human review.
+    \item \textbf{Class F (Ventricular Fusion):} Sensitivity was limited to 24.74\% (96 of 388 detected). Ventricular fusion beats represent hybrid depolarizations resulting from simultaneous conduction from normal supraventricular and ectopic ventricular pacemakers. When sinus conduction dominates, the complex is morphologically and temporally near-normal, leading to misclassification as Class N (62.37\% of fusion beats).
+\end{enumerate}
+
+\subsection{Error Characteristics and Inter-Record Variation}
+Performance differences between DS1 and DS2 emphasize the necessity of inter-patient partitioning:
+\begin{itemize}
+    \item Clean baseline recordings with standard sinus rhythm and minimal baseline wander (Records 103, 111, 113, 117, 121, 212) achieved classification accuracies exceeding \textbf{99.5\%}.
+    \item High-noise recordings and dense ectopic arrhythmias in DS2 reduced overall accuracy to 90.93\%. Record 232 contained 1,381 APCs (overall record accuracy = 76.87\%), providing a rigorous evaluation of Class S sensitivity.
+    \item Record 213 contained 362 fusion beats (93.3\% of DS2 fusion cases, record accuracy = 83.22\%), revealing the severe sampling concentration of Class F in benchmark archives.
+\end{itemize}
+
+\section{Limitations}
+\begin{enumerate}
+    \item \textbf{Benchmark Nature of the Dataset:} The findings of this study are derived exclusively from the PhysioNet MIT-BIH Arrhythmia Database (\texttt{mitdb}). While this database serves as a foundational international research benchmark, it represents an idealized, curated archive that does not encompass the full clinical heterogeneity of modern cardiac telemetry.
+    \item \textbf{Historical Dataset Characteristics:} The MIT-BIH recordings were acquired between 1975 and 1979 using analog reel-to-reel Holter recorders and early digital conversion hardware (11-bit, 360~Hz). Modern hospital monitoring systems utilize 12-lead digital acquisition at 500--1000~Hz with higher bit-depths and different analog front-end filtering.
+    \item \textbf{Absence of External Dataset Validation:} The model has not been evaluated on external multi-center databases (e.g. the INCART 12-Lead Database or the European ST-T Database). Consequently, cross-dataset transportability remains unverified.
+    \item \textbf{Absence of Prospective Clinical Validation:} No prospective clinical trial, bedside evaluation, or real-time clinical workflow testing was performed. Performance reported herein is purely retrospective.
+    \item \textbf{Extreme Class Imbalance and Metric Sensitivity:} The dataset exhibits severe natural class imbalance ($N > 89\%$). While cost-sensitive balanced weighting mitigated majority-class bias, metrics on minority classes---especially Class S and Class F---remain highly sensitive to individual false positives and class prevalence shifts.
+    \item \textbf{Class F (Fusion) Sampling Concentration:} Within the held-out DS2 test partition, 93.3\% of all true fusion beats (362 of 388) originate from a single patient recording (Record 213). Consequently, F-class metrics reflect high sampling concentration and patient-specific morphology rather than broad generalized fusion detection.
+    \item \textbf{Offline Bidirectional Timing Formulation:} The finalized model utilizes prospective cardiac interval timing (\texttt{RR\_next}, \texttt{HR\_next}, \texttt{RR\_ratio\_bidi}, \texttt{RR\_bidi\_diff}). Because these features require the timing of the subsequent heartbeat, the pipeline is strictly suitable for offline/retrospective Holter analysis and cannot be applied in instantaneous causal streaming without introducing algorithmic latency.
+    \item \textbf{Reliance on Expert Reference Annotations:} Heartbeat segmentation, window alignment, and RR-interval calculations were derived from human cardiologist reference annotations. In real-world deployment, automated beat detection algorithms must be used, which inevitably introduce R-peak jitter, false-positive detections, and missed beats that degrade downstream classification accuracy.
+    \item \textbf{Absence of an Automated Real-Time QRS Detector:} The current experimental pipeline does not incorporate an end-to-end automated QRS detector. The reported benchmark represents classifier performance given verified fiducial markers.
+    \item \textbf{Per-Beat Normalization Constraints:} Local per-beat z-score normalization standardizes voltage amplitude within each 200-sample window ($z_i = (x_i - \mu)/\sigma$). While this effectively eliminates baseline drift and subject-level impedance variations, it discards absolute millivolt amplitude, which carries clinical significance in left ventricular hypertrophy or low-voltage states.
+    \item \textbf{Model Interpretability Boundaries:} Feature importance metrics reported herein represent model-level Gini impurity reductions across Random Forest splits. Gini importances quantify predictive split frequency within the learned trees and must not be interpreted as independent causal biological drivers.
+    \item \textbf{Non-Clinical Research Disclaimer:} This software, pipeline, and trained model are developed strictly for academic research and educational benchmark purposes. The system is \textbf{NOT} a medical diagnostic device, clinical decision support system, or medical alarm monitor, and must \textbf{NEVER} be used for patient diagnosis or clinical treatment selection.
+\end{enumerate}
+
+\section{Future Work}
+\begin{enumerate}
+    \item \textbf{Causal Real-Time RR Interval Adaptation:} Designing causal adaptive filters (e.g. Kalman filters or exponential moving averages with dynamic time constants) capable of filtering out respiratory sinus arrhythmia while instantly identifying acute atrial premature contractions, eliminating the need for prospective post-ectopic pause intervals (\texttt{RR\_next}).
+    \item \textbf{Automated End-to-End QRS Detection Integration:} Investigating the cascading degradation introduced when human reference annotations are replaced with automated QRS detection algorithms (such as the Pan-Tompkins algorithm or deep learning R-peak segmenters) to evaluate tolerance to fiducial alignment jitter.
+    \item \textbf{Multi-Database Cross-Cohort Generalization:} Validating the frozen feature extraction pipeline across external multi-lead datasets (e.g. the INCART 12-lead database and PhysioNet Challenge datasets) to test decision boundary robustness across varying analog acquisition hardware and sampling rates.
+    \item \textbf{Advanced Minority-Class Learning Strategies:} Investigating adaptive cost-sensitive loss formulations, focal loss mechanisms, or class-specific ensemble thresholds to address the severe sampling deficit in Class F and enhance the positive predictive value of Class S without inducing false-positive alarms on normal sinus rhythms.
+    \item \textbf{Prospective Clinical Validation:} Designing prospective observational studies in ambulatory telemetry units to evaluate algorithmic utility, alarm burden reduction, and concordance with expert electrophysiologist reviews in live hospital environments.
+    \item \textbf{Probabilistic Calibration and Uncertainty Estimation:} Implementing conformal prediction frameworks, temperature scaling, or isotonic regression to produce well-calibrated posterior probabilities, enabling automated referral of ambiguous cardiac complexes to human cardiologists.
+    \item \textbf{Clinically Interpretable Explanations:} Integrating post-hoc interpretability frameworks (such as TreeSHAP) to map specific tree split decisions back to standardized clinical ECG intervals (e.g., QRS duration, PR interval prolongation, ST-segment elevation/depression).
+\end{enumerate}
+
+\section{Conclusion}
+This research investigated automated heartbeat classification according to the ANSI/AAMI EC57 four-class standard (Normal sinus rhythm, Supraventricular ectopic, Ventricular ectopic, and Ventricular fusion) using classical machine-learning ensembles on the PhysioNet MIT-BIH Arrhythmia Database. To prevent artificial performance inflation from intra-patient beat correlation, the entire 44-record non-paced dataset (100,586 usable heartbeats) was partitioned strictly at the patient level following the canonical de Chazal protocol, isolating 22 held-out patient recordings (DS2, 49,639 beats) for a single final benchmark evaluation.
+
+Waveform morphology provided effective baseline discrimination for normal sinus rhythm and wide-complex ventricular ectopy (V recall = 84.20\%), where ventricular depolarization differs markedly from normal activation. However, morphology alone hit a physiological ceiling on supraventricular premature beats (S recall = 38.40\%), where His-Purkinje conduction preserves normal QRS shape. Incorporating cardiac cycle timing broke this morphological deadlock: causal interval ratios ($RR_{\text{prev}} / \text{median}$) elevated Class S recall to 61.20\% (+22.80\%), and bidirectional timing further improved it to 68.40\% on validation and 75.64\% on held-out test data. In aggregate, the 9 timing features contributed 26.38\% of total ensemble split decisions despite comprising only 4.31\% of input dimensionality.
+
+Record-grouped hyperparameter optimization regularized individual tree depth and leaf variance, yielding an incremental gain of +0.0110 in Macro F1 (from 0.6985 to 0.7095). The improvement from RR feature engineering was substantially larger than the subsequent gain from hyperparameter optimization, indicating that feature representation contributed more to the observed validation improvement than the tuning step.
+
+On 49,639 heartbeats from 22 completely unseen patients, the permanently frozen model achieved an overall accuracy of \textbf{90.93\%}, a balanced accuracy of \textbf{70.00\%}, and a Macro F1 score of \textbf{0.6403}, with high sensitivity for ventricular ectopics (87.20\% recall, 69.75\% precision) and supraventricular ectopics (75.64\% recall, 38.45\% precision). Balanced Accuracy showed relatively little degradation between the validation cohort (0.7079) and the held-out test cohort (0.7000), indicating comparatively stable class-balanced performance across the record-level split. This demonstrates held-out inter-record generalization within the MIT-BIH dataset and should not be interpreted as evidence of clinical generalization.
+
+The results establish an offline, interpretable machine-learning reference benchmark for retrospective Holter analysis, demonstrating that classical tree ensembles with domain-engineered features remain highly competitive with complex deep architectures while offering high transparency and computational efficiency. The system is strictly an academic benchmark and is not approved as a medical diagnostic device.
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

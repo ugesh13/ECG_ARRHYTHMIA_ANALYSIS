@@ -1,0 +1,104 @@
+{
+  "dataset_name": "MIT-BIH Arrhythmia Preprocessed Beat Dataset",
+  "archive_filename": "mitbih_processed_beats.npz",
+  "archive_sha256": "104c126fc2b0084aa15a3d54f5717892a38d896ff9fc8ca79e08a922dbb9310d",
+  "total_beats": 109465,
+  "window_length": 200,
+  "fs": 360.0,
+  "pre_samples": 90,
+  "post_samples": 110,
+  "duration_seconds": 0.5555555555555556,
+  "normalization_method": "zscore",
+  "remove_baseline": true,
+  "preferred_leads": [
+    "MLII",
+    "V5",
+    "V1",
+    "V2",
+    "V4"
+  ],
+  "exclusion_stats": {
+    "total_annotations_examined": 112647,
+    "total_beat_annotations": 109494,
+    "total_non_beat_annotations": 3153,
+    "total_included_beats": 109465,
+    "total_excluded_annotations": 3182,
+    "breakdown": {
+      "non_beat_event_annotations": 3153,
+      "boundary_incomplete_windows": 29,
+      "nan_or_inf_signal": 0,
+      "duplicate_annotations": 0,
+      "unsupported_or_rejected_symbols": 0
+    },
+    "reconciliation_valid": true
+  },
+  "class_distribution": {
+    "N": {
+      "count": 90605,
+      "percentage": 82.77,
+      "description": "Non-ectopic / Normal beats (Normal, LBBB, RBBB, Escape beats)"
+    },
+    "S": {
+      "count": 2781,
+      "percentage": 2.54,
+      "description": "Supraventricular ectopic beats (APB, Aberrated APB, Junctional premature, SVEB)"
+    },
+    "V": {
+      "count": 7235,
+      "percentage": 6.61,
+      "description": "Ventricular ectopic beats (PVC, Ventricular escape, R-on-T)"
+    },
+    "F": {
+      "count": 802,
+      "percentage": 0.73,
+      "description": "Fusion beats (Ventricular-normal fusion)"
+    },
+    "Q": {
+      "count": 8042,
+      "percentage": 7.35,
+      "description": "Paced / Unclassifiable beats (Paced, Paced fusion, Unclassifiable)"
+    }
+  },
+  "lead_distribution": {
+    "MLII": 105050,
+    "V5": 4415
+  },
+  "records_processed": 48,
+  "validation_samples": {
+    "N": {
+      "file": "class_N_beat.svg",
+      "record_id": "203",
+      "symbol": "N",
+      "lead": "MLII",
+      "sample_index": 2933
+    },
+    "S": {
+      "file": "class_S_beat.svg",
+      "record_id": "232",
+      "symbol": "A",
+      "lead": "MLII",
+      "sample_index": 27559
+    },
+    "V": {
+      "file": "class_V_beat.svg",
+      "record_id": "208",
+      "symbol": "V",
+      "lead": "MLII",
+      "sample_index": 295844
+    },
+    "F": {
+      "file": "class_F_beat.svg",
+      "record_id": "208",
+      "symbol": "F",
+      "lead": "MLII",
+      "sample_index": 648735
+    },
+    "Q": {
+      "file": "class_Q_beat.svg",
+      "record_id": "104",
+      "symbol": "f",
+      "lead": "V5",
+      "sample_index": 611869
+    }
+  }
+}

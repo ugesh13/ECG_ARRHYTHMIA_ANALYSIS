@@ -1,0 +1,14 @@
+\begin{table*}[t]
+\centering
+\caption{Final Diagnostic Performance Comparison Across Progression Milestones}
+\label{tab:final_performance}
+\begin{tabular}{lcccccc}
+\hline
+\textbf{Model / Dataset Partition} & \textbf{Accuracy} & \textbf{Balanced Accuracy} & \textbf{Macro Precision} & \textbf{Macro Recall} & \textbf{Macro F1} & \textbf{Weighted F1} \\
+\hline
+Phase 6 Best RF (Morphology + Bidi RR -- DS1 Val) & 0.9640 & 0.7120 & 0.7280 & 0.7120 & 0.6985 & 0.9630 \\
+Phase 7 Tuned RF (Morphology + Bidi RR -- DS1 Val) & 0.9668 & 0.7079 & 0.7166 & 0.7079 & 0.7095 & 0.9664 \\
+Phase 8 Frozen RF (Morphology + Bidi RR -- \textbf{DS2 Test}) & \textbf{0.9093} & \textbf{0.7000} & \textbf{0.6348} & \textbf{0.7000} & \textbf{0.6403} & \textbf{0.9174} \\
+\hline
+\end{tabular}
+\end{table*}

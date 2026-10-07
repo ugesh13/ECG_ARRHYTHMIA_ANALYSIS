@@ -1,0 +1,76 @@
+{
+  "random_seed": 42,
+  "strategy": "aami_ds1_ds2",
+  "train_records": [
+    "101",
+    "106",
+    "109",
+    "112",
+    "115",
+    "116",
+    "119",
+    "122",
+    "124",
+    "203",
+    "205",
+    "207",
+    "208",
+    "215",
+    "223",
+    "230"
+  ],
+  "validation_records": [
+    "108",
+    "114",
+    "118",
+    "201",
+    "209",
+    "220"
+  ],
+  "test_records": [
+    "100",
+    "103",
+    "105",
+    "111",
+    "113",
+    "117",
+    "121",
+    "123",
+    "200",
+    "202",
+    "210",
+    "212",
+    "213",
+    "214",
+    "219",
+    "221",
+    "222",
+    "228",
+    "231",
+    "232",
+    "233",
+    "234"
+  ],
+  "excluded_records": [
+    "102",
+    "104",
+    "107",
+    "217"
+  ],
+  "version": "1.0.0",
+  "exclusion_reason": {
+    "102": "paced_rhythm_aami_ec57_standard",
+    "104": "paced_rhythm_aami_ec57_standard",
+    "107": "paced_rhythm_aami_ec57_standard",
+    "217": "paced_rhythm_aami_ec57_standard"
+  },
+  "metadata": {
+    "description": "ANSI/AAMI EC57 de Chazal benchmark record-level partition",
+    "protocol_reference": "AAMI EC57:1998 & de Chazal et al. (IEEE TBME 2004)",
+    "leakage_guarantee": "Zero record overlap; strictly inter-patient isolation",
+    "ds1_records_count": 22,
+    "ds2_records_count": 22,
+    "paced_records_count": 4,
+    "total_records_count": 48
+  }
+}
