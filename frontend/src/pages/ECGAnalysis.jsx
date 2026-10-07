@@ -232,6 +232,6 @@ export default function ECGAnalysis() {
 
       {/* Reference Clinician Annotations Card */}
       <AnnotationsCard annotations={annotations} />
-    </>
+    </PageContainer>
   );
 }
