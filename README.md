@@ -227,13 +227,13 @@ Feature importance was computed using Random Forest **Mean Decrease in Impurity 
 Across the held-out DS2 test cohort, the model committed **4,502 total beat misclassifications** (an observed error rate of 9.07%):
 
 ### Primary Error Transitions
-1. **$N \to S$ (2,154 errors, 47.85% of all errors)**: Normal beats misclassified as supraventricular ectopic due to minor sinus arrhythmia or respiratory sinus variations.
-2. **$N \to V$ (1,126 errors, 25.01% of all errors)**: Normal beats misclassified as ventricular ectopic due to motion artifacts, baseline drift, or conduction delays mimicking PVCs.
-3. **$S \to N$ (382 errors, 8.48% of all errors)**: Subtly premature supraventricular beats missed due to compensatory pauses.
-4. **$V \to N$ (334 errors, 7.42% of all errors)**: Ventricular ectopic beats exhibiting narrow QRS morphology misclassified as normal.
-5. **$F \to N$ (242 errors, 5.38% of all errors)**: Fusion beats misclassified as normal due to predominance of sinus conduction.
+1. **$N \to S$ (2,154 errors, 47.85% of all errors)**: Normal beats misclassified as supraventricular ectopic.
+2. **$N \to V$ (1,126 errors, 25.01% of all errors)**: Normal beats misclassified as ventricular ectopic.
+3. **$S \to N$ (382 errors, 8.48% of all errors)**: Supraventricular ectopic beats misclassified as normal.
+4. **$V \to N$ (334 errors, 7.42% of all errors)**: Ventricular ectopic beats misclassified as normal.
+5. **$F \to N$ (242 errors, 5.38% of all errors)**: Fusion beats misclassified as normal.
 
-The top two transitions ($N \to S$ and $N \to V$) constitute **72.86%** of all errors.
+Together, $N \to S$ and $N \to V$ represent 72.86% of all observed model errors.
 
 ---
 
