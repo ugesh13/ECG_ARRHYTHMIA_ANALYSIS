@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import PageContainer from '../components/PageContainer.jsx';
 import Card from '../components/Card.jsx';
 import ECGLegend from '../components/ECGLegend.jsx';
@@ -9,7 +10,7 @@ export default function About() {
       subtitle="Engineering architecture, signal processing pipeline, machine learning methodology, and academic governance."
       breadcrumbs={
         <>
-          <a href="/">Dashboard</a>
+          <Link to="/">Dashboard</Link>
           <span>/</span>
           <span>About Project</span>
         </>
