@@ -174,7 +174,7 @@ class ArtifactDetail(BaseModel):
 
 class ExperimentArtifactsResponse(BaseModel):
     benchmark: bool
-    model_config: bool
+    model_config_: bool = Field(alias="model_config")
     confusion_matrix: bool
     generalization: bool
     feature_importance: bool
