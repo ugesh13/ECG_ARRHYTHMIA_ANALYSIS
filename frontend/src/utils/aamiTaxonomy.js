@@ -107,3 +107,20 @@ export function getAnnotationMeta(symbol) {
     classInfo: AAMI_CLASSES.Q,
   };
 }
+
+// ANSI/AAMI EC57 Partition Sets
+export const DS1_TRAIN = new Set(['101', '106', '109', '112', '115', '116', '119', '122', '124', '203', '205', '207', '208', '215', '223', '230']);
+export const DS1_VAL = new Set(['108', '114', '118', '201', '209', '220']);
+export const DS2_TEST = new Set(['100', '103', '105', '111', '113', '117', '121', '123', '200', '202', '210', '212', '213', '214', '219', '221', '222', '228', '231', '232', '233', '234']);
+export const PACED = new Set(['102', '104', '107', '217']);
+
+/** Determine partition category and styling for record */
+export function getRecordPartition(recordId, source) {
+  if (source === 'upload') return { name: 'Uploaded Record', badge: 'badge-default' };
+  if (DS2_TEST.has(recordId)) return { name: 'DS2 Held-Out Test', badge: 'badge-purple' };
+  if (DS1_VAL.has(recordId)) return { name: 'DS1 Validation', badge: 'badge-warning' };
+  if (DS1_TRAIN.has(recordId)) return { name: 'DS1 Training', badge: 'badge-cyan' };
+  if (PACED.has(recordId)) return { name: 'Paced (Isolated)', badge: 'badge-default' };
+  return { name: 'MIT-BIH', badge: 'badge-default' };
+}
+
