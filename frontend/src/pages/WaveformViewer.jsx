@@ -750,10 +750,10 @@ export default function WaveformViewer() {
               Stage 2
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 700, margin: '0.2rem 0' }}>
-              Baseline Wander Filter
+              Moving-Average Baseline Removal
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Dual median filter cascade (200ms + 600ms) isolating baseline drift without distorting ST segments.
+              Moving-average baseline removal (W = 217 samples, reflection padding) isolating wander.
             </p>
           </div>
 
@@ -769,10 +769,10 @@ export default function WaveformViewer() {
               Stage 3
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 700, margin: '0.2rem 0' }}>
-              Beat Segmentation
+              Segmentation & Z-Score Normalization
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Fixed 200-sample window centered at R-peak ([-99, +100] samples) with Z-score standardization.
+              Fixed 200-sample window centered at R-peak with local per-beat Z-score normalization.
             </p>
           </div>
 
