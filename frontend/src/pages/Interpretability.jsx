@@ -361,10 +361,50 @@ export default function Interpretability() {
             </div>
 
             <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-secondary)', marginTop: '0.35rem' }}>
-              Temporal Features in Top 15:
+              The 9 Bidirectional RR Features (Canonical Order):
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-              {temporalFeaturesInTop.map((feat) => (
+
+            {/* Dedicated 9 RR Features Horizontal Bar Chart */}
+            <div style={{ height: '240px', width: '100%', marginTop: '0.25rem' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={[...canonicalRRData].reverse()}
+                  layout="vertical"
+                  margin={{ top: 5, right: 20, bottom: 5, left: 95 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
+                  <XAxis
+                    type="number"
+                    domain={[0, 7]}
+                    stroke="#64748b"
+                    tick={{ fill: '#94a3b8', fontSize: 10 }}
+                    tickFormatter={(v) => `${v}%`}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="feature_name"
+                    stroke="#64748b"
+                    tick={{ fill: '#00e5ff', fontSize: 10, fontFamily: 'monospace' }}
+                    width={95}
+                  />
+                  <Tooltip content={<FeatureTooltip />} />
+                  <Bar dataKey="percentage" radius={[0, 4, 4, 0]}>
+                    {[...canonicalRRData].reverse().map((entry, idx) => (
+                      <Cell
+                        key={`rr-cell-${idx}`}
+                        fill="#00e5ff"
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setSelectedFeature(entry)}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Preserved Canonical Order Listing */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.25rem' }}>
+              {canonicalRRData.map((feat, idx) => (
                 <div
                   key={feat.feature_name}
                   onClick={() => setSelectedFeature(feat)}
@@ -372,30 +412,34 @@ export default function Interpretability() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    padding: '0.45rem 0.75rem',
+                    padding: '0.35rem 0.65rem',
                     backgroundColor: 'var(--bg-surface-2)',
                     borderRadius: 'var(--radius-sm)',
                     cursor: 'pointer',
                     border: '1px solid var(--border-subtle)',
+                    fontSize: '0.8rem',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span className="font-mono" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                      #{feat.rank}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <span className="font-mono" style={{ fontSize: '0.72rem', color: 'var(--text-muted)', width: '18px' }}>
+                      {idx + 1}.
                     </span>
                     <span className="font-mono" style={{ fontWeight: 600, color: 'var(--accent-cyan)' }}>
                       {feat.feature_name}
                     </span>
+                    <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                      (Rank {feat.rank})
+                    </span>
                   </div>
-                  <span className="font-mono" style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-                    {(feat.gini_importance * 100).toFixed(2)}%
+                  <span className="font-mono" style={{ fontWeight: 700, fontSize: '0.8rem' }}>
+                    {feat.rank === '>15' ? '<0.01%' : `${feat.percentage}%`}
                   </span>
                 </div>
               ))}
             </div>
 
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.35rem', fontStyle: 'italic' }}>
-              RR features provide additional information that helps the model distinguish classes.
+              RR features provide additional information used by the model.
             </p>
           </div>
         </Card>
