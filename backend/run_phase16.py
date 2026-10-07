@@ -63,7 +63,8 @@ if __name__ == "__main__":
         print("-" * 78)
         for b in result.beats[:5]:
             probs_str = f"P(N)={b.probabilities.N:.3f}, P(S)={b.probabilities.S:.3f}, P(V)={b.probabilities.V:.3f}, P(F)={b.probabilities.F:.3f}"
-            print(f"  Beat {b.beat_index:>4d} @ {b.time_seconds:>7.2f}s | Sample: {b.sample_index:>7d} | Symbol: {b.symbol:1s} | Pred: {b.predicted_class:24s} | Conf: {b.confidence:.3f} | {probs_str}")
+            pred_str = str(b.predicted_class) if b.predicted_class is not None else "unclassified_edge_beat"
+            print(f"  Beat {b.beat_index:>4d} @ {b.time_seconds:>7.2f}s | Sample: {b.sample_index:>7d} | Symbol: {b.symbol:1s} | Pred: {pred_str:24s} | Conf: {b.confidence:.3f} | {probs_str}")
 
         print("\n" + "=" * 78)
         print("PHASE 16 FINISHED SUCCESSFULLY — END-TO-END INFERENCE INTEGRATED")
