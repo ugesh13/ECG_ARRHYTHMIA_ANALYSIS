@@ -10,6 +10,7 @@ import PredictionCard from '../components/PredictionCard.jsx';
 import BeatTableCard from '../components/BeatTableCard.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
+import PageContainer from '../components/PageContainer.jsx';
 
 const WINDOWS = [5, 10, 30];
 
