@@ -89,6 +89,13 @@ export default function History() {
     <PageContainer
       title="Upload & Analysis History"
       subtitle="Complete chronological audit trail of processed recordings and uploaded WFDB clinical data."
+      breadcrumbs={
+        <>
+          <Link to="/">Dashboard</Link>
+          <span>/</span>
+          <span>History & Uploads</span>
+        </>
+      }
       actions={
         <Link to="/upload" className="btn btn-primary btn-sm">
           + Upload New Record

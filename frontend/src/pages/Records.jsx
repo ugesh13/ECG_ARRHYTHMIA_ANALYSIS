@@ -132,6 +132,13 @@ export default function Records() {
     <PageContainer
       title="ECG Record Explorer"
       subtitle={`Browse, search, and inspect recordings across standard ANSI/AAMI EC57 training, validation, and held-out test cohorts (${data?.count || 0} total records available).`}
+      breadcrumbs={
+        <>
+          <Link to="/">Dashboard</Link>
+          <span>/</span>
+          <span>Records</span>
+        </>
+      }
       actions={
         <Link to="/upload" className="btn btn-secondary btn-sm">
           + Upload WFDB Record
