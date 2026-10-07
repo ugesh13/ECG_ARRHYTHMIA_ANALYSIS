@@ -133,7 +133,10 @@ export default function ECGAnalysis() {
         <h1 style={{ margin: 0 }}>
           ECG Arrhythmia Analysis <span className="muted">— Record {recordId}</span>
         </h1>
-        <Link to="/analysis" className="btn btn-secondary">← Select Another Record</Link>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <Link to="/error-analysis" className="btn btn-outline">Error Analysis Studio →</Link>
+          <Link to="/analysis" className="btn btn-secondary">← Select Another Record</Link>
+        </div>
       </div>
 
       <MetadataCard metadata={metadata} />
