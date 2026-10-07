@@ -105,7 +105,8 @@ class RecordFeaturePipeline:
 
         for i, (sample_idx, sym) in enumerate(valid_heartbeats):
             time_sec = round(float(sample_idx) / self.window_config.fs, 4)
-            gt_class = get_aami_class(sym)
+            raw_aami = get_aami_class(sym)
+            gt_class = raw_aami if raw_aami in ("N", "S", "V", "F") else None
 
             is_first_beat = (i == 0)
             is_last_beat = (i == n_beats - 1)
@@ -115,10 +116,35 @@ class RecordFeaturePipeline:
             end_idx = sample_idx + self.window_config.post_samples
             incomplete_morphology = (start_idx < 0 or end_idx > len(filtered_signal))
 
+            edge_rr_features: Dict[str, Optional[float]] = {
+                "RR_prev": None,
+                "HR_prev": None,
+                "RR_local_median": None,
+                "RR_ratio_prev": None,
+                "RR_dev_prev": None,
+                "RR_next": None,
+                "HR_next": None,
+                "RR_ratio_bidi": None,
+                "RR_bidi_diff": None,
+            }
+
             if is_first_beat or is_last_beat:
                 # Controlled edge beat
                 reason = "First beat in record (lacks RR_prev)" if is_first_beat else "Last beat in record (lacks RR_next)"
                 norm_window = np.zeros(200, dtype=np.float32) if incomplete_morphology else normalize_beat_window(filtered_signal[start_idx:end_idx], method="zscore").astype(np.float32)
+                if is_first_beat and i < n_beats - 1:
+                    next_s = all_samples[i + 1]
+                    rr_n = float((next_s - sample_idx) / self.window_config.fs)
+                    if rr_n > 0:
+                        edge_rr_features["RR_next"] = round(rr_n, 4)
+                        edge_rr_features["HR_next"] = round(60.0 / rr_n, 2)
+                elif is_last_beat and i > 0:
+                    prev_s = all_samples[i - 1]
+                    rr_p = float((sample_idx - prev_s) / self.window_config.fs)
+                    if rr_p > 0:
+                        edge_rr_features["RR_prev"] = round(rr_p, 4)
+                        edge_rr_features["HR_prev"] = round(60.0 / rr_p, 2)
+
                 extracted_beats.append(
                     ExtractedBeat(
                         beat_index=i,
@@ -128,7 +154,7 @@ class RecordFeaturePipeline:
                         ground_truth_class=gt_class,
                         lead_name=lead_name,
                         morphology_window=norm_window,
-                        rr_features={},
+                        rr_features=edge_rr_features,
                         feature_vector=np.zeros(209, dtype=np.float32),
                         is_valid_bidirectional=False,
                         exclusion_reason=reason,
@@ -147,7 +173,7 @@ class RecordFeaturePipeline:
                         ground_truth_class=gt_class,
                         lead_name=lead_name,
                         morphology_window=np.zeros(200, dtype=np.float32),
-                        rr_features={},
+                        rr_features=edge_rr_features,
                         feature_vector=np.zeros(209, dtype=np.float32),
                         is_valid_bidirectional=False,
                         exclusion_reason="Incomplete morphology window at recording boundary",
@@ -176,7 +202,7 @@ class RecordFeaturePipeline:
                         ground_truth_class=gt_class,
                         lead_name=lead_name,
                         morphology_window=norm_window,
-                        rr_features={},
+                        rr_features=edge_rr_features,
                         feature_vector=np.zeros(209, dtype=np.float32),
                         is_valid_bidirectional=False,
                         exclusion_reason="Non-positive physiological RR interval",
