@@ -100,7 +100,7 @@ export default function History() {
           columns={columns}
           data={data?.entries || []}
           keyField="record_id"
-          emptyMessage="No historical sessions or uploaded records found."
+          emptyMessage="No analysis history yet. Analyze an ECG record from the Record Explorer or Upload page to begin tracking session activity."
         />
       </Card>
     </PageContainer>
