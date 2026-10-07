@@ -7,6 +7,7 @@ import BeatInspector from './pages/BeatInspector.jsx';
 import ECGAnalysis from './pages/ECGAnalysis.jsx';
 import PredictionConfidence from './pages/PredictionConfidence.jsx';
 import BenchmarkDashboard from './pages/BenchmarkDashboard.jsx';
+import ErrorAnalysis from './pages/ErrorAnalysis.jsx';
 import Interpretability from './pages/Interpretability.jsx';
 import History from './pages/History.jsx';
 import About from './pages/About.jsx';
@@ -38,7 +39,10 @@ export default function App() {
         {/* 7. Experimental Benchmark Dashboard */}
         <Route path="/benchmark" element={<BenchmarkDashboard />} />
 
-        {/* 8. Interpretability & Feature Attribution */}
+        {/* 8. Error Analysis Studio */}
+        <Route path="/error-analysis" element={<ErrorAnalysis />} />
+
+        {/* 9. Interpretability & Feature Attribution */}
         <Route path="/interpretability" element={<Interpretability />} />
 
         {/* 9. History & Uploads */}
