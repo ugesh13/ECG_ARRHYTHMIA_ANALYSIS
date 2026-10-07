@@ -203,7 +203,7 @@ export default function ECGAnalysis() {
 
       {/* Single-Beat Detail & Probability Inspector */}
       {analysis && (
-        <PredictionCard beat={selectedBeat} />
+        <PredictionCard beat={selectedBeat} recordId={recordId} />
       )}
 
       {/* Paginated Beat-by-Beat Classification Table */}

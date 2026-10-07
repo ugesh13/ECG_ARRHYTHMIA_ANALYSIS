@@ -4,6 +4,8 @@
  * ground truth annotation comparison, and electrophysiological descriptions.
  */
 
+import { Link } from 'react-router-dom';
+
 const CLASS_DESCRIPTIONS = {
   N: 'Non-ectopic / Normal Sinus: Regular rhythm, normal sinus beats, or bundle branch blocks (LBBB/RBBB).',
   S: 'Supraventricular Ectopic: Premature contraction originating above ventricles (atrial/nodal premature).',
@@ -12,7 +14,7 @@ const CLASS_DESCRIPTIONS = {
   unclassified_edge_beat: 'Boundary Beat: First or last beat in recording lacking preceding/succeeding RR interval.',
 };
 
-export default function PredictionCard({ beat = null }) {
+export default function PredictionCard({ beat = null, recordId = null }) {
   if (!beat) {
     return (
       <section className="card card-disabled">
@@ -29,6 +31,7 @@ export default function PredictionCard({ beat = null }) {
   const badgeClass = isEdge ? 'badge-edge' : `badge-${beat.predicted_class}`;
   const probs = beat.probabilities || { N: 0, S: 0, V: 0, F: 0 };
   const description = CLASS_DESCRIPTIONS[beat.predicted_class] || 'Arrhythmia category';
+  const targetRecord = beat.record_id || recordId;
 
   return (
     <section className="card">
@@ -36,9 +39,27 @@ export default function PredictionCard({ beat = null }) {
         <h2 style={{ margin: 0 }}>
           Beat #{beat.beat_index} Prediction <span className="muted">— t = {beat.time_seconds.toFixed(3)} s (Sample {beat.sample_index})</span>
         </h2>
-        <span className={`badge ${badgeClass}`} style={{ fontSize: '0.9rem', padding: '0.25rem 0.75rem' }}>
-          {isEdge ? 'Excluded Edge Beat' : `Predicted: Class ${beat.predicted_class}`}
-        </span>
+        <div style={{ display: 'flex', gap: '0.45rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <span className={`badge ${badgeClass}`} style={{ fontSize: '0.85rem', padding: '0.25rem 0.65rem' }}>
+            {isEdge ? 'Excluded Edge Beat' : `Predicted: Class ${beat.predicted_class}`}
+          </span>
+          {targetRecord && (
+            <>
+              <Link
+                to={`/beat/${targetRecord}/${beat.beat_index}`}
+                className="btn btn-secondary btn-sm"
+              >
+                Beat Inspector →
+              </Link>
+              <Link
+                to={`/prediction/${targetRecord}/${beat.beat_index}`}
+                className="btn btn-outline btn-sm"
+              >
+                Confidence Studio →
+              </Link>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="grid" style={{ marginBottom: '1rem' }}>
