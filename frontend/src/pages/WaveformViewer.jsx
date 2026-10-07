@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import useECG from '../hooks/useECG.js';
-import { getAnalysisSummary, listRecords } from '../services/api.js';
+import { getAnalysisBeats, getAnalysisSummary, listRecords } from '../services/api.js';
 import { getAnnotationMeta, getRecordPartition } from '../utils/aamiTaxonomy.js';
 import PageContainer from '../components/PageContainer.jsx';
 import Card from '../components/Card.jsx';
@@ -23,6 +23,7 @@ export default function WaveformViewer() {
   const [windowLength, setWindowLength] = useState(10);
   const [selectedLeadIndex, setSelectedLeadIndex] = useState('all');
   const [selectedAnnotation, setSelectedAnnotation] = useState(null);
+  const [exactBeatIndex, setExactBeatIndex] = useState(null);
 
   // Quick record switcher list
   const [availableRecords, setAvailableRecords] = useState([]);
