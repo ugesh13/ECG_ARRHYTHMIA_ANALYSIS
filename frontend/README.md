@@ -39,6 +39,7 @@ If unset, it defaults to `/api` (leveraging Vite's dev proxy to `http://127.0.0.
 | `/prediction/:recordId/:beatIndex` | `PredictionConfidence.jsx` | Posterior probability distribution across ANSI/AAMI classes `[N, S, V, F]` and confidence breakdown |
 | `/benchmark` | `BenchmarkDashboard.jsx` | Locked Phase 8 DS2 experimental benchmark metrics, 4×4 confusion matrix, and generalization delta table |
 | `/interpretability` | `Interpretability.jsx` | Model-level Random Forest Gini feature importances (Top 15 ranking, 26.38% temporal total) |
+| `/error-analysis` | `ErrorAnalysis.jsx` | Held-out DS2 error analysis, top misclassification transitions (N→S, N→V), and record breakdown |
 | `/history` | `History.jsx` | Chronological session history and upload audit trail |
 | `/upload` | `UploadECG.jsx` | Drag-and-drop WFDB archive upload (.hea, .dat, optional .atr) |
 | `/about` | `About.jsx` | System architecture, ANSI/AAMI EC57 diagnostic taxonomy details, and academic disclaimers |
