@@ -35,11 +35,14 @@ FastAPI service. See the root README for setup. Entry point: `app/main.py`.
   }
   ```
 
-## ECG Arrhythmia Analysis API (Phase 16)
+## ECG Arrhythmia Analysis APIs (Phase 16)
 
 - **Endpoints**:
-  - `POST /api/analysis/{record_id}`
-  - `POST /api/ecg/{record_id}/analyze` (RESTful alias)
+  - `POST /api/analysis/{record_id}` — Execute end-to-end beat segmentation, 209-D extraction, and batch inference.
+  - `POST /api/ecg/{record_id}/analyze` — RESTful alias for analysis execution.
+  - `GET /api/analysis/{record_id}/summary` — Lightweight cached summary (counts, percentages, execution time) without full beats array.
+  - `GET /api/analysis/{record_id}/beats` — Paginated beats list (`page`, `page_size`, `class_filter`, `prediction_filter`, `ground_truth_filter`).
+  - `GET /api/analysis/{record_id}/beats/{beat_idx}` — Single beat detail with 200 morphology samples (-90 to +109 offsets) and 9 RR features.
 - **Parameters**:
   - `record_id` (path): Identifier of the record (e.g., `100`, `208`, or upload ID).
   - `force_refresh` (query, optional, default `false`): Bypass session cache.
