@@ -1,4 +1,8 @@
-// All backend communication lives here. Components never call axios directly.
+/**
+ * Centralized API service layer for ECG Arrhythmia Analysis Platform.
+ * All backend HTTP calls are isolated in this module.
+ */
+
 import axios from 'axios';
 
 const client = axios.create({
@@ -6,46 +10,93 @@ const client = axios.create({
   timeout: 120000, // 2 minutes for processing complete 30-minute records
 });
 
-/** Convert any axios error into a safe, human-readable message. */
+/** Convert any Axios error into a safe, human-readable message without raw tracebacks. */
 export function getErrorMessage(err) {
   if (err?.response) {
     const status = err.response.status;
-    const msg = err.response.data?.message;
+    const detail = err.response.data?.detail || err.response.data?.message;
 
-    if (status === 400) return msg || 'Invalid record ID or malformed request.';
-    if (status === 404) return 'ECG record was not found.';
-    if (status === 422) return msg || 'The ECG record could not be analyzed because annotation or signal data is invalid.';
-    if (status === 503) return 'The arrhythmia classification model is currently unavailable.';
-    if (status >= 500) return 'An unexpected server error occurred during analysis. Please try again.';
-    return msg || `Request failed with HTTP ${status}.`;
+    if (status === 400) return detail || 'Invalid record ID or malformed request.';
+    if (status === 404) return detail || 'ECG record was not found.';
+    if (status === 422) return detail || 'The ECG record could not be processed due to invalid parameters.';
+    if (status === 503) return detail || 'The requested analysis or experimental artifact is currently unavailable.';
+    if (status >= 500) return 'An unexpected server error occurred. Please try again.';
+    return detail || `Request failed with HTTP status ${status}.`;
   }
-  if (err?.request) return 'Backend unavailable. Is the API server running on port 8000?';
+  if (err?.request) return 'Backend API is unreachable. Please verify the backend server is running on port 8000.';
   return err?.message || 'An unexpected error occurred.';
 }
 
-const data = (p) => p.then((r) => r.data);
+const unwrap = (promise) => promise.then((res) => res.data);
 
-export const checkHealth = () => data(client.get('/health'));
-export const listRecords = () => data(client.get('/ecg/records'));
-export const getMetadata = (id) => data(client.get(`/ecg/${id}/metadata`));
-export const getSignal = (id, params = {}) => data(client.get(`/ecg/${id}/signal`, { params }));
-export const getAnnotations = (id, params = {}) =>
-  data(client.get(`/ecg/${id}/annotations`, { params }));
+// ============================================================================
+// System Health & Diagnostics
+// ============================================================================
+export const checkHealth = () => unwrap(client.get('/health'));
+export const healthApi = checkHealth;
 
-/** Execute complete arrhythmia analysis on an ECG record. */
-export const analyzeECGRecord = (id, forceRefresh = false) =>
-  data(client.post(`/analysis/${id}${forceRefresh ? '?force_refresh=true' : ''}`));
+// ============================================================================
+// ECG Records & Raw Signals
+// ============================================================================
+export const listRecords = () => unwrap(client.get('/ecg/records'));
+export const getRecords = listRecords;
 
-/** Backward-compatible alias for existing components. */
-export const runAnalysis = analyzeECGRecord;
+export const getRecordMetadata = (recordId) => unwrap(client.get(`/ecg/${recordId}/metadata`));
+export const getMetadata = getRecordMetadata;
 
-export const getHistory = () => data(client.get('/history'));
+export const getRecordSignal = (recordId, params = {}) =>
+  unwrap(client.get(`/ecg/${recordId}/signal`, { params }));
+export const getSignal = getRecordSignal;
 
-/** files: File[] (.hea + .dat [+ .atr]). onProgress receives 0-100. */
+export const getRecordAnnotations = (recordId, params = {}) =>
+  unwrap(client.get(`/ecg/${recordId}/annotations`, { params }));
+export const getAnnotations = getRecordAnnotations;
+
+// ============================================================================
+// Arrhythmia Analysis & Inference
+// ============================================================================
+export const analyzeRecord = (recordId, forceRefresh = false) =>
+  unwrap(client.post(`/analysis/${recordId}${forceRefresh ? '?force_refresh=true' : ''}`));
+export const analyzeECGRecord = analyzeRecord;
+export const runAnalysis = analyzeRecord;
+
+export const getAnalysisSummary = (recordId) =>
+  unwrap(client.get(`/analysis/${recordId}/summary`));
+
+export const getAnalysisBeats = (recordId, params = {}) =>
+  unwrap(client.get(`/analysis/${recordId}/beats`, { params }));
+
+export const getBeatDetail = (recordId, beatIndex) =>
+  unwrap(client.get(`/analysis/${recordId}/beats/${beatIndex}`));
+
+// ============================================================================
+// Model Provenance & Experimental Benchmarks (Phase 17)
+// ============================================================================
+export const getModelInfo = () => unwrap(client.get('/model/info'));
+
+export const getBenchmark = () => unwrap(client.get('/experiments/benchmark'));
+
+export const getGeneralization = () => unwrap(client.get('/experiments/generalization'));
+
+export const getFeatureImportance = () => unwrap(client.get('/experiments/feature-importance'));
+
+export const getRecordBreakdown = (params = {}) =>
+  unwrap(client.get('/experiments/record-breakdown', { params }));
+
+export const getDatasetDistribution = () => unwrap(client.get('/experiments/dataset-distribution'));
+
+export const getExperimentArtifacts = () => unwrap(client.get('/experiments/artifacts'));
+
+// ============================================================================
+// Record Upload & Session History
+// ============================================================================
+export const getHistory = () => unwrap(client.get('/history'));
+
+/** Upload WFDB record files (.hea, .dat, .atr) */
 export function uploadRecord(files, onProgress) {
   const form = new FormData();
   files.forEach((f) => form.append('files', f));
-  return data(
+  return unwrap(
     client.post('/upload', form, {
       onUploadProgress: (e) => e.total && onProgress?.(Math.round((e.loaded * 100) / e.total)),
     })
