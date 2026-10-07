@@ -212,5 +212,26 @@ GET /api/experiments/artifacts HTTP/1.1
 Host: localhost:8000
 ```
 
+## Running Tests
+
+Execute automated backend test suite using pytest:
+```bash
+pytest
+```
+Test modules in `tests/`:
+- `test_smoke.py`: API route health and metadata probes
+- `test_inference_service.py`: 209-D validation, proba alignment, and edge-beat exclusion
+- `test_analysis_service.py`: Full record analysis and beat pagination
+- `test_experiments.py`: Frozen benchmark and provenance response schemas
+- `test_rr_features.py`: 9-dimensional canonical timing calculations
+- `test_ml_preprocessing.py`: Moving-average baseline removal and per-beat z-score normalization
+
+## Scientific Architecture Notes
+
+- **Baseline Removal**: Moving-average filter ($W=217$ samples, reflection padding) followed by local per-beat z-score normalization.
+- **Feature Vector (209-D)**: 200 morphology samples (offsets -90 to +109, R-peak index 90) + 9 canonical bidirectional RR timing features.
+- **Model**: Scikit-Learn `RandomForestClassifier` ($T=200, d_{\max}=30$) locked from Phase 8.
+- **Immutability**: No models are retrained and no benchmark numbers are recomputed dynamically.
+
 
 
