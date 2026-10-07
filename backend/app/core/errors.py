@@ -22,6 +22,10 @@ class RecordNotFoundError(AppError):
     status_code, code = 404, "record_not_found"
 
 
+class BeatNotFoundError(AppError):
+    status_code, code = 404, "beat_not_found"
+
+
 class RecordReadError(AppError):
     status_code, code = 422, "record_read_error"
 
