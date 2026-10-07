@@ -100,11 +100,14 @@ class BeatAnalysisItem(BaseModel):
     sample_index: int
     time_seconds: float
     symbol: Optional[str] = None
+    ground_truth_symbol: Optional[str] = None
     ground_truth_class: Optional[str] = None
-    predicted_class: str
+    predicted_class: Optional[str] = None
     confidence: float
     probabilities: ClassProbabilities
-    is_valid: bool
+    is_edge_beat: bool = False
+    status: Optional[str] = "classified"
+    is_valid: bool = True
     exclusion_reason: Optional[str] = None
 
 
@@ -133,15 +136,69 @@ class RecordAnalysisResponse(BaseModel):
     lead_name: str
     sampling_rate: float
     duration_seconds: float
+    total_beats_detected: int
+    valid_beats_analyzed: int
+    edge_beats: int
     total_detected_beats: int
     total_classified_beats: int
     total_edge_beats: int
+    class_counts: dict[str, int]
+    class_percentages: dict[str, float]
+    execution_time_ms: float = 0.0
     aggregate_counts: AggregateCounts
     percentages: AggregatePercentages
     beats: list[BeatAnalysisItem]
     model_name: str = "RandomForestClassifier"
     model_version: str = "1.0 (Frozen Phase 8)"
     disclaimer: str = "Research prototype for educational/academic evaluation only. Not a clinical diagnostic device."
+
+
+class MorphologyData(BaseModel):
+    samples: list[float]
+    sample_offsets: list[int]
+
+
+class BeatDetailResponse(BaseModel):
+    record_id: str
+    beat_index: int
+    sample_index: int
+    time_seconds: float
+    ground_truth_symbol: Optional[str] = None
+    ground_truth_class: Optional[str] = None
+    predicted_class: Optional[str] = None
+    confidence: float
+    probabilities: ClassProbabilities
+    is_edge_beat: bool
+    status: Optional[str] = None
+    is_valid: bool
+    exclusion_reason: Optional[str] = None
+    morphology: MorphologyData
+    rr_features: dict[str, Optional[float]]
+
+
+class PaginatedBeatsResponse(BaseModel):
+    record_id: str
+    page: int
+    page_size: int
+    total: int
+    items: list[BeatAnalysisItem]
+
+
+class RecordAnalysisSummaryResponse(BaseModel):
+    record_id: str
+    status: str  # "completed" | "not_analyzed"
+    message: Optional[str] = None
+    lead_name: Optional[str] = None
+    sampling_rate: Optional[float] = None
+    duration_seconds: Optional[float] = None
+    total_beats_detected: Optional[int] = None
+    valid_beats_analyzed: Optional[int] = None
+    edge_beats: Optional[int] = None
+    class_counts: Optional[dict[str, int]] = None
+    class_percentages: Optional[dict[str, float]] = None
+    execution_time_ms: Optional[float] = None
+    model_name: Optional[str] = None
+    model_version: Optional[str] = None
 
 
 # Retain AnalysisResponse as an alias for backward compatibility
