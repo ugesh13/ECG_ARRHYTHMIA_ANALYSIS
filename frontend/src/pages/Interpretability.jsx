@@ -192,6 +192,9 @@ export default function Interpretability() {
           <span className="badge badge-purple" style={{ fontSize: '0.8rem' }}>
             Status: LOCKED FOR EVALUATION
           </span>
+          <Link to="/error-analysis" className="btn btn-primary btn-sm">
+            Error Analysis Studio →
+          </Link>
           <Link to="/benchmark" className="btn btn-secondary btn-sm">
             View Benchmark Results →
           </Link>

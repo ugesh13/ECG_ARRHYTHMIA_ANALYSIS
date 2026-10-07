@@ -225,6 +225,12 @@ export default function BenchmarkDashboard() {
           <span className="badge badge-purple" style={{ fontSize: '0.8rem' }}>
             Status: LOCKED FOR EVALUATION
           </span>
+          <Link to="/error-analysis" className="btn btn-primary btn-sm">
+            Error Analysis Studio →
+          </Link>
+          <Link to="/interpretability" className="btn btn-outline btn-sm">
+            Feature Importance →
+          </Link>
           <Link to="/records" className="btn btn-secondary btn-sm">
             Record Explorer
           </Link>
