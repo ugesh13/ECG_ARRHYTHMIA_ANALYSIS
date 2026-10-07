@@ -459,7 +459,6 @@ export default function PredictionConfidence() {
               const isTop = predClass === item.key;
               const probVal = item.prob !== null ? item.prob : 0;
               const pct = (probVal * 100).toFixed(2);
-              const treeVotes = Math.round(probVal * 200);
 
               return (
                 <div
@@ -498,7 +497,7 @@ export default function PredictionConfidence() {
                         {pct}%
                       </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-                        P = {probVal.toFixed(4)} ({treeVotes} of 200 trees)
+                        Model Output Probability: P = {probVal.toFixed(4)}
                       </div>
                     </div>
                   </div>
