@@ -11,12 +11,176 @@ class HealthResponse(BaseModel):
 
 
 class ModelInfoResponse(BaseModel):
+    model_type: str = "RandomForestClassifier"
+    n_estimators: int = 200
+    max_depth: Optional[int] = 30
+    min_samples_split: int = 5
+    min_samples_leaf: int = 2
+    max_features: str = "sqrt"
+    class_weight: str = "balanced"
+    random_state: int = 42
+    n_jobs: int = -1
+    feature_dimension: int = 209
+    morphology_dimension: int = 200
+    rr_dimension: int = 9
+    class_labels: list[str] = ["N", "S", "V", "F"]
+    model_loaded: bool = False
+    model_artifact_available: bool = False
+    standard_reference: str = "ANSI/AAMI EC57:1998"
+    status: str = "LOCKED_FOR_EVALUATION"
+    frozen_at_utc: Optional[str] = None
+    feature_description: Optional[dict] = None
+    training_partitions: Optional[dict] = None
+    validation_results_summary: Optional[dict] = None
+    # Backward compatibility aliases
+    model_name: Optional[str] = None
+    classes: Optional[list[str]] = None
+    n_features: Optional[int] = None
+
+
+class ConfusionMatrixResponse(BaseModel):
+    class_order: list[str]
+    raw: list[list[int]]
+    row_normalized: list[list[float]]
+    column_normalized: list[list[float]]
+    total_beats: int
+    notes: Optional[str] = None
+
+
+class ClassMetricItem(BaseModel):
+    precision: float
+    recall: float
+    f1_score: float
+    support: int
+
+
+class OverallBenchmarkMetrics(BaseModel):
+    accuracy: float
+    balanced_accuracy: float
+    macro_precision: float
+    macro_recall: float
+    macro_f1: float
+    weighted_f1: float
+    roc_auc: float
+    pr_auc: float
+    evaluated_beats: int
+
+
+class BenchmarkResponse(BaseModel):
     model_name: str
-    classes: list[str]
-    n_features: int
-    n_estimators: int
-    max_depth: Optional[int]
-    status: str
+    phase: int
+    evaluation_partition: str
+    evaluated_beats_count: int
+    metrics: OverallBenchmarkMetrics
+    confusion_matrix: ConfusionMatrixResponse
+    per_class: dict[str, ClassMetricItem]
+    class_supports: dict[str, int]
+    notes: Optional[str] = None
+
+
+class GeneralizationMetrics(BaseModel):
+    accuracy: float
+    balanced_accuracy: float
+    macro_precision: Optional[float] = None
+    macro_recall: Optional[float] = None
+    macro_f1: float
+    weighted_f1: float
+    roc_auc: Optional[float] = None
+    pr_auc: Optional[float] = None
+
+
+class GeneralizationComparisonRow(BaseModel):
+    metric: str
+    ds1_validation: float
+    ds2_test: float
+    absolute_difference: float
+    relative_change_pct: str
+
+
+class GeneralizationResponse(BaseModel):
+    evaluation_type: str
+    ds1_validation: GeneralizationMetrics
+    ds2_test: GeneralizationMetrics
+    differences: dict[str, float]
+    relative_change_pct: dict[str, str]
+    comparison_table: list[GeneralizationComparisonRow]
+    notes: str
+
+
+class FeatureImportanceItem(BaseModel):
+    rank: int
+    feature_name: str
+    feature_type: str
+    gini_importance: float
+    description: Optional[str] = None
+
+
+class FeatureImportanceResponse(BaseModel):
+    model_family: str
+    importance_metric: str
+    top_features: list[FeatureImportanceItem]
+    temporal_features_total_importance: float
+    temporal_feature_names: list[str]
+    notes: str
+
+
+class RecordBreakdownItem(BaseModel):
+    record_id: str
+    evaluated_beats: int
+    accuracy: float
+    n_recall: Optional[float] = None
+    n_support: int
+    s_recall: Optional[float] = None
+    s_support: int
+    v_recall: Optional[float] = None
+    v_support: int
+    f_recall: Optional[float] = None
+    f_support: int
+
+
+class RecordBreakdownResponse(BaseModel):
+    total_records: int
+    partition: str
+    records: list[RecordBreakdownItem]
+
+
+class CohortDistributionItem(BaseModel):
+    partition: str
+    record_count: int
+    usable_beats: int
+    n_count: int
+    n_pct: str
+    s_count: int
+    s_pct: str
+    v_count: int
+    v_pct: str
+    f_count: int
+    f_pct: str
+    isolated_q: int
+
+
+class DatasetDistributionResponse(BaseModel):
+    cohorts: list[CohortDistributionItem]
+    notes: str
+
+
+class ArtifactDetail(BaseModel):
+    name: str
+    logical_path: str
+    available: bool
+    format: str
+    description: str
+
+
+class ExperimentArtifactsResponse(BaseModel):
+    benchmark: bool
+    model_config: bool
+    confusion_matrix: bool
+    generalization: bool
+    feature_importance: bool
+    record_breakdown: bool
+    dataset_distribution: bool
+    artifacts: list[ArtifactDetail]
 
 
 class RecordSummary(BaseModel):
