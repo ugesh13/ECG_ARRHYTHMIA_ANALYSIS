@@ -29,6 +29,7 @@ class Settings:
     uploads_dir: Path = field(default_factory=lambda: _path("UPLOADS_DIR", "data/uploads"))
     history_file: Path = field(default_factory=lambda: _path("HISTORY_FILE", "data/history.json"))
     models_dir: Path = field(default_factory=lambda: _path("MODELS_DIR", "models"))
+    ml_results_dir: Path = field(default_factory=lambda: _path("ML_RESULTS_DIR", "data/processed/ml_results"))
     max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "50"))
     max_signal_points: int = int(os.getenv("MAX_SIGNAL_POINTS", "5000"))
     # WFDB record files accepted for upload. .xws is deliberately not accepted/used.
