@@ -114,14 +114,19 @@ export default function ECGAnalysis() {
 
   if (!recordId) {
     return (
-      <>
-        <h1>ECG Arrhythmia Analysis</h1>
-        <p className="muted" style={{ marginBottom: '1.25rem' }}>
-          Select an ambulatory ECG recording from the MIT-BIH Database to inspect raw waveforms,
-          annotated heartbeats, and run 209-D automated classification.
-        </p>
+      <PageContainer
+        title="ECG Record Arrhythmia Analysis"
+        subtitle="Select an ambulatory MIT-BIH recording to run 209-D automated heartbeat classification."
+        breadcrumbs={
+          <>
+            <Link to="/">Dashboard</Link>
+            <span>/</span>
+            <span>Record Analysis</span>
+          </>
+        }
+      >
         <RecordPicker />
-      </>
+      </PageContainer>
     );
   }
 
@@ -129,17 +134,26 @@ export default function ECGAnalysis() {
   const canNext = windowStart + windowLength < duration;
 
   return (
-    <>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
-        <h1 style={{ margin: 0 }}>
-          ECG Arrhythmia Analysis <span className="muted">— Record {recordId}</span>
-        </h1>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <Link to="/error-analysis" className="btn btn-outline">Error Analysis Studio →</Link>
-          <Link to="/analysis" className="btn btn-secondary">← Select Another Record</Link>
+    <PageContainer
+      title={`ECG Arrhythmia Analysis — Record ${recordId}`}
+      subtitle={`Automated beat segmentation, 209-D feature extraction, and ANSI/AAMI classification for Record ${recordId}.`}
+      breadcrumbs={
+        <>
+          <Link to="/">Dashboard</Link>
+          <span>/</span>
+          <Link to="/records">Records</Link>
+          <span>/</span>
+          <span>Record {recordId} Analysis</span>
+        </>
+      }
+      actions={
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <Link to={`/waveform/${recordId}`} className="btn btn-secondary btn-sm">Waveform Studio →</Link>
+          <Link to="/error-analysis" className="btn btn-outline btn-sm">Error Analysis Studio →</Link>
+          <Link to="/analysis" className="btn btn-secondary btn-sm">← Change Record</Link>
         </div>
-      </div>
-
+      }
+    >
       <MetadataCard metadata={metadata} />
 
       {/* Analysis Dashboard & Execution Card */}
