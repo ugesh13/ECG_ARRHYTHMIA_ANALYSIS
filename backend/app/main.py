@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import analysis, ecg, health, history, upload
+from app.api.routes import analysis, ecg, experiments, health, history, model, upload
 from app.core.config import settings
 from app.core.errors import AppError
 from app.core.logging_config import setup_logging
@@ -40,7 +40,7 @@ app.add_middleware(
     allow_methods=["GET", "POST"], allow_headers=["*"],
 )
 
-for r in (health, upload, ecg, analysis, history):
+for r in (health, upload, ecg, analysis, history, model, experiments):
     app.include_router(r.router, prefix="/api")
 
 
