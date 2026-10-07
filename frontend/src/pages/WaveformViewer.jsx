@@ -47,8 +47,36 @@ export default function WaveformViewer() {
   useEffect(() => {
     setWindowStart(0);
     setSelectedAnnotation(null);
+    setExactBeatIndex(null);
     setSelectedLeadIndex('all');
   }, [recordId]);
+
+  // Attempt to resolve exact beat_index from analysis when annotation is selected
+  useEffect(() => {
+    setExactBeatIndex(null);
+    if (!selectedAnnotation || !recordId) return;
+    let active = true;
+
+    // Approximate page based on 1.2 beats per second (typical MIT-BIH rate)
+    const estPage = Math.max(1, Math.floor((selectedAnnotation.time * 1.2) / 50));
+    getAnalysisBeats(recordId, { page: estPage, page_size: 100 })
+      .then((res) => {
+        if (!active || !res?.items) return;
+        const match = res.items.find(
+          (b) =>
+            Math.abs(b.sample_index - selectedAnnotation.sample) < 10 ||
+            Math.abs(b.time_seconds - selectedAnnotation.time) < 0.05
+        );
+        if (match) {
+          setExactBeatIndex(match.beat_index);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [selectedAnnotation, recordId]);
 
   // Discover records for quick switcher dropdown
   useEffect(() => {
@@ -587,10 +615,10 @@ export default function WaveformViewer() {
             </div>
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <Link
-                to={`/beat/${recordId}/${mappedBeatIndex}`}
+                to={`/beat/${recordId}/${exactBeatIndex !== null ? exactBeatIndex : mappedBeatIndex}`}
                 className="btn btn-primary btn-sm"
               >
-                Inspect Beat #{mappedBeatIndex} in Beat Inspector →
+                Inspect Beat #{exactBeatIndex !== null ? exactBeatIndex : mappedBeatIndex} in Beat Inspector →
               </Link>
               <Link
                 to={`/analysis/${recordId}`}
