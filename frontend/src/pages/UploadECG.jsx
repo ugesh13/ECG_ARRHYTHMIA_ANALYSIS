@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UploadCard from '../components/UploadCard.jsx';
+import PageContainer from '../components/PageContainer.jsx';
 import { getErrorMessage, uploadRecord } from '../services/api.js';
 
 export default function UploadECG() {
@@ -10,7 +11,9 @@ export default function UploadECG() {
   const [error, setError] = useState(null);
 
   const handleUpload = async (files) => {
-    setStatus('uploading'); setProgress(0); setError(null);
+    setStatus('uploading');
+    setProgress(0);
+    setError(null);
     try {
       const res = await uploadRecord(files, setProgress);
       setStatus('success');
@@ -22,9 +25,11 @@ export default function UploadECG() {
   };
 
   return (
-    <>
-      <h1>Upload ECG</h1>
+    <PageContainer
+      title="Upload Custom ECG Recording"
+      subtitle="Upload paired WFDB archive files (.hea header + .dat binary signal, optional .atr annotations) to run automated 209-D beat classification."
+    >
       <UploadCard onUpload={handleUpload} progress={progress} status={status} error={error} />
-    </>
+    </PageContainer>
   );
 }
