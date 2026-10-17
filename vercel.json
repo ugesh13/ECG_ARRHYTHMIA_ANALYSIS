@@ -1,22 +1,29 @@
 {
   "version": 2,
   "buildCommand": "cd frontend && npm install && npm run build",
-  "outputDirectory": "frontend/dist",
   "functions": {
     "api/index.py": {
-      "includeFiles": "backend/**",
+      "includeFiles": "backend/**,frontend/dist/**",
       "maxDuration": 60,
       "memory": 1024
     }
   },
   "rewrites": [
     {
-      "source": "/api/:match*",
-      "destination": "/api/index.py"
+      "source": "/api",
+      "destination": "/api/index.py?__path__=/api"
     },
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "source": "/api/(.*)",
+      "destination": "/api/index.py?__path__=/api/$1"
+    },
+    {
+      "source": "/assets/(.*)",
+      "destination": "/api/index.py?__path__=/assets/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.py?__path__=/$1"
     }
   ]
 }

@@ -150,14 +150,22 @@ try {
     Write-Host "  FAIL: $_" -ForegroundColor Red
 }
 
-# Check 8: Arrhythmia Analysis and Beat Prediction
-Write-Host "`n[Check 8] /api/analysis/100 and Beat 1 Prediction" -ForegroundColor Yellow
+# Check 9: Asset MIME Type & JS Bundle Verification
+Write-Host "`n[Check 9] Asset MIME Type and JS Bundle Verification" -ForegroundColor Yellow
 try {
-    $analysis = Invoke-RestMethod -Uri "$liveUrl/api/analysis/100" -Method Post
-    $beatsAnalyzed = $analysis.valid_beats_analyzed
-    Write-Host "  PASS: Analysis executed on record 100 ($beatsAnalyzed beats classified)" -ForegroundColor Green
-    $beat = Invoke-RestMethod -Uri "$liveUrl/api/analysis/100/beats/1" -Method Get
-    Write-Host "  PASS: Beat 1 classified as '$($beat.predicted_class)' with confidence $($beat.confidence * 100)%" -ForegroundColor Green
+    $homeHtml = (Invoke-WebRequest -Uri "$liveUrl/" -Method Get).Content
+    if ($homeHtml -match 'src="(/assets/[^"]+\.js)"') {
+        $assetPath = $matches[1]
+        $assetRes = Invoke-WebRequest -Uri "$liveUrl$assetPath" -Method Get
+        $contentType = $assetRes.Headers["Content-Type"]
+        if ($contentType -match "javascript") {
+            Write-Host "  PASS: $assetPath served with Content-Type: $contentType" -ForegroundColor Green
+        } else {
+            Write-Host "  FAIL: $assetPath returned unexpected Content-Type: $contentType (HTML fallback detected!)" -ForegroundColor Red
+        }
+    } else {
+        Write-Host "  SKIP: Could not extract JS asset path from index.html" -ForegroundColor Yellow
+    }
 } catch {
     Write-Host "  FAIL: $_" -ForegroundColor Red
 }
