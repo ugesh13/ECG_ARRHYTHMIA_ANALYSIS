@@ -11,6 +11,7 @@ import BeatTableCard from '../components/BeatTableCard.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import PageContainer from '../components/PageContainer.jsx';
+import ECGLegend from '../components/ECGLegend.jsx';
 
 const WINDOWS = [5, 10, 30];
 
@@ -136,7 +137,7 @@ export default function ECGAnalysis() {
   return (
     <PageContainer
       title={`ECG Arrhythmia Analysis — Record ${recordId}`}
-      subtitle={`Automated beat segmentation, 209-D feature extraction, and ANSI/AAMI classification for Record ${recordId}.`}
+      subtitle={`Offline beat-level classification (209-D feature representation anchored to expert .atr annotations) for Record ${recordId}.`}
       breadcrumbs={
         <>
           <Link to="/">Dashboard</Link>
@@ -148,9 +149,21 @@ export default function ECGAnalysis() {
       }
       actions={
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <Link to={`/waveform/${recordId}`} className="btn btn-secondary btn-sm">Waveform Studio →</Link>
-          <Link to="/error-analysis" className="btn btn-outline btn-sm">Error Analysis Studio →</Link>
-          <Link to="/analysis" className="btn btn-secondary btn-sm">← Change Record</Link>
+          <Link to={`/waveform/${recordId}`} className="btn btn-secondary btn-sm">
+            📈 Waveform Studio
+          </Link>
+          <Link
+            to={`/beat/${recordId}/${selectedBeat?.beat_index || 1}`}
+            className="btn btn-outline btn-sm"
+          >
+            🔬 Beat Inspector (Beat #{selectedBeat?.beat_index || 1}) →
+          </Link>
+          <Link to="/benchmark" className="btn btn-secondary btn-sm">
+            📊 Frozen Benchmark →
+          </Link>
+          <Link to="/analysis" className="btn btn-outline btn-sm">
+            ← Change Record
+          </Link>
         </div>
       }
     >
@@ -162,6 +175,7 @@ export default function ECGAnalysis() {
         analysis={analysis}
         loading={analysisLoading}
         error={analysisError}
+        hasAnnotations={metadata?.has_annotations}
         onRunAnalysis={() => handleRunAnalysis(false)}
         onForceRefresh={() => handleRunAnalysis(true)}
       />
@@ -220,6 +234,11 @@ export default function ECGAnalysis() {
       {analysis && (
         <PredictionCard beat={selectedBeat} recordId={recordId} />
       )}
+
+      {/* AAMI Taxonomy Legend */}
+      <div style={{ margin: '1rem 0' }}>
+        <ECGLegend compact={false} />
+      </div>
 
       {/* Paginated Beat-by-Beat Classification Table */}
       {analysis && (

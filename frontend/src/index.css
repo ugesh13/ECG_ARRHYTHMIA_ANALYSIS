@@ -15,6 +15,7 @@
   --border-subtle: #1e293b;
   --border-default: #28364d;
   --border-highlight: #3b82f6;
+  --line: var(--border-default);
 
   /* Typography / Text Colors */
   --text-primary: #f8fafc;
@@ -125,6 +126,42 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+}
+
+input,
+select,
+textarea {
+  background-color: var(--bg-surface-2);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.65rem;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+select option {
+  background-color: var(--bg-surface-1);
+  color: var(--text-primary);
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
 /* ==========================================================================
@@ -1008,7 +1045,7 @@ textarea {
 .meta dd {
   margin: 0;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-primary);
   font-family: ui-monospace, monospace;
 }
 

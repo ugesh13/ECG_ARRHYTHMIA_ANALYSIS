@@ -519,12 +519,18 @@ export default function ErrorAnalysis() {
                 margin={{ top: 10, right: 20, bottom: 5, left: 10 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="cls" stroke="#64748b" tick={{ fill: '#f8fafc', fontWeight: 700 }} />
+                <XAxis
+                  dataKey="cls"
+                  stroke="#64748b"
+                  tick={{ fill: '#f8fafc', fontWeight: 700 }}
+                  label={{ value: 'True AAMI Class', position: 'insideBottom', offset: -4, fill: '#64748b', fontSize: 10 }}
+                />
                 <YAxis
                   domain={[0, 100]}
                   stroke="#64748b"
                   tick={{ fill: '#94a3b8', fontSize: 11 }}
                   tickFormatter={(v) => `${v}%`}
+                  label={{ value: 'Error Rate (%)', angle: -90, position: 'insideLeft', offset: 2, fill: '#64748b', fontSize: 10 }}
                 />
                 <Tooltip content={<ErrorChartTooltip />} />
                 <Bar dataKey="errorRatePct" name="Error Rate %" radius={[4, 4, 0, 0]}>
@@ -838,7 +844,7 @@ export default function ErrorAnalysis() {
             <BarChart
               data={[...topErrorPairs.slice(0, 8)].reverse()}
               layout="vertical"
-              margin={{ top: 10, right: 30, bottom: 5, left: 60 }}
+              margin={{ top: 10, right: 30, bottom: 20, left: 60 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
               <XAxis
@@ -846,6 +852,7 @@ export default function ErrorAnalysis() {
                 stroke="#64748b"
                 tick={{ fill: '#94a3b8', fontSize: 11 }}
                 tickFormatter={(v) => v.toLocaleString()}
+                label={{ value: 'Misclassified Beat Count', position: 'insideBottom', offset: -10, fill: '#64748b', fontSize: 10 }}
               />
               <YAxis
                 type="category"
@@ -853,6 +860,7 @@ export default function ErrorAnalysis() {
                 stroke="#64748b"
                 tick={{ fill: '#f8fafc', fontSize: 11, fontFamily: 'monospace' }}
                 width={60}
+                label={{ value: 'Pair', angle: -90, position: 'insideLeft', offset: 0, fill: '#64748b', fontSize: 10 }}
               />
               <Tooltip content={<ErrorChartTooltip />} />
               <Bar dataKey="count" name="Beat Count" fill="#ef4444" radius={[0, 4, 4, 0]}>
@@ -888,17 +896,23 @@ export default function ErrorAnalysis() {
             <ResponsiveContainer width="100%" height={260}>
               <BarChart
                 data={trueVsPredErrors}
-                margin={{ top: 10, right: 20, bottom: 5, left: 10 }}
+                margin={{ top: 12, right: 20, bottom: 18, left: 16 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="cls" stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                <XAxis
+                  dataKey="cls"
+                  stroke="#64748b"
+                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  label={{ value: 'AAMI Diagnostic Category', position: 'insideBottom', offset: -10, fill: '#64748b', fontSize: 11 }}
+                />
                 <YAxis
                   stroke="#64748b"
                   tick={{ fill: '#94a3b8', fontSize: 11 }}
                   tickFormatter={(v) => v.toLocaleString()}
+                  label={{ value: 'Error Count (Beats)', angle: -90, position: 'insideLeft', offset: -4, fill: '#64748b', fontSize: 11 }}
                 />
                 <Tooltip content={<ErrorChartTooltip />} />
-                <Legend wrapperStyle={{ paddingTop: '8px', fontSize: '0.8rem' }} />
+                <Legend wrapperStyle={{ paddingTop: '16px', fontSize: '0.8rem' }} />
                 <Bar dataKey="Missed (True Class Errors)" fill="#ef4444" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="False Assignments (Predicted Class Errors)" fill="#f59e0b" radius={[3, 3, 0, 0]} />
               </BarChart>
@@ -916,6 +930,9 @@ export default function ErrorAnalysis() {
               <strong>Minority Class Dilution:</strong> Because N beats outnumber S and V beats by orders of magnitude, even a modest false-positive rate on N creates a large absolute influx into the predicted S and V classes.
             </p>
           </div>
+        </div>
+        <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+          Source: saved Phase 8 DS2 evaluation artifacts.
         </div>
       </Card>
 
@@ -983,9 +1000,9 @@ export default function ErrorAnalysis() {
               fontSize: '0.82rem',
             }}
           >
-            <div style={{ fontWeight: 700, color: '#10b981' }}>High Accuracy Records</div>
+            <div style={{ fontWeight: 700, color: '#10b981' }}>Highest Accuracy Record</div>
             <div style={{ marginTop: '0.2rem', color: 'var(--text-secondary)' }}>
-              Record 212 has high held-out accuracy (99.44%) within the DS2 cohort, with 15 errors across 2,698 evaluated beats.
+              Record 212 achieves 99.93% held-out accuracy within the DS2 cohort (only 2 errors across 2,745 evaluated beats).
             </div>
           </div>
 
@@ -998,9 +1015,9 @@ export default function ErrorAnalysis() {
               fontSize: '0.82rem',
             }}
           >
-            <div style={{ fontWeight: 700, color: '#ef4444' }}>Lower Accuracy Records</div>
+            <div style={{ fontWeight: 700, color: '#ef4444' }}>Lowest Accuracy Record</div>
             <div style={{ marginTop: '0.2rem', color: 'var(--text-secondary)' }}>
-              Record 232 has lower held-out accuracy (66.86%) than other evaluated DS2 records, with 587 errors across 1,771 evaluated beats.
+              Record 232 has the lowest held-out accuracy (76.87%) among DS2 records (411 errors across 1,777 evaluated beats).
             </div>
           </div>
         </div>
@@ -1094,6 +1111,9 @@ export default function ErrorAnalysis() {
             <Link to="/waveform/232" className="btn btn-outline btn-sm">
               Inspect Lower-Accuracy Record 232 →
             </Link>
+          </div>
+          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+            Source: saved Phase 8 DS2 evaluation artifacts.
           </div>
         </div>
       </Card>

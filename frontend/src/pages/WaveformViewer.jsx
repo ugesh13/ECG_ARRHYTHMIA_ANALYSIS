@@ -760,10 +760,10 @@ export default function WaveformViewer() {
               Stage 1
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 700, margin: '0.2rem 0' }}>
-              Continuous Telemetry
+              Lead Telemetry & Expert Annotations
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Physical WFDB leads sampled at 360 Hz. Real-time window streaming and downsampling.
+              WFDB digitized channels sampled at 360 Hz. The viewer supports multi-lead inspection, while the classification model evaluates the preferred signal lead (MLII). R-peak locations come from certified MIT-BIH <code>.atr</code> annotations (no automated QRS detector is used).
             </p>
           </div>
 
@@ -782,7 +782,7 @@ export default function WaveformViewer() {
               Moving-Average Baseline Removal
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Moving-average baseline removal (W = 217 samples, reflection padding) isolating wander.
+              Two-pass moving-average baseline removal (W = 217 samples, reflection padding) isolating wander.
             </p>
           </div>
 
@@ -817,10 +817,10 @@ export default function WaveformViewer() {
               Stage 4
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 700, margin: '0.2rem 0' }}>
-              209-D Feature Vector
+              209-D Feature Vector (Retrospective)
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              200 morphology features + 9 bidirectional RR timing features (pre-RR, post-RR, local ratio, global ratio).
+              200 morphology features + 9 bidirectional RR timing features (pre-RR, post-RR, local ratio, global ratio). Because post-RR requires the subsequent beat (RR<sub>next</sub>), this analysis operates retrospectively / offline.
             </p>
           </div>
 
@@ -836,10 +836,10 @@ export default function WaveformViewer() {
               Stage 5
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 700, margin: '0.2rem 0' }}>
-              Random Forest Inference
+              Beat-Level Random Forest Inference
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              Frozen 200-tree Random Forest mapping 209-D features to ANSI/AAMI classes: N, S, V, F.
+              Frozen 200-tree Random Forest mapping 209-D features to ANSI/AAMI classes: N, S, V, F. Beat-level classification only; not intended for real-time monitoring or holistic clinical patient diagnosis.
             </p>
           </div>
         </div>

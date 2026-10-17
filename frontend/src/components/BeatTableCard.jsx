@@ -114,9 +114,17 @@ export default function BeatTableCard({ beats = [], selectedBeatIndex = null, on
               return (
                 <tr
                   key={b.beat_index}
-                  className={isSelected ? 'tr-selectable tr-selected' : 'tr-selectable'}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Select Beat #${b.beat_index}, time ${b.time_seconds.toFixed(2)} seconds, predicted ${isEdge ? 'Edge Beat' : `Class ${b.predicted_class}`}`}
                   onClick={() => onSelectBeat?.(b)}
-                  title="Click to view full probabilities and morphology details"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onSelectBeat?.(b);
+                    }
+                  }}
+                  title="Click or press Enter to inspect full probabilities and morphology details"
                 >
                   <td style={{ fontWeight: 600 }}>#{b.beat_index}</td>
                   <td>{b.time_seconds.toFixed(3)}s</td>

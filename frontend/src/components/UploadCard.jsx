@@ -6,11 +6,11 @@ const extOf = (n) => n.slice(n.lastIndexOf('.')).toLowerCase();
 
 /** Client-side check only; the backend re-validates everything. */
 export function validateFiles(files) {
-  if (!files.length) return 'Select a .hea and a .dat file (optionally .atr).';
+  if (!files.length) return 'Select a .hea header and a .dat signal file (include .atr for beat classification).';
   const bad = files.find((f) => !ALLOWED.includes(extOf(f.name)));
   if (bad) return `Unsupported file: ${bad.name}. Allowed: ${ALLOWED.join(', ')}.`;
   const exts = files.map((f) => extOf(f.name));
-  if (!exts.includes('.hea') || !exts.includes('.dat')) return 'Both a .hea and a .dat file are required.';
+  if (!exts.includes('.hea') || !exts.includes('.dat')) return 'Both a .hea header file and a .dat signal file are required.';
   return null;
 }
 
@@ -28,9 +28,17 @@ export default function UploadCard({ onUpload, progress, status, error }) {
   };
   const shownError = localError || error;
 
+  const exts = files.map((f) => extOf(f.name));
+  const hasAtr = exts.includes('.atr');
+  const hasHeaAndDat = exts.includes('.hea') && exts.includes('.dat');
+
   return (
     <section className="card">
-      <h2>Upload ECG record</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <h2 style={{ margin: 0 }}>Upload ECG Record</h2>
+        <span className="badge badge-default" style={{ fontSize: '0.75rem' }}>PhysioNet WFDB Format</span>
+      </div>
+
       <div
         className={`dropzone ${dragging ? 'dragging' : ''}`}
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
@@ -40,21 +48,52 @@ export default function UploadCard({ onUpload, progress, status, error }) {
         role="button" tabIndex={0}
         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && inputRef.current?.click()}
       >
-        <p>Drag and drop WFDB files here, or click to browse</p>
-        <p className="muted">One record: .hea + .dat (+ optional .atr), same base name</p>
+        <p style={{ fontWeight: 600, margin: '0 0 0.35rem' }}>Drag and drop WFDB files here, or click to browse</p>
+        <p className="muted" style={{ fontSize: '0.82rem', margin: 0 }}>
+          Same record base name: <strong>.hea + .dat</strong> (waveform view) and <strong>.atr</strong> (required for beat classification)
+        </p>
         <input ref={inputRef} type="file" multiple accept={ALLOWED.join(',')} hidden
-               onChange={(e) => choose(e.target.files)} />
+          onChange={(e) => choose(e.target.files)} />
       </div>
 
       {files.length > 0 && (
-        <table className="table">
-          <thead><tr><th>Filename</th><th>Type</th><th>Size</th></tr></thead>
-          <tbody>
-            {files.map((f) => (
-              <tr key={f.name}><td>{f.name}</td><td>{extOf(f.name)}</td><td>{formatSize(f.size)}</td></tr>
-            ))}
-          </tbody>
-        </table>
+        <div style={{ marginTop: '1rem' }}>
+          {hasHeaAndDat && (
+            <div style={{
+              padding: '0.65rem 0.85rem',
+              borderRadius: 'var(--radius-sm)',
+              marginBottom: '0.75rem',
+              fontSize: '0.82rem',
+              backgroundColor: hasAtr ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)',
+              border: `1px solid ${hasAtr ? 'var(--color-class-N-border)' : 'var(--color-class-S-border)'}`,
+              color: hasAtr ? 'var(--color-class-N)' : 'var(--color-class-S)',
+            }}>
+              {hasAtr ? (
+                <>✓ <strong>Full Analysis Mode:</strong> .atr annotations included. Beat-level 209-D classification will be available.</>
+              ) : (
+                <>⚠️ <strong>Waveform-Only Mode:</strong> .atr annotation file not selected. You can view continuous waveforms, but beat-level classification requires .atr annotations.</>
+              )}
+            </div>
+          )}
+
+          <table className="table">
+            <thead><tr><th>Filename</th><th>Type</th><th>Size</th><th>Requirement</th></tr></thead>
+            <tbody>
+              {files.map((f) => {
+                const ext = extOf(f.name);
+                const reqText = ext === '.hea' ? 'Required (Header)' : ext === '.dat' ? 'Required (Signal)' : ext === '.atr' ? 'Required for Classification' : 'Optional';
+                return (
+                  <tr key={f.name}>
+                    <td className="font-mono">{f.name}</td>
+                    <td>{ext}</td>
+                    <td>{formatSize(f.size)}</td>
+                    <td style={{ fontSize: '0.78rem', color: ext === '.atr' ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>{reqText}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {status === 'uploading' && (

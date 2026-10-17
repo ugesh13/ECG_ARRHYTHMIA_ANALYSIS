@@ -69,6 +69,12 @@ export default function About() {
             </p>
             <ul style={{ paddingLeft: '1.2rem', marginBottom: '0.75rem' }}>
               <li>
+                <strong>Expert Reference Annotations:</strong> Beat R-peak positions are provided directly by certified MIT-BIH <code>.atr</code> annotations. The project does not implement an independent R-peak detector.
+              </li>
+              <li>
+                <strong>Lead Selection:</strong> While the waveform studio can display multiple ECG channels, the machine-learning pipeline extracts features exclusively from the preferred signal lead (MLII).
+              </li>
+              <li>
                 <strong>200 Morphology Samples:</strong> Extracted in a window of -90 pre-R to +109 post-R samples centered at sample index 90.
               </li>
               <li>
@@ -78,7 +84,7 @@ export default function About() {
                 <strong>Local Amplitude Scaling:</strong> Per-beat z-score normalization ensures invariant morphology across differing electrode gains.
               </li>
               <li>
-                <strong>9 Bidirectional RR Features:</strong> Captures local prematurity coupling ratios (`RR_prev / RR_local_median`), compensatory pauses (`RR_next`), coupling asymmetry, and instantaneous heart rate.
+                <strong>9 Bidirectional RR Features (Retrospective):</strong> Captures local prematurity coupling ratios (<code>RR_prev / RR_local_median</code>), compensatory pauses (<code>RR_next</code>), coupling asymmetry, and instantaneous heart rate. Because post-RR requires the subsequent beat, this system functions as an offline/retrospective beat classifier, not a real-time monitor.
               </li>
             </ul>
           </div>
@@ -130,6 +136,62 @@ export default function About() {
                 </div>
               </div>
             ))}
+          </div>
+        </Card>
+
+        {/* 7. Documented Scientific Limitations */}
+        <Card title="Documented Scientific Boundaries & Limitations">
+          <div style={{ color: 'var(--text-secondary)', lineHeight: 1.65, fontSize: '0.88rem' }}>
+            <p style={{ marginBottom: '0.75rem' }}>
+              For student presentations and academic rigor, the project operates under clear, transparent scientific boundaries:
+            </p>
+            <ul style={{ paddingLeft: '1.2rem', margin: 0 }}>
+              <li><strong>Single Historical Cohort:</strong> All experiments utilize the MIT-BIH Arrhythmia Database (1980); no testing has been conducted on external multicenter datasets (e.g. INCART, AHA).</li>
+              <li><strong>Expert Annotation Grounding:</strong> Beat R-peak positions are provided by certified expert <code>.atr</code> annotations. No independent automated QRS detector is implemented.</li>
+              <li><strong>Retrospective / Offline Inference:</strong> Bidirectional RR timing relies on the succeeding beat (RR<sub>next</sub>), which requires completed temporal recording rather than real-time monitoring.</li>
+              <li><strong>Preferred Lead Processing:</strong> The classifier processes lead MLII exclusively, even though multi-channel signals can be visualized in the waveform studio.</li>
+              <li><strong>Fusion Beat (Class F) Scarcity:</strong> Only 388 fusion beats exist in the DS2 test cohort, with 74% concentrated in Record 213, constraining inter-patient generalization.</li>
+            </ul>
+          </div>
+        </Card>
+
+        {/* 8. Student Presentation Glossary */}
+        <Card title="Student Presentation Glossary (Key Concepts)">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
+            <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid var(--accent-cyan)' }}>
+              <div style={{ fontWeight: 700, color: 'var(--accent-cyan)', fontSize: '0.9rem' }}>Annotation</div>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                An expert label provided by cardiologists indicating the exact millisecond time position and clinical classification of a heartbeat (stored in the <code>.atr</code> file).
+              </p>
+            </div>
+
+            <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid #10b981' }}>
+              <div style={{ fontWeight: 700, color: '#10b981', fontSize: '0.9rem' }}>Beat (Cardiac Cycle)</div>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                A single heart contraction cycle comprising atrial depolarization (P-wave), ventricular depolarization (QRS complex), and ventricular recovery (T-wave).
+              </p>
+            </div>
+
+            <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid #f59e0b' }}>
+              <div style={{ fontWeight: 700, color: '#f59e0b', fontSize: '0.9rem' }}>RR Interval</div>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                The time elapsed between two consecutive R-peaks. Measuring preceding and subsequent RR intervals reveals premature beats and compensatory pauses.
+              </p>
+            </div>
+
+            <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid #a855f7' }}>
+              <div style={{ fontWeight: 700, color: '#a855f7', fontSize: '0.9rem' }}>Feature Vector (209-D)</div>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                A quantitative numerical summary of a heartbeat: 200 voltage shape samples plus 9 interval timing ratios that are passed to the Random Forest model.
+              </p>
+            </div>
+
+            <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid #ec4899' }}>
+              <div style={{ fontWeight: 700, color: '#ec4899', fontSize: '0.9rem' }}>Held-Out Test Set (DS2)</div>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                A group of 22 patient records completely isolated from model training. Testing on unseen patients verifies real-world generalizability without data leakage.
+              </p>
+            </div>
           </div>
         </Card>
       </div>

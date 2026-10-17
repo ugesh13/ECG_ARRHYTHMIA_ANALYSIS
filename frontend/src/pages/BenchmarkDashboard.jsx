@@ -223,16 +223,22 @@ export default function BenchmarkDashboard() {
       actions={
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
           <span className="badge badge-purple" style={{ fontSize: '0.8rem' }}>
-            Status: LOCKED FOR EVALUATION
+            Status: FROZEN DS2 BENCHMARK
           </span>
-          <Link to="/error-analysis" className="btn btn-primary btn-sm">
-            Error Analysis Studio →
-          </Link>
-          <Link to="/interpretability" className="btn btn-outline btn-sm">
-            Feature Importance →
-          </Link>
           <Link to="/records" className="btn btn-secondary btn-sm">
-            Record Explorer
+            📁 Record Explorer
+          </Link>
+          <Link to="/waveform/100" className="btn btn-secondary btn-sm">
+            📈 Waveform
+          </Link>
+          <Link to="/analysis/100" className="btn btn-secondary btn-sm">
+            ⚡ Live Analysis
+          </Link>
+          <Link to="/beat/100/1" className="btn btn-secondary btn-sm">
+            🔬 Beat Inspector
+          </Link>
+          <Link to="/error-analysis" className="btn btn-primary btn-sm">
+            ⚠️ Error Analysis →
           </Link>
         </div>
       }
@@ -250,13 +256,13 @@ export default function BenchmarkDashboard() {
         >
           <div>
             <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 700 }}>
-              Evaluation Provenance & Partitioning
+              Evaluation Provenance & Partitioning (Stored Artifacts)
             </div>
             <div style={{ fontSize: '1.1rem', fontWeight: 700, marginTop: '0.15rem' }}>
               Random Forest Classifier • 209-Dimensional Feature Input
             </div>
             <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginTop: '0.2rem', maxWidth: '820px' }}>
-              Evaluated strictly on the held-out inter-record evaluation within the MIT-BIH dataset (DS2 test cohort, 22 independent patient recordings, {benchmark?.evaluated_beats_count?.toLocaleString() || '49,639'} usable heartbeats).
+              Evaluated strictly on the held-out inter-record partition within the MIT-BIH dataset (DS2 test cohort, 22 independent patient recordings, {benchmark?.evaluated_beats_count?.toLocaleString() || '49,639'} usable heartbeats). <strong>Notice:</strong> This website displays stored, verified evaluation results directly. It does not retrain the model or recalculate benchmark numbers upon page load.
             </p>
           </div>
 
@@ -282,6 +288,71 @@ export default function BenchmarkDashboard() {
           </div>
         </div>
       </Card>
+
+      {/* Presentation Guidance & Scientific Context */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1rem',
+          marginBottom: '1.25rem',
+        }}
+      >
+        <div
+          style={{
+            padding: '1rem',
+            backgroundColor: 'rgba(56, 189, 248, 0.08)',
+            border: '1px solid rgba(56, 189, 248, 0.25)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.85rem',
+          }}
+        >
+          <div style={{ fontWeight: 700, color: '#38bdf8', marginBottom: '0.35rem' }}>
+            📊 Precomputed DS2 Benchmark vs. Live Analysis
+          </div>
+          <div style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            This page presents the <strong>frozen, precomputed benchmark</strong> evaluated across all 22 independent patient recordings in the held-out DS2 test cohort (<strong>49,639 usable beats</strong>). It is a comprehensive inter-patient population evaluation, distinct from running live inference on an individual record in the ECG Analysis studio.
+          </div>
+        </div>
+
+        <div
+          style={{
+            padding: '1rem',
+            backgroundColor: 'rgba(245, 158, 11, 0.08)',
+            border: '1px solid rgba(245, 158, 11, 0.25)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.85rem',
+          }}
+        >
+          <div style={{ fontWeight: 700, color: '#f59e0b', marginBottom: '0.35rem' }}>
+            ⚖️ What These Benchmark Metrics Mean (Why They Differ)
+          </div>
+          <div style={{ color: 'var(--text-secondary)', lineHeight: 1.5, fontSize: '0.82rem' }}>
+            • <strong>Accuracy (90.93%):</strong> Fraction of all 49,639 evaluated beats classified correctly.<br />
+            • <strong>Balanced Accuracy (70.00%):</strong> Arithmetic average of recall across all four classes.<br />
+            • <strong>Macro F1 (0.6403):</strong> Arithmetic average of F1 scores across the four classes.<br />
+            <em>Why they answer different questions:</em> Because Normal beats (Class N) represent ~89.04% of the dataset, raw accuracy is strongly dominated by majority-class true negatives. Balanced accuracy and Macro F1 evaluate performance across all classes equally without majority-class bias.
+          </div>
+        </div>
+
+        <div
+          style={{
+            padding: '1rem',
+            backgroundColor: 'rgba(168, 85, 247, 0.08)',
+            border: '1px solid rgba(168, 85, 247, 0.25)',
+            borderRadius: 'var(--radius-md)',
+            fontSize: '0.85rem',
+          }}
+        >
+          <div style={{ fontWeight: 700, color: '#a855f7', marginBottom: '0.35rem' }}>
+            🔍 Documented Minority Class Limitations
+          </div>
+          <div style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+            • <strong>Class S Precision (38.45%):</strong> Diluted because even minor false positives from massive N influx create 2,222 false alarms despite 75.64% recall.<br />
+            • <strong>Class F Recall (24.74%):</strong> Severe real-world scarcity (388 total beats; 74% concentrated in Record 213) limits morphological generalizability.
+          </div>
+        </div>
+      </div>
 
       {/* 2. Headline Performance Metrics Grid */}
       <div className="stats-grid" style={{ marginBottom: '1.25rem' }}>
@@ -358,12 +429,18 @@ export default function BenchmarkDashboard() {
                 margin={{ top: 12, right: 16, bottom: 4, left: -10 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="class" stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+                <XAxis
+                  dataKey="class"
+                  stroke="#64748b"
+                  tick={{ fill: '#94a3b8', fontSize: 11 }}
+                  label={{ value: 'AAMI Category', position: 'insideBottom', offset: -8, fill: '#64748b', fontSize: 10 }}
+                />
                 <YAxis
                   domain={[0, 1]}
                   stroke="#64748b"
                   tick={{ fill: '#94a3b8', fontSize: 11 }}
                   tickFormatter={(v) => v.toFixed(2)}
+                  label={{ value: 'Score (0–1)', angle: -90, position: 'insideLeft', offset: 0, fill: '#64748b', fontSize: 10 }}
                 />
                 <Tooltip content={<CustomChartTooltip />} />
                 <Legend
@@ -411,6 +488,9 @@ export default function BenchmarkDashboard() {
               </tbody>
             </table>
           </div>
+        </div>
+        <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+          Source: saved Phase 8 DS2 evaluation artifacts.
         </div>
       </Card>
 
@@ -583,6 +663,9 @@ export default function BenchmarkDashboard() {
               )}
             </div>
           </div>
+          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+            Source: saved Phase 8 DS2 evaluation artifacts.
+          </div>
         </Card>
       )}
 
@@ -611,12 +694,18 @@ export default function BenchmarkDashboard() {
                   margin={{ top: 12, right: 16, bottom: 4, left: -10 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="metric" stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                  <XAxis
+                    dataKey="metric"
+                    stroke="#64748b"
+                    tick={{ fill: '#94a3b8', fontSize: 10 }}
+                    label={{ value: 'Evaluation Metric', position: 'insideBottom', offset: -8, fill: '#64748b', fontSize: 10 }}
+                  />
                   <YAxis
                     domain={[0.5, 1]}
                     stroke="#64748b"
                     tick={{ fill: '#94a3b8', fontSize: 11 }}
                     tickFormatter={(v) => v.toFixed(2)}
+                    label={{ value: 'Metric Score (0.50 – 1.00)', angle: -90, position: 'insideLeft', offset: 0, fill: '#64748b', fontSize: 10 }}
                   />
                   <Tooltip content={<CustomChartTooltip />} />
                   <Legend
@@ -668,6 +757,9 @@ export default function BenchmarkDashboard() {
               </table>
             </div>
           </div>
+          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+            Source: saved Phase 8 DS2 evaluation artifacts.
+          </div>
         </Card>
       )}
 
@@ -696,11 +788,17 @@ export default function BenchmarkDashboard() {
                   margin={{ top: 12, right: 16, bottom: 4, left: 10 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="partition" stroke="#64748b" tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                  <XAxis
+                    dataKey="partition"
+                    stroke="#64748b"
+                    tick={{ fill: '#94a3b8', fontSize: 10 }}
+                    label={{ value: 'MIT-BIH Dataset Partition', position: 'insideBottom', offset: -8, fill: '#64748b', fontSize: 10 }}
+                  />
                   <YAxis
                     stroke="#64748b"
                     tick={{ fill: '#94a3b8', fontSize: 11 }}
                     tickFormatter={(v) => (v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v)}
+                    label={{ value: 'Usable Beats', angle: -90, position: 'insideLeft', offset: 0, fill: '#64748b', fontSize: 10 }}
                   />
                   <Tooltip content={<CustomChartTooltip unit="beats" />} />
                   <Legend wrapperStyle={{ paddingTop: '8px', fontSize: '0.8rem' }} iconSize={10} />
@@ -742,6 +840,9 @@ export default function BenchmarkDashboard() {
                 </tbody>
               </table>
             </div>
+          </div>
+          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+            Source: saved Phase 8 DS2 evaluation artifacts.
           </div>
         </Card>
       )}
@@ -832,6 +933,9 @@ export default function BenchmarkDashboard() {
               </tbody>
             </table>
           </div>
+          <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
+            Source: saved Phase 8 DS2 evaluation artifacts.
+          </div>
         </Card>
       )}
 
@@ -878,8 +982,8 @@ export default function BenchmarkDashboard() {
 
       {/* 9. Academic Interpretation & Benchmark Limitations */}
       <Card
-        title="Academic Interpretation — How to Interpret This Benchmark"
-        subtitle="Key principles and considerations for evaluating machine learning performance in ECG signal processing."
+        title="Academic Interpretation & Benchmark Limitations"
+        subtitle="Key principles, metric rationale, and documented scientific boundaries for student presentation."
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
           <p>
@@ -894,6 +998,39 @@ export default function BenchmarkDashboard() {
           <p>
             • <strong>Inter-Patient Generalization:</strong> The DS2 cohort tests records from patients completely separate from those in training (DS1). Observed performance drop (Macro F1: 0.7095 → 0.6403) reflects realistic inter-patient morphological heterogeneity.
           </p>
+        </div>
+
+        {/* Presentation-Focused Documented Limitations Panel */}
+        <div
+          style={{
+            marginTop: '1.25rem',
+            padding: '1rem',
+            backgroundColor: 'var(--bg-surface-2)',
+            border: '1px solid var(--border-default)',
+            borderRadius: 'var(--radius-sm)',
+          }}
+        >
+          <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--accent-cyan)', marginBottom: '0.6rem' }}>
+            📋 Documented Project Limitations (School Presentation Reference)
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-1)', borderRadius: 'var(--radius-sm)' }}>
+              <strong style={{ color: 'var(--text-primary)' }}>1. Single Historical Dataset:</strong>
+              <div style={{ marginTop: '0.2rem' }}>All data comes from the MIT-BIH Arrhythmia Database (1980). There is no external validation on modern independent cohorts (e.g. INCART or AHA).</div>
+            </div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-1)', borderRadius: 'var(--radius-sm)' }}>
+              <strong style={{ color: 'var(--text-primary)' }}>2. Expert Annotations Required:</strong>
+              <div style={{ marginTop: '0.2rem' }}>Beat positions are supplied by certified expert <code>.atr</code> annotations. The project does not include an independent automated QRS detector.</div>
+            </div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-1)', borderRadius: 'var(--radius-sm)' }}>
+              <strong style={{ color: 'var(--text-primary)' }}>3. Retrospective / Offline Timing:</strong>
+              <div style={{ marginTop: '0.2rem' }}>The 9 RR timing features use the following heartbeat (RR<sub>next</sub>). This makes the workflow retrospective/offline rather than real-time monitoring.</div>
+            </div>
+            <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-1)', borderRadius: 'var(--radius-sm)' }}>
+              <strong style={{ color: 'var(--text-primary)' }}>4. Fusion-Beat Scarcity:</strong>
+              <div style={{ marginTop: '0.2rem' }}>Class F has only 388 total beats in DS2, with 74% concentrated in a single patient (Record 213), limiting statistical generalization across patients.</div>
+            </div>
+          </div>
         </div>
 
         <div className="disclaimer-banner" style={{ margin: '1rem 0 0 0' }}>

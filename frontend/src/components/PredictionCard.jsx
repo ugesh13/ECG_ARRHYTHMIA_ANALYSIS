@@ -63,8 +63,8 @@ export default function PredictionCard({ beat = null, recordId = null }) {
       </div>
 
       <div className="grid" style={{ marginBottom: '1rem' }}>
-        <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '6px', border: '1px solid var(--line)' }}>
-          <div className="stat-title">Model Prediction</div>
+        <div style={{ background: 'rgba(0, 229, 255, 0.04)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '2px solid rgba(0, 229, 255, 0.25)' }}>
+          <div className="stat-title" style={{ color: 'var(--accent-cyan)' }}>Model Prediction (Phase 8 RF)</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.2rem' }}>
             <span style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'Georgia, serif' }}>
               {isEdge ? 'Edge Beat' : `Class ${beat.predicted_class}`}
@@ -76,15 +76,19 @@ export default function PredictionCard({ beat = null, recordId = null }) {
           <p className="muted" style={{ fontSize: '0.85rem', margin: '0.4rem 0 0' }}>
             {description}
           </p>
-          {isEdge && beat.exclusion_reason && (
-            <p className="error-text" style={{ fontSize: '0.8rem', margin: '0.25rem 0 0' }}>
-              Reason: {beat.exclusion_reason}
-            </p>
+          {isEdge ? (
+            <div style={{ marginTop: '0.5rem', padding: '0.4rem 0.6rem', backgroundColor: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem', color: '#ef4444' }}>
+              <strong>Boundary Exclusion:</strong> {beat.exclusion_reason || 'First or last beat in recording excluded because the 209-D pipeline requires bidirectional timing intervals (RR_prev and RR_next).'}
+            </div>
+          ) : (
+            <div style={{ marginTop: '0.5rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              Note: Confidence is the model's tree-voting proportion for Class {beat.predicted_class}, representing algorithmic certainty within the 209-D space, not clinical certainty.
+            </div>
           )}
         </div>
 
-        <div style={{ background: '#f8fafc', padding: '0.85rem', borderRadius: '6px', border: '1px solid var(--line)' }}>
-          <div className="stat-title">Reference Annotation (Ground Truth)</div>
+        <div style={{ background: 'rgba(168, 85, 247, 0.04)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '2px solid rgba(168, 85, 247, 0.25)' }}>
+          <div className="stat-title" style={{ color: '#a855f7' }}>Reference Annotation (Ground Truth)</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.2rem' }}>
             <span style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'Georgia, serif' }}>
               Symbol: '{beat.symbol || '?'}'
@@ -97,7 +101,7 @@ export default function PredictionCard({ beat = null, recordId = null }) {
             PhysioNet cardiologist expert reference annotation from MIT-BIH dataset.
           </p>
           {!isEdge && beat.ground_truth_class && (
-            <div style={{ marginTop: '0.4rem', fontSize: '0.85rem' }}>
+            <div style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>
               {beat.predicted_class === beat.ground_truth_class ? (
                 <span className="ok" style={{ fontWeight: 600 }}>✓ Model agrees with expert annotation</span>
               ) : (

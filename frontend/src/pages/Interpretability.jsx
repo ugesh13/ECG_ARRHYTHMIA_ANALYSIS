@@ -298,11 +298,11 @@ export default function Interpretability() {
           </div>
         </div>
 
-        <ResponsiveContainer width="100%" height={420}>
+        <ResponsiveContainer width="100%" height={430}>
           <BarChart
             data={chartData}
             layout="vertical"
-            margin={{ top: 8, right: 30, bottom: 8, left: 90 }}
+            margin={{ top: 8, right: 30, bottom: 22, left: 90 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
             <XAxis
@@ -311,6 +311,7 @@ export default function Interpretability() {
               stroke="#64748b"
               tick={{ fill: '#94a3b8', fontSize: 11 }}
               tickFormatter={(v) => `${v}%`}
+              label={{ value: 'Mean Decrease in Impurity (Gini Importance %)', position: 'insideBottom', offset: -12, fill: '#94a3b8', fontSize: 11 }}
             />
             <YAxis
               type="category"
@@ -318,6 +319,7 @@ export default function Interpretability() {
               stroke="#64748b"
               tick={{ fill: '#f8fafc', fontSize: 11, fontFamily: 'monospace' }}
               width={90}
+              label={{ value: 'Feature Name', angle: -90, position: 'insideLeft', offset: -10, fill: '#94a3b8', fontSize: 11 }}
             />
             <Tooltip content={<FeatureTooltip />} />
             <Bar dataKey="percentage" radius={[0, 4, 4, 0]}>
@@ -332,6 +334,15 @@ export default function Interpretability() {
             </Bar>
           </BarChart>
         </ResponsiveContainer>
+
+        <div style={{ marginTop: '0.75rem', fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.65rem' }}>
+          <div>
+            <strong>Chart Explanation:</strong> Features are ranked by relative Gini impurity reduction across all 200 trees in the frozen Phase 8 model. Cyan bars denote temporal RR interval timing; amber bars denote local waveform voltage dimensions around the QRS apex.
+          </div>
+          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            Source: Saved Phase 8 DS2 evaluation artifacts (209 features).
+          </div>
+        </div>
       </Card>
 
       {/* 4. Morphology vs. Temporal Group Comparison */}
@@ -373,7 +384,7 @@ export default function Interpretability() {
                 <BarChart
                   data={[...canonicalRRData].reverse()}
                   layout="vertical"
-                  margin={{ top: 5, right: 20, bottom: 5, left: 95 }}
+                  margin={{ top: 5, right: 20, bottom: 20, left: 95 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
                   <XAxis
@@ -382,6 +393,7 @@ export default function Interpretability() {
                     stroke="#64748b"
                     tick={{ fill: '#94a3b8', fontSize: 10 }}
                     tickFormatter={(v) => `${v}%`}
+                    label={{ value: 'Gini Importance (%)', position: 'insideBottom', offset: -10, fill: '#94a3b8', fontSize: 10 }}
                   />
                   <YAxis
                     type="category"
@@ -389,6 +401,7 @@ export default function Interpretability() {
                     stroke="#64748b"
                     tick={{ fill: '#00e5ff', fontSize: 10, fontFamily: 'monospace' }}
                     width={95}
+                    label={{ value: 'RR Metric', angle: -90, position: 'insideLeft', offset: -10, fill: '#94a3b8', fontSize: 10 }}
                   />
                   <Tooltip content={<FeatureTooltip />} />
                   <Bar dataKey="percentage" radius={[0, 4, 4, 0]}>

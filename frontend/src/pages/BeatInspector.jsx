@@ -218,17 +218,23 @@ export default function BeatInspector() {
       }
       actions={
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <Link to="/records" className="btn btn-secondary btn-sm">
+            📁 Record Explorer
+          </Link>
           <Link to={`/waveform/${recordId}`} className="btn btn-secondary btn-sm">
-            ← Back to Waveform
+            📈 Waveform Studio
+          </Link>
+          <Link to={`/analysis/${recordId}`} className="btn btn-secondary btn-sm">
+            ⚡ Full Analysis
           </Link>
           <Link
             to={`/prediction/${recordId}/${currentBeatIdx}`}
-            className="btn btn-secondary btn-sm"
+            className="btn btn-outline btn-sm"
           >
-            Prediction Confidence Studio →
+            🎯 Confidence Studio →
           </Link>
-          <Link to={`/analysis/${recordId}`} className="btn btn-primary btn-sm">
-            Analyze Full Record
+          <Link to="/benchmark" className="btn btn-primary btn-sm">
+            📊 Frozen Benchmark →
           </Link>
         </div>
       }
@@ -307,6 +313,139 @@ export default function BeatInspector() {
               Go
             </button>
           </form>
+        </div>
+      </Card>
+
+      {/* How to Read This Beat Panel */}
+      <Card
+        title="How to Read This Beat"
+        subtitle="Unified evaluation of certified clinical reference, model classification, algorithmic confidence, and class probabilities."
+      >
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1rem',
+            marginBottom: '1rem',
+          }}
+        >
+          {/* Reference Annotation Block */}
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: 'rgba(168, 85, 247, 0.08)',
+              border: '2px solid rgba(168, 85, 247, 0.35)',
+              borderRadius: 'var(--radius-sm)',
+            }}
+          >
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#a855f7', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Reference Annotation (PhysioNet Ground Truth)
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '0.4rem' }}>
+              <span style={{ fontSize: '1.4rem', fontFamily: 'Georgia, serif', fontWeight: 700, color: 'var(--text-primary)' }}>
+                Symbol '{gtSymbol || '?'}'
+              </span>
+              {gtClass && <ClassBadge cls={gtClass} showDescription size="md" />}
+            </div>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem', lineHeight: 1.4 }}>
+              Certified cardiologist annotation from MIT-BIH Arrhythmia Database. Serves as reference truth for academic evaluation.
+            </p>
+          </div>
+
+          {/* Model Prediction Block */}
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: isEdge ? 'rgba(148, 163, 184, 0.08)' : 'rgba(0, 229, 255, 0.08)',
+              border: `2px solid ${isEdge ? 'rgba(148, 163, 184, 0.35)' : 'rgba(0, 229, 255, 0.35)'}`,
+              borderRadius: 'var(--radius-sm)',
+            }}
+          >
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: isEdge ? '#94a3b8' : 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Model Prediction (Phase 8 Random Forest)
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '0.4rem' }}>
+              {isEdge ? (
+                <span className="badge badge-edge" style={{ fontSize: '0.9rem', padding: '0.3rem 0.6rem' }}>
+                  Excluded Boundary Beat
+                </span>
+              ) : (
+                <>
+                  <ClassBadge cls={predClass} showDescription size="md" />
+                  <span className="font-mono" style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
+                    {((data?.confidence || 0) * 100).toFixed(1)}% Conf.
+                  </span>
+                </>
+              )}
+            </div>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem', lineHeight: 1.4 }}>
+              {isEdge
+                ? 'Excluded from inference because the 209-D pipeline requires preceding (RR_prev) and following (RR_next) intervals for bidirectional timing.'
+                : 'Predicted beat class based on 200 morphology samples (MLII lead) and 9 bidirectional RR interval features.'}
+            </p>
+          </div>
+
+          {/* Model Confidence & Probabilities Block */}
+          <div
+            style={{
+              padding: '1rem',
+              backgroundColor: 'var(--bg-surface-2)',
+              border: '1px solid var(--border-default)',
+              borderRadius: 'var(--radius-sm)',
+            }}
+          >
+            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Class Posterior Probabilities [P(N), P(S), P(V), P(F)]
+            </div>
+            {isEdge ? (
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>
+                Probabilities are undefined for boundary beats (sentinel values are not evaluated).
+              </p>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.4rem' }}>
+                {[
+                  { cls: 'N', name: 'Normal', val: probs.N, color: '#10b981' },
+                  { cls: 'S', name: 'Supraventricular', val: probs.S, color: '#f59e0b' },
+                  { cls: 'V', name: 'Ventricular', val: probs.V, color: '#ef4444' },
+                  { cls: 'F', name: 'Fusion', val: probs.F, color: '#a855f7' },
+                ].map(({ cls, name, val, color }) => {
+                  const pct = typeof val === 'number' ? (val * 100).toFixed(1) : '0.0';
+                  return (
+                    <div key={cls} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem' }}>
+                      <span style={{ fontWeight: 600, color }}>{cls} ({name}):</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '60%' }}>
+                        <div style={{ flex: 1, height: '6px', backgroundColor: 'var(--bg-surface-3)', borderRadius: '3px', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', backgroundColor: color }} />
+                        </div>
+                        <span className="font-mono" style={{ width: '40px', textAlign: 'right' }}>{pct}%</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Confidence & Boundary Callout Notes */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '0.75rem',
+            padding: '0.75rem 1rem',
+            backgroundColor: 'var(--bg-surface-1)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-subtle)',
+            fontSize: '0.82rem',
+          }}
+        >
+          <div>
+            <strong style={{ color: 'var(--accent-cyan)' }}>⚠️ Understanding Model Confidence:</strong> Confidence is the model's posterior probability (the proportion of the 200 decision trees voting for the winning class). It represents <em>algorithmic decision certainty</em> within the 209-D feature space, <strong>not medical certainty or clinical truth</strong>.
+          </div>
+          <div>
+            <strong style={{ color: '#f59e0b' }}>⏹️ Boundary Edge Beat Handling:</strong> The first and last beats in each recording lack either a preceding beat (for RR<sub>prev</sub>) or a subsequent beat (for RR<sub>next</sub>). Because the 9 RR features require bidirectional context, boundary beats are excluded from classification to preserve pipeline integrity rather than inventing artificial dummy intervals.
+          </div>
         </div>
       </Card>
 
@@ -832,10 +971,10 @@ export default function BeatInspector() {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
           <p>
-            1. <strong>Morphology Vector:</strong> Contains 200 normalized ECG samples extracted from a fixed window centered around the detected R-peak.
+            1. <strong>Morphology Vector:</strong> Contains 200 normalized ECG samples extracted from a fixed window (-90 to +109 samples) centered around the expert MIT-BIH <code>.atr</code> reference annotation on the preferred lead (MLII). No automatic QRS detector is used.
           </p>
           <p>
-            2. <strong>Bidirectional RR Features:</strong> Nine timing ratios and heart-rate metrics describe temporal coupling relationships around the beat.
+            2. <strong>Bidirectional RR Features (Retrospective):</strong> Nine timing ratios and interval metrics describe coupling relationships before (RR<sub>prev</sub>) and after (RR<sub>next</sub>) the beat, requiring retrospective/offline analysis.
           </p>
           <p>
             3. <strong>209-D Model Input:</strong> Together, morphology (200) and RR features (9) form the exact 209-dimensional feature vector fed into the model.
@@ -850,7 +989,7 @@ export default function BeatInspector() {
             6. <strong>Reference Mismatch:</strong> Disagreement indicates difference between the statistical model prediction and reference labeling, useful for error analysis.
           </p>
           <p>
-            7. <strong>Academic Evaluation:</strong> These outputs are intended for technical evaluation and verification of ML pipelines, not clinical patient diagnosis.
+            7. <strong>Academic Evaluation:</strong> Beat-level classification intended for machine learning research and educational demonstration; not intended for real-time patient telemetry or clinical diagnostic decisions.
           </p>
         </div>
 

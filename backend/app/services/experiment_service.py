@@ -376,31 +376,63 @@ class ExperimentService:
         """Return DS2 per-record evaluation breakdown with optional sorting and limiting."""
         csv_rows = self._load_csv("DS2_RECORD_RESULTS.csv", "DS2_RECORD_RESULTS")
 
+        EXPECTED_COLS = {
+            "record_id", "evaluated_beats", "accuracy",
+            "N_recall", "N_support", "S_recall", "S_support",
+            "V_recall", "V_support", "F_recall", "F_support",
+        }
+
+        def _parse_float(val: Optional[str]) -> Optional[float]:
+            if val is None:
+                return None
+            s = str(val).strip()
+            return float(s) if s else None
+
+        def _parse_int(val: Optional[str]) -> int:
+            if val is None:
+                return 0
+            s = str(val).strip()
+            return int(s) if s else 0
+
         records: list[RecordBreakdownItem] = []
-        for r in csv_rows:
-            def _parse_float(val: str) -> Optional[float]:
-                val = val.strip() if val else ""
-                return float(val) if val else None
-
-            def _parse_int(val: str) -> int:
-                val = val.strip() if val else ""
-                return int(val) if val else 0
-
-            records.append(
-                RecordBreakdownItem(
-                    record_id=r["record_id"],
-                    evaluated_beats=_parse_int(r["evaluated_beats"]),
-                    accuracy=float(r["accuracy"]),
-                    n_recall=_parse_float(r.get("N_recall", "")),
-                    n_support=_parse_int(r.get("N_support", "0")),
-                    s_recall=_parse_float(r.get("S_recall", "")),
-                    s_support=_parse_int(r.get("S_support", "0")),
-                    v_recall=_parse_float(r.get("V_recall", "")),
-                    v_support=_parse_int(r.get("V_support", "0")),
-                    f_recall=_parse_float(r.get("F_recall", "")),
-                    f_support=_parse_int(r.get("F_support", "0")),
+        for row_idx, r in enumerate(csv_rows, start=2):
+            if None in r:
+                logger.error("Malformed row %d in DS2_RECORD_RESULTS.csv with extra columns: %s", row_idx, r[None])
+                raise HTTPException(
+                    status_code=500,
+                    detail=(
+                        f"Malformed row {row_idx} in DS2_RECORD_RESULTS.csv: Contains extra unaligned comma-separated fields {r[None]}."
+                    ),
                 )
-            )
+            missing = EXPECTED_COLS - set(r.keys())
+            if missing:
+                logger.error("Malformed row %d in DS2_RECORD_RESULTS.csv missing columns: %s", row_idx, missing)
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Malformed row {row_idx} in DS2_RECORD_RESULTS.csv: Missing columns {sorted(list(missing))}.",
+                )
+            try:
+                records.append(
+                    RecordBreakdownItem(
+                        record_id=str(r["record_id"]).strip(),
+                        evaluated_beats=_parse_int(r["evaluated_beats"]),
+                        accuracy=float(str(r["accuracy"]).strip()),
+                        n_recall=_parse_float(r.get("N_recall")),
+                        n_support=_parse_int(r.get("N_support")),
+                        s_recall=_parse_float(r.get("S_recall")),
+                        s_support=_parse_int(r.get("S_support")),
+                        v_recall=_parse_float(r.get("V_recall")),
+                        v_support=_parse_int(r.get("V_support")),
+                        f_recall=_parse_float(r.get("F_recall")),
+                        f_support=_parse_int(r.get("F_support")),
+                    )
+                )
+            except Exception as exc:
+                logger.error("Failed to parse row %d in DS2_RECORD_RESULTS.csv: %s", row_idx, exc)
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Data parsing error on row {row_idx} (record '{r.get('record_id')}'): {exc}",
+                ) from exc
 
         if sort_by:
             valid_fields = {

@@ -112,8 +112,8 @@ export default function Dashboard() {
             <div style={{ fontSize: '1.15rem', fontWeight: 700, marginTop: '0.15rem' }}>
               RandomForestClassifier • 209-Dimensional Feature Representation
             </div>
-            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginTop: '0.25rem', maxWidth: '800px', lineHeight: 1.5 }}>
-              End-to-end telemetry and analysis suite for multi-lead electrocardiogram signals. Segments individual heartbeats, computes 200 morphology samples and 9 bidirectional RR temporal features, and executes inference across 4 ANSI/AAMI EC57 arrhythmia categories.
+            <p style={{ fontSize: '0.86rem', color: 'var(--text-secondary)', marginTop: '0.25rem', maxWidth: '820px', lineHeight: 1.5 }}>
+              Offline beat-level arrhythmia classification suite for electrocardiogram telemetry. Beat locations are anchored to expert clinical fiducial points from MIT-BIH <code>.atr</code> annotations (the system does not implement an automated R-peak detector). The classifier extracts 200 morphology samples from a single preferred lead (Lead MLII) alongside 9 retrospective bidirectional RR intervals, and executes inference across 4 ANSI/AAMI EC57 categories.
             </p>
           </div>
 
@@ -149,8 +149,61 @@ export default function Dashboard() {
         </div>
       </Card>
 
-      {/* 2. Key Experimental Benchmark Metrics (Dynamically from /api/experiments/benchmark) */}
-      <div className="stats-grid" style={{ marginBottom: '1.25rem' }}>
+      {/* 2. Presentation Flow & "Start Here" Walkthrough Guide */}
+      <Card
+        title="Presentation Guide: Recommended Walkthrough (Start Here)"
+        subtitle="A clear 5-step sequence for demonstrating the platform to instructors, evaluators, and reviewers."
+      >
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '0.85rem' }}>
+          <div style={{ padding: '0.9rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderTop: '3px solid var(--accent-cyan)' }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--accent-cyan)', fontWeight: 700, textTransform: 'uppercase' }}>Step 1 • Choose Record</div>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem', margin: '0.25rem 0 0.2rem' }}>Record Explorer</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.65rem', lineHeight: 1.4 }}>
+              Select an MIT-BIH recording (e.g. Record 100 for normal rhythm with APCs, or Record 200 with heavy ventricular ectopy).
+            </div>
+            <Link to="/records" className="btn btn-secondary btn-sm" style={{ width: '100%' }}>Browse Records →</Link>
+          </div>
+
+          <div style={{ padding: '0.9rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderTop: '3px solid #10b981' }}>
+            <div style={{ fontSize: '0.72rem', color: '#10b981', fontWeight: 700, textTransform: 'uppercase' }}>Step 2 • Inspect Signal</div>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem', margin: '0.25rem 0 0.2rem' }}>Waveform Studio</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.65rem', lineHeight: 1.4 }}>
+              View raw multi-lead ECG signals and inspect expert cardiologist <code>.atr</code> fiducial annotations.
+            </div>
+            <Link to="/waveform/100" className="btn btn-secondary btn-sm" style={{ width: '100%' }}>View Waveform →</Link>
+          </div>
+
+          <div style={{ padding: '0.9rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderTop: '3px solid #f59e0b' }}>
+            <div style={{ fontSize: '0.72rem', color: '#f59e0b', fontWeight: 700, textTransform: 'uppercase' }}>Step 3 • Run Inference</div>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem', margin: '0.25rem 0 0.2rem' }}>Live Record Analysis</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.65rem', lineHeight: 1.4 }}>
+              Execute the frozen Random Forest to extract 209-D features and classify heartbeats into N, S, V, F.
+            </div>
+            <Link to="/analysis/100" className="btn btn-secondary btn-sm" style={{ width: '100%' }}>Run Live Analysis →</Link>
+          </div>
+
+          <div style={{ padding: '0.9rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderTop: '3px solid #a855f7' }}>
+            <div style={{ fontSize: '0.72rem', color: '#a855f7', fontWeight: 700, textTransform: 'uppercase' }}>Step 4 • Single-Beat Audit</div>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem', margin: '0.25rem 0 0.2rem' }}>Confidence Studio</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.65rem', lineHeight: 1.4 }}>
+              Audit a single beat's morphology window, 9 bidirectional RR intervals, and [P(N), P(S), P(V), P(F)] probabilities.
+            </div>
+            <Link to="/prediction/100/1" className="btn btn-secondary btn-sm" style={{ width: '100%' }}>Inspect Beat #1 →</Link>
+          </div>
+
+          <div style={{ padding: '0.9rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderTop: '3px solid #ec4899' }}>
+            <div style={{ fontSize: '0.72rem', color: '#ec4899', fontWeight: 700, textTransform: 'uppercase' }}>Step 5 • Evaluation Benchmark</div>
+            <div style={{ fontWeight: 700, fontSize: '0.95rem', margin: '0.25rem 0 0.2rem' }}>Benchmark & Errors</div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '0.65rem', lineHeight: 1.4 }}>
+              Review the precomputed DS2 benchmark across 22 held-out patients (49,639 beats), confusion matrix, and limitations.
+            </div>
+            <Link to="/benchmark" className="btn btn-secondary btn-sm" style={{ width: '100%' }}>Open Benchmark →</Link>
+          </div>
+        </div>
+      </Card>
+
+      {/* 3. Key Experimental Benchmark Metrics & Academic Explanation */}
+      <div className="stats-grid" style={{ marginBottom: '1rem' }}>
         <StatCard
           label="DS2 Evaluated Beats"
           value={metrics ? metrics.evaluated_beats.toLocaleString() : '49,639'}
@@ -163,15 +216,15 @@ export default function Dashboard() {
           label="Overall Accuracy"
           value={metrics ? `${(metrics.accuracy * 100).toFixed(2)}%` : '90.93%'}
           badge={<span className="badge badge-success">45,137 Correct</span>}
-          subtext="Raw cohort accuracy"
+          subtext="Majority-class dominated"
           accentColor="#10b981"
         />
 
         <StatCard
           label="Balanced Accuracy"
           value={metrics ? `${(metrics.balanced_accuracy * 100).toFixed(2)}%` : '70.00%'}
-          badge={<span className="badge badge-cyan">Unweighted</span>}
-          subtext="Prevents majority dominance"
+          badge={<span className="badge badge-cyan">Unweighted Mean</span>}
+          subtext="Equal weight to N, S, V, F"
           accentColor="var(--accent-cyan)"
         />
 
@@ -192,10 +245,43 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* 3. Seven Interactive Application Workflow Cards */}
+      {/* Explanatory Callout: Interpreting Metrics for Teacher / Evaluation */}
+      <Card style={{ marginBottom: '1.25rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+          <div>
+            <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.35rem', fontSize: '0.92rem' }}>
+              📊 Distinguishing Live Record Analysis from the DS2 Benchmark
+            </div>
+            <p style={{ margin: 0 }}>
+              <strong>Live Analysis</strong> executes dynamically in real time on any chosen individual patient recording. In contrast, the <strong>DS2 Benchmark</strong> is the precomputed, locked scientific evaluation conducted once across all 22 unseen test patients (49,639 usable beats). Demonstrating a single record analysis illustrates the operational pipeline; presenting the DS2 benchmark proves generalized model performance.
+            </p>
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.35rem', fontSize: '0.92rem' }}>
+              ⚖️ Why Balanced Accuracy (70.00%) Matters Over Raw Accuracy (90.93%)
+            </div>
+            <p style={{ margin: 0 }}>
+              Because Normal sinus beats (Class N) constitute <strong>89.04%</strong> of the test cohort, a naive baseline guessing "Normal" for every heartbeat would achieve ~89% overall accuracy while detecting zero arrhythmias. Therefore, <strong>Balanced Accuracy (70.00%)</strong> and <strong>Macro F1 (0.6403)</strong> are the true scientific metrics evaluating minority-class arrhythmia detection.
+            </p>
+          </div>
+
+          <div>
+            <div style={{ fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.35rem', fontSize: '0.92rem' }}>
+              ⚠️ Documented Minority Class Limitations (Saved DS2 Results)
+            </div>
+            <p style={{ margin: 0 }}>
+              • <strong>Class S Precision (38.45%):</strong> While recall is 75.64% (catching ~3 of 4 S-beats), premature atrial contractions frequently share morphologic similarity with normal QRS complexes, leading to false positives.<br />
+              • <strong>Class F Recall (24.74%):</strong> 96 of 388 fusion beats detected. In the DS2 cohort, <strong>93.3% of all fusion beats (362 of 388)</strong> originate from a single patient (Record 213), causing severe sampling concentration.
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* 4. Interactive Application Modules Navigation */}
       <Card
-        title="Application Workflow & Analysis Studios"
-        subtitle="Step-by-step navigation through signal exploration, beat telemetry, prediction probabilities, and academic evaluation."
+        title="Application Navigation & Exploration Studios"
+        subtitle="Direct access to all individual signal exploration, beat telemetry, prediction probabilities, and academic evaluation modules."
       >
         <div
           style={{

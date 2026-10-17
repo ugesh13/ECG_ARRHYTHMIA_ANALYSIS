@@ -197,10 +197,18 @@ export default function ECGChart({
                 />
                 <YAxis
                   domain={['auto', 'auto']}
-                  width={52}
+                  width={56}
                   stroke="#64748b"
                   tick={{ fill: '#94a3b8', fontSize: 11 }}
                   tickFormatter={(v) => typeof v === 'number' ? v.toFixed(2) : v}
+                  label={{
+                    value: `Amplitude (${channel.unit || 'mV'})`,
+                    angle: -90,
+                    position: 'insideLeft',
+                    offset: 14,
+                    fill: '#64748b',
+                    fontSize: 11,
+                  }}
                 />
                 <Tooltip
                   content={<CustomECGTooltip unit={channel.unit || 'mV'} />}

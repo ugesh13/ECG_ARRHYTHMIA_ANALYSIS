@@ -2,7 +2,7 @@
 # Target: https://github.com/ugesh13/ECG_ARRHYTHMIA_ANALYSIS.git
 
 param (
-    [string]$CommitMessage = "Complete Phase 15 model persistence and inference engine",
+    [string]$CommitMessage = "feat: complete end-to-end ECG Arrhythmia Analysis platform (Phases 1-17)",
     [string]$Branch = "main"
 )
 
