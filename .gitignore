@@ -14,9 +14,16 @@ venv/
 node_modules/
 frontend/dist/
 
-# Runtime data (dataset is NOT committed)
+# Runtime data (raw dataset is NOT committed, except 6 demo records for Vercel)
 backend/data/mitbih/*
 !backend/data/mitbih/README.md
+!backend/data/mitbih/RECORDS
+!backend/data/mitbih/100.*
+!backend/data/mitbih/101.*
+!backend/data/mitbih/103.*
+!backend/data/mitbih/105.*
+!backend/data/mitbih/117.*
+!backend/data/mitbih/200.*
 backend/data/uploads/*
 !backend/data/uploads/.gitkeep
 backend/data/history.json

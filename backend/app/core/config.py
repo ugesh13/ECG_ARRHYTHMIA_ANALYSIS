@@ -18,6 +18,22 @@ def _list(env: str, default: str) -> list[str]:
     return [x.strip() for x in os.getenv(env, default).split(",") if x.strip()]
 
 
+def _is_serverless() -> bool:
+    return bool(os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME"))
+
+
+def _uploads_dir() -> Path:
+    if _is_serverless():
+        return Path("/tmp/ecg_uploads")
+    return _path("UPLOADS_DIR", "data/uploads")
+
+
+def _history_file() -> Path:
+    if _is_serverless():
+        return Path("/tmp/ecg_history.json")
+    return _path("HISTORY_FILE", "data/history.json")
+
+
 @dataclass(frozen=True)
 class Settings:
     app_name: str = os.getenv("APP_NAME", "ECG Arrhythmia Analysis API")
@@ -26,11 +42,11 @@ class Settings:
         default_factory=lambda: _list("CORS_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
     )
     mitbih_dir: Path = field(default_factory=lambda: _path("MITBIH_DIR", "data/mitbih"))
-    uploads_dir: Path = field(default_factory=lambda: _path("UPLOADS_DIR", "data/uploads"))
-    history_file: Path = field(default_factory=lambda: _path("HISTORY_FILE", "data/history.json"))
+    uploads_dir: Path = field(default_factory=_uploads_dir)
+    history_file: Path = field(default_factory=_history_file)
     models_dir: Path = field(default_factory=lambda: _path("MODELS_DIR", "models"))
     ml_results_dir: Path = field(default_factory=lambda: _path("ML_RESULTS_DIR", "data/processed/ml_results"))
-    max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "50"))
+    max_upload_mb: int = int(os.getenv("MAX_UPLOAD_MB", "4" if _is_serverless() else "50"))
     max_signal_points: int = int(os.getenv("MAX_SIGNAL_POINTS", "5000"))
     # WFDB record files accepted for upload. .xws is deliberately not accepted/used.
     allowed_extensions: tuple[str, ...] = (".hea", ".dat", ".atr")

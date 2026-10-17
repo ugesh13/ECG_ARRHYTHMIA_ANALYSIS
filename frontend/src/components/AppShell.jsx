@@ -14,6 +14,26 @@ export default function AppShell({ children }) {
       <div className="shell-body">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="shell-main" id="main-content">
+          <div
+            style={{
+              padding: '0.6rem 1rem',
+              marginBottom: '1rem',
+              borderRadius: 'var(--radius-sm, 6px)',
+              backgroundColor: 'rgba(234, 179, 8, 0.1)',
+              border: '1px solid rgba(234, 179, 8, 0.3)',
+              color: '#facc15',
+              fontSize: '0.82rem',
+              lineHeight: 1.5,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+            }}
+          >
+            <span style={{ fontSize: '1.1rem' }}>⚠️</span>
+            <span>
+              <strong>Academic &amp; Educational Viva Demonstration Only:</strong> This system classifies heartbeats located from expert reference annotations (<code>.atr</code>); it does not automatically detect heartbeat peaks from raw ECG signals and is not a certified medical diagnostic device.
+            </span>
+          </div>
           {children}
           <footer
             style={{
@@ -25,7 +45,7 @@ export default function AppShell({ children }) {
               color: 'var(--text-muted)',
             }}
           >
-            Academic demonstration only. Model outputs are for research/educational analysis and are not medical diagnoses.
+            Academic &amp; Educational Demonstration Only • ANSI/AAMI EC57:1998 Standard Mapping • Model outputs are research artifacts and do not constitute independent medical diagnoses.
           </footer>
         </main>
       </div>

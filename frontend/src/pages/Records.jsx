@@ -145,6 +145,21 @@ export default function Records() {
         </Link>
       }
     >
+      <div
+        style={{
+          padding: '0.65rem 1rem',
+          borderRadius: 'var(--radius-sm, 6px)',
+          backgroundColor: 'rgba(56, 189, 248, 0.08)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          color: 'var(--text-secondary, #94a3b8)',
+          fontSize: '0.82rem',
+          lineHeight: 1.5,
+          marginBottom: '1rem',
+        }}
+      >
+        <strong style={{ color: 'var(--accent-cyan, #38bdf8)' }}>ℹ️ Demo Dataset Notice:</strong> For this educational demonstration, exactly 6 representative MIT-BIH recordings (<code>100</code>, <code>101</code>, <code>103</code>, <code>105</code>, <code>117</code>, <code>200</code>) are bundled with the serverless function deployment to comply with Vercel's 50 MB compressed package ceiling. Complete population-level metrics across all 22 held-out DS2 test records (49,639 evaluated beats) were computed during Phase 8/9 and are verified on the <strong>Benchmark Dashboard</strong>.
+      </div>
+
       <Card>
         {/* Search & Filter Toolbar */}
         <div
@@ -160,7 +175,7 @@ export default function Records() {
           <div style={{ display: 'flex', gap: '0.5rem', flex: 1, minWidth: '240px', maxWidth: '420px' }}>
             <input
               type="text"
-              placeholder="Search record ID (e.g. 100, 208)..."
+              placeholder="Search record ID (e.g. 100, 200)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
@@ -176,11 +191,11 @@ export default function Records() {
 
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
             {[
-              { id: 'ALL', label: 'All Records' },
-              { id: 'DS2', label: 'DS2 Test (22)' },
-              { id: 'DS1_TRAIN', label: 'DS1 Train (16)' },
-              { id: 'DS1_VAL', label: 'DS1 Val (6)' },
-              { id: 'PACED', label: 'Paced (4)' },
+              { id: 'ALL', label: `All Loaded (${data?.records?.length || 0})` },
+              { id: 'DS2', label: `DS2 Test (${data?.records?.filter((r) => DS2_TEST.has(r.record_id)).length || 0})` },
+              { id: 'DS1_TRAIN', label: `DS1 Train (${data?.records?.filter((r) => DS1_TRAIN.has(r.record_id)).length || 0})` },
+              { id: 'DS1_VAL', label: `DS1 Val (${data?.records?.filter((r) => DS1_VAL.has(r.record_id)).length || 0})` },
+              { id: 'PACED', label: `Paced (${data?.records?.filter((r) => PACED.has(r.record_id)).length || 0})` },
             ].map((tab) => (
               <button
                 key={tab.id}

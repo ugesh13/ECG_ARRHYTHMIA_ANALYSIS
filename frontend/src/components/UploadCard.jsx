@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 
 const ALLOWED = ['.hea', '.dat', '.atr'];
+export const MAX_UPLOAD_BYTES = 4.5 * 1024 * 1024; // 4.5 MB Vercel Serverless request body limit
 const formatSize = (b) => (b < 1024 * 1024 ? `${(b / 1024).toFixed(1)} KB` : `${(b / 1024 / 1024).toFixed(2)} MB`);
 const extOf = (n) => n.slice(n.lastIndexOf('.')).toLowerCase();
 
@@ -11,6 +12,11 @@ export function validateFiles(files) {
   if (bad) return `Unsupported file: ${bad.name}. Allowed: ${ALLOWED.join(', ')}.`;
   const exts = files.map((f) => extOf(f.name));
   if (!exts.includes('.hea') || !exts.includes('.dat')) return 'Both a .hea header file and a .dat signal file are required.';
+
+  const totalSize = files.reduce((acc, f) => acc + (f.size || 0), 0);
+  if (totalSize > MAX_UPLOAD_BYTES) {
+    return `Total upload size (${formatSize(totalSize)}) exceeds the Vercel serverless limit of 4.5 MB. Standard 30-minute MIT-BIH records (~1.96 MB) fit easily. For larger recordings, please test using the preloaded MIT-BIH records.`;
+  }
   return null;
 }
 
@@ -37,6 +43,21 @@ export default function UploadCard({ onUpload, progress, status, error }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
         <h2 style={{ margin: 0 }}>Upload ECG Record</h2>
         <span className="badge badge-default" style={{ fontSize: '0.75rem' }}>PhysioNet WFDB Format</span>
+      </div>
+
+      <div
+        style={{
+          padding: '0.65rem 0.9rem',
+          borderRadius: 'var(--radius-sm, 6px)',
+          backgroundColor: 'rgba(56, 189, 248, 0.08)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          color: 'var(--text-secondary, #94a3b8)',
+          fontSize: '0.8rem',
+          lineHeight: 1.5,
+          marginBottom: '1rem',
+        }}
+      >
+        <strong style={{ color: 'var(--accent-cyan, #38bdf8)' }}>ℹ️ Vercel Serverless Demo Storage & Payload Notice:</strong> Uploaded WFDB records are written to temporary serverless instance storage (<code>/tmp</code>) and subject to Vercel's <strong>4.5 MB function payload limit</strong>. Standard 30-minute MIT-BIH recordings (~1.96 MB total) fit easily. Because serverless instances are stateless, uploads do not persist permanently across restarts. For reliable viva evaluation, preloaded MIT-BIH recordings are permanently available.
       </div>
 
       <div

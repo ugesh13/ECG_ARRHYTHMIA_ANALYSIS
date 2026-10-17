@@ -1,0 +1,30 @@
+# Vercel Deployment Ignore
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+
+# Large processed beat matrix (81 MB)
+backend/data/processed/mitbih_processed_beats.npz
+
+# Local uploads and session history
+backend/data/uploads/*
+!backend/data/uploads/.gitkeep
+backend/data/history.json
+
+# Local node_modules (built by Vercel)
+frontend/node_modules
+
+# MIT-BIH raw records: bundle 6 representative demo records (100, 101, 103, 105, 117, 200)
+# to stay safely under Vercel's 50 MB compressed function ceiling
+backend/data/mitbih/*
+!backend/data/mitbih/README.md
+!backend/data/mitbih/RECORDS
+!backend/data/mitbih/100.*
+!backend/data/mitbih/101.*
+!backend/data/mitbih/103.*
+!backend/data/mitbih/105.*
+!backend/data/mitbih/117.*
+!backend/data/mitbih/200.*

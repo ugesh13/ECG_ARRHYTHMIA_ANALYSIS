@@ -15,9 +15,11 @@ from app.services.inference_service import get_inference_service
 setup_logging(settings.log_level)
 logger = logging.getLogger(__name__)
 
-settings.mitbih_dir.mkdir(parents=True, exist_ok=True)
-settings.uploads_dir.mkdir(parents=True, exist_ok=True)
-settings.models_dir.mkdir(parents=True, exist_ok=True)
+for target_dir in (settings.mitbih_dir, settings.uploads_dir, settings.models_dir):
+    try:
+        target_dir.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        pass
 
 
 @asynccontextmanager
@@ -42,6 +44,8 @@ app.add_middleware(
 
 for r in (health, upload, ecg, analysis, history, model, experiments):
     app.include_router(r.router, prefix="/api")
+    # Also register without prefix so serverless function routes match /api/... and /... identically
+    app.include_router(r.router)
 
 
 @app.exception_handler(AppError)
@@ -54,3 +58,34 @@ async def unhandled_handler(_: Request, exc: Exception):
     logger.exception("Unhandled error")  # full trace stays in server logs only
     return JSONResponse(status_code=500, content={"error": "internal_error",
                                                   "message": "An internal error occurred."})
+
+
+# -----------------------------------------------------------------------------
+# Frontend Static Files & SPA Catch-All Route
+# -----------------------------------------------------------------------------
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+# Locate frontend/dist relative to project root
+_project_root = Path(__file__).resolve().parents[2]
+frontend_dist = (_project_root / "frontend" / "dist").resolve()
+
+if frontend_dist.is_dir():
+    assets_dir = frontend_dist / "assets"
+    if assets_dir.is_dir():
+        app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+    @app.get("/{full_path:path}", include_in_schema=False)
+    async def serve_spa(full_path: str):
+        # Do not catch unhandled /api calls as SPA routes
+        if full_path.startswith("api/") or full_path == "api":
+            return JSONResponse(status_code=404, content={"error": "not_found", "message": "API route not found."})
+        target_file = (frontend_dist / full_path).resolve()
+        if full_path and target_file.is_file() and str(target_file).startswith(str(frontend_dist)):
+            return FileResponse(target_file)
+        index_file = frontend_dist / "index.html"
+        if index_file.is_file():
+            return FileResponse(index_file)
+        return JSONResponse(status_code=404, content={"error": "frontend_not_built", "message": "Frontend build index.html not found."})
+
