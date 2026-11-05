@@ -64,7 +64,7 @@ export default function PredictionCard({ beat = null, recordId = null }) {
 
       <div className="grid" style={{ marginBottom: '1rem' }}>
         <div style={{ background: 'rgba(0, 229, 255, 0.04)', padding: '1rem', borderRadius: 'var(--radius-sm)', border: '2px solid rgba(0, 229, 255, 0.25)' }}>
-          <div className="stat-title" style={{ color: 'var(--accent-cyan)' }}>Model Prediction (Phase 8 RF)</div>
+          <div className="stat-title" style={{ color: 'var(--accent-cyan)' }}>Model Prediction (frozen Random Forest)</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.2rem' }}>
             <span style={{ fontSize: '1.4rem', fontWeight: 700, fontFamily: 'Georgia, serif' }}>
               {isEdge ? 'Edge Beat' : `Class ${beat.predicted_class}`}
@@ -82,7 +82,7 @@ export default function PredictionCard({ beat = null, recordId = null }) {
             </div>
           ) : (
             <div style={{ marginTop: '0.5rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-              Note: Confidence is the model's tree-voting proportion for Class {beat.predicted_class}, representing algorithmic certainty within the 209-D space, not clinical certainty.
+              Note: Confidence is the Random Forest's predicted probability: the average of the class probabilities given by its 200 trees. It reflects the model's certainty in the 209-feature space, not medical certainty.
             </div>
           )}
         </div>

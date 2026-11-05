@@ -43,7 +43,7 @@ export default function BeatTableCard({ beats = [], selectedBeatIndex = null, on
         <div>
           <h2 style={{ margin: 0 }}>Beat-by-Beat Arrhythmia Table</h2>
           <p className="muted" style={{ margin: '0.2rem 0 0', fontSize: '0.85rem' }}>
-            Showing {filteredBeats.length.toLocaleString()} of {beats.length.toLocaleString()} detected heartbeats.
+            Showing {filteredBeats.length.toLocaleString()} of {beats.length.toLocaleString()} annotated heartbeats.
             Click any row to inspect calibrated probabilities.
           </p>
         </div>

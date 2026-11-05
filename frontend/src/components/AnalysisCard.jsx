@@ -24,7 +24,7 @@ export default function AnalysisCard({
         <div>
           <h2 style={{ margin: 0 }}>Offline Beat-Level Arrhythmia Classification</h2>
           <p className="muted" style={{ margin: '0.2rem 0 0', fontSize: '0.85rem' }}>
-            Frozen Phase 8 Random Forest (209 features: 200 morphology from preferred lead + 9 retrospective bidirectional RR intervals).
+            Frozen Random Forest (209 features: 200 morphology from preferred lead + 9 retrospective bidirectional RR intervals).
           </p>
         </div>
 
@@ -164,17 +164,17 @@ export default function AnalysisCard({
               lineHeight: 1.5,
               margin: '0.75rem 0 1rem',
             }}>
-              <strong style={{ color: 'var(--accent-cyan)' }}>Scientific Pipeline Note on Record 100 Beat Counts:</strong> Live analysis classifies <strong>2,271 beats</strong> (2,273 continuous WFDB annotations minus 2 boundary edge beats without complete bidirectional context). In the frozen precomputed DS2 benchmark table, Record 100 lists <strong>2,270 evaluated beats</strong>. This exact 1-beat difference occurs because the offline dataset builder excluded Beat 0 (at sample 18) due to recording-start boundary limits (18 - 90 pre-samples &lt; 0), after which the offline Phase 8 evaluator dropped the first and last beats of the preprocessed NPZ array. Both authoritative counts are mathematically accounted for and preserved.
+              <strong style={{ color: 'var(--accent-cyan)' }}>Scientific Pipeline Note on Record 100 Beat Counts:</strong> Live analysis classifies <strong>2,271 beats</strong> (2,273 continuous WFDB annotations minus 2 boundary edge beats without complete bidirectional context). In the frozen precomputed DS2 benchmark table, Record 100 lists <strong>2,270 evaluated beats</strong>. This exact 1-beat difference occurs because the offline dataset builder excluded Beat 0 (at sample 18) due to recording-start boundary limits (18 - 90 pre-samples &lt; 0), after which the offline evaluator dropped the first and last beats of the preprocessed NPZ array. Both authoritative counts are mathematically accounted for and preserved.
             </div>
           )}
 
           {/* Arrhythmia Category Aggregate Breakdown */}
           <h3 style={{ fontSize: '0.95rem', margin: '1.25rem 0 0.5rem', fontWeight: 600 }}>
-            Detected Heartbeat Categories & Burden (ANSI/AAMI EC57)
+            Annotated Heartbeat Categories & Burden (ANSI/AAMI EC57)
           </h3>
           <div className="stats-grid">
             <div className="stat-box stat-total">
-              <div className="stat-title">Detected Beats</div>
+              <div className="stat-title">Annotated Beats</div>
               <div className="stat-value">{analysis.total_detected_beats.toLocaleString()}</div>
               <div className="stat-sub">{analysis.total_classified_beats.toLocaleString()} classified</div>
             </div>

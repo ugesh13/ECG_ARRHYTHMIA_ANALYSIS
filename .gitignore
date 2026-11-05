@@ -38,3 +38,22 @@ Thumbs.db
 
 # Large processed ECG dataset
 backend/data/processed/mitbih_processed_beats.npz
+
+# Local datasets, backup folders & screenshots
+mit-bih-arrhythmia-database-1.0.0/
+mitbih_extra_records_backup/
+screenshot_*.png
+ECG_Anomaly_Detection/
+.vite/
+frontend/.vite/
+
+# Workspace sibling projects & personal documents
+.kilo/
+Anitgravity-Research-Paper/
+Job Tracker/
+rhythm-Habit Tracker/
+secureclass/
+ShortURL(Project1)/
+SecureClass-RoughSheet.docx
+ugesh.pdf
+notes.md

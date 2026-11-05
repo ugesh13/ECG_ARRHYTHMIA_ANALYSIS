@@ -72,7 +72,7 @@ export default function UploadECG() {
             }}>
               <strong>Upload Mode Rules:</strong>
               <div style={{ marginTop: '0.2rem' }}>• <code>.hea + .dat</code> → Continuous waveform viewer enabled.</div>
-              <div>• <code>.hea + .dat + .atr</code> → Waveform viewer + automated 209-D beat classification enabled.</div>
+              <div>• <code>.hea + .dat + .atr</code> → Waveform viewer + 209-D beat classification enabled.</div>
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>
               All uploaded files must share the exact same base record name (e.g., <code>patient_01.hea</code>, <code>patient_01.dat</code>, and <code>patient_01.atr</code>).

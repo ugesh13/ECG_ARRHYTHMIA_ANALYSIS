@@ -88,7 +88,7 @@ export default function History() {
   return (
     <PageContainer
       title="Upload & Analysis History"
-      subtitle="Complete chronological audit trail of processed recordings and uploaded WFDB clinical data."
+      subtitle="Complete chronological audit trail of processed recordings and uploaded WFDB ECG data."
       breadcrumbs={
         <>
           <Link to="/">Dashboard</Link>
@@ -102,6 +102,21 @@ export default function History() {
         </Link>
       }
     >
+      <div
+        style={{
+          padding: '0.65rem 1rem',
+          borderRadius: 'var(--radius-sm, 6px)',
+          backgroundColor: 'rgba(56, 189, 248, 0.08)',
+          border: '1px solid rgba(56, 189, 248, 0.25)',
+          color: 'var(--text-secondary, #94a3b8)',
+          fontSize: '0.82rem',
+          lineHeight: 1.5,
+          marginBottom: '1rem',
+        }}
+      >
+        <strong style={{ color: 'var(--accent-cyan, #38bdf8)' }}>ℹ️ Ephemeral Session History:</strong> Audit logs are written to temporary function storage (<code>/tmp/ecg_history.json</code>). When Vercel serverless function instances recycle or redeploy, this log is reset. Persistent external database storage (such as PostgreSQL or Vercel Blob) is intentionally omitted for this standalone educational demonstration.
+      </div>
+
       <Card>
         <DataTable
           columns={columns}

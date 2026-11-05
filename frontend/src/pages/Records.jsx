@@ -157,7 +157,7 @@ export default function Records() {
           marginBottom: '1rem',
         }}
       >
-        <strong style={{ color: 'var(--accent-cyan, #38bdf8)' }}>ℹ️ Demo Dataset Notice:</strong> For this educational demonstration, exactly 6 representative MIT-BIH recordings (<code>100</code>, <code>101</code>, <code>103</code>, <code>105</code>, <code>117</code>, <code>200</code>) are bundled with the serverless function deployment to comply with Vercel's 50 MB compressed package ceiling. Complete population-level metrics across all 22 held-out DS2 test records (49,639 evaluated beats) were computed during Phase 8/9 and are verified on the <strong>Benchmark Dashboard</strong>.
+        <strong style={{ color: 'var(--accent-cyan, #38bdf8)' }}>ℹ️ Demo Dataset Notice:</strong> For this demonstration, 6 representative MIT-BIH recordings (100, 101, 103, 105, 117, 200) are bundled so the hosted site stays small. The benchmark numbers cover all 22 held-out DS2 recordings and come from the saved evaluation.
       </div>
 
       <Card>

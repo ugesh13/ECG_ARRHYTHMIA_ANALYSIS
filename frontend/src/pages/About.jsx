@@ -21,10 +21,10 @@ export default function About() {
         <Card title="Project Title & Objective">
           <div style={{ color: 'var(--text-secondary)', lineHeight: 1.65, fontSize: '0.88rem' }}>
             <p style={{ marginBottom: '0.75rem' }}>
-              <strong>Project:</strong> ECG Signal Processing and Arrhythmia Detection Using Machine Learning
+              <strong>Project:</strong> ECG Signal Processing and Arrhythmia Classification Using Machine Learning
             </p>
             <p>
-              <strong>Objective:</strong> To develop an integrated, reproducible, and interactive academic software platform for multi-lead electrocardiogram (ECG) telemetry, R-peak segmentation, baseline noise suppression, morphology extraction, temporal interval modeling, and automated beat-level classification into standard diagnostic categories.
+              <strong>Objective:</strong> To build an inspectable machine-learning workflow that classifies expert-annotated heartbeats from the MIT-BIH Arrhythmia Database into the four AAMI groups (N, S, V, F) using lead MLII, baseline removal, a 200-sample beat window and 9 RR timing features, and to report honestly how well it performs on unseen recordings.
             </p>
           </div>
         </Card>
@@ -56,7 +56,7 @@ export default function About() {
               <strong>Hyperparameters:</strong> 200 estimators, maximum tree depth of 30, minimum split size of 5 samples, square-root feature subsampling (`max_features = 'sqrt'`), Gini impurity splitting criterion.
             </p>
             <p>
-              <strong>Evaluation State:</strong> Frozen Phase 8 model persisted with Joblib and evaluated across all 49,639 held-out DS2 beats.
+              <strong>Evaluation State:</strong> Frozen Random Forest persisted with Joblib and evaluated across all 49,639 held-out DS2 beats.
             </p>
           </div>
         </Card>
@@ -150,13 +150,13 @@ export default function About() {
               <li><strong>Expert Annotation Grounding:</strong> Beat R-peak positions are provided by certified expert <code>.atr</code> annotations. No independent automated QRS detector is implemented.</li>
               <li><strong>Retrospective / Offline Inference:</strong> Bidirectional RR timing relies on the succeeding beat (RR<sub>next</sub>), which requires completed temporal recording rather than real-time monitoring.</li>
               <li><strong>Preferred Lead Processing:</strong> The classifier processes lead MLII exclusively, even though multi-channel signals can be visualized in the waveform studio.</li>
-              <li><strong>Fusion Beat (Class F) Scarcity:</strong> Only 388 fusion beats exist in the DS2 test cohort, with 74% concentrated in Record 213, constraining inter-patient generalization.</li>
+              <li><strong>Fusion Beat (Class F) Scarcity:</strong> Only 388 fusion beats exist in the DS2 test cohort, with 93.3% (362 of 388) concentrated in Record 213, constraining inter-patient generalization.</li>
             </ul>
           </div>
         </Card>
 
         {/* 8. Student Presentation Glossary */}
-        <Card title="Student Presentation Glossary (Key Concepts)">
+        <Card title="Glossary (Key Concepts)">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem' }}>
             <div style={{ padding: '0.75rem 1rem', backgroundColor: 'var(--bg-surface-2)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid var(--accent-cyan)' }}>
               <div style={{ fontWeight: 700, color: 'var(--accent-cyan)', fontSize: '0.9rem' }}>Annotation</div>

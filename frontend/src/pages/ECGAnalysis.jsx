@@ -12,6 +12,7 @@ import LoadingState from '../components/LoadingState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
 import PageContainer from '../components/PageContainer.jsx';
 import ECGLegend from '../components/ECGLegend.jsx';
+import NotBundledCard from '../components/NotBundledCard.jsx';
 
 const WINDOWS = [5, 10, 30];
 
@@ -79,6 +80,7 @@ export default function ECGAnalysis() {
   const [analysis, setAnalysis] = useState(null);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisError, setAnalysisError] = useState(null);
+  const [analysisNotFound, setAnalysisNotFound] = useState(false);
   const [selectedBeat, setSelectedBeat] = useState(null);
 
   // Clear previous analysis immediately on record switch (Step 14)
@@ -86,11 +88,12 @@ export default function ECGAnalysis() {
     setWindowStart(0);
     setAnalysis(null);
     setAnalysisError(null);
+    setAnalysisNotFound(false);
     setSelectedBeat(null);
   }, [recordId]);
 
   // Load WFDB raw signal and metadata
-  const { metadata, signal, annotations, loading, error, reload } =
+  const { metadata, signal, annotations, loading, error, notFound, reload } =
     useECG(recordId, { windowStart, windowLength });
 
   // Trigger automated full-record analysis
@@ -98,6 +101,7 @@ export default function ECGAnalysis() {
     if (!recordId) return;
     setAnalysisLoading(true);
     setAnalysisError(null);
+    setAnalysisNotFound(false);
     try {
       const res = await analyzeECGRecord(recordId, forceRefresh);
       setAnalysis(res);
@@ -107,7 +111,11 @@ export default function ECGAnalysis() {
         setSelectedBeat(firstEctopic || res.beats[0]);
       }
     } catch (e) {
-      setAnalysisError(getErrorMessage(e));
+      if (e?.response?.status === 404) {
+        setAnalysisNotFound(true);
+      } else {
+        setAnalysisError(getErrorMessage(e));
+      }
     } finally {
       setAnalysisLoading(false);
     }
@@ -127,6 +135,24 @@ export default function ECGAnalysis() {
         }
       >
         <RecordPicker />
+      </PageContainer>
+    );
+  }
+
+  if (notFound || analysisNotFound) {
+    return (
+      <PageContainer
+        title="ECG Record Arrhythmia Analysis"
+        subtitle={`Record ${recordId} Analysis`}
+        breadcrumbs={
+          <>
+            <Link to="/records">Records</Link>
+            <span>/</span>
+            <span>Record {recordId} Analysis</span>
+          </>
+        }
+      >
+        <NotBundledCard />
       </PageContainer>
     );
   }
@@ -186,7 +212,7 @@ export default function ECGAnalysis() {
           <h2 style={{ margin: 0 }}>Continuous ECG Waveform</h2>
           {analysis && (
             <span className="muted" style={{ fontSize: '0.8rem' }}>
-              Overlaid with Phase 8 model predictions
+              Overlaid with frozen Random Forest model predictions
             </span>
           )}
         </div>

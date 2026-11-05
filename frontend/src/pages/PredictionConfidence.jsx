@@ -14,6 +14,7 @@ import ClassBadge from '../components/ClassBadge.jsx';
 import ECGLegend from '../components/ECGLegend.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
+import NotBundledCard from '../components/NotBundledCard.jsx';
 
 export default function PredictionConfidence() {
   const { recordId, beatIndex } = useParams();
@@ -25,6 +26,7 @@ export default function PredictionConfidence() {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [jumpInput, setJumpInput] = useState('');
 
   // 1. Fetch Beat Details
@@ -32,6 +34,7 @@ export default function PredictionConfidence() {
     let active = true;
     setLoading(true);
     setError(null);
+    setNotFound(false);
 
     getBeatDetail(recordId, currentBeatIdx)
       .then((res) => {
@@ -41,7 +44,12 @@ export default function PredictionConfidence() {
         }
       })
       .catch((err) => {
-        if (active) setError(getErrorMessage(err));
+        if (active) {
+          if (err?.response?.status === 404) {
+            setNotFound(true);
+          }
+          setError(getErrorMessage(err));
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -94,6 +102,24 @@ export default function PredictionConfidence() {
       <LoadingState
         label={`Computing posterior probabilities and decision confidence for Beat #${currentBeatIdx}…`}
       />
+    );
+  }
+
+  if (notFound) {
+    return (
+      <PageContainer
+        title="Prediction Confidence Studio"
+        subtitle={`Model Uncertainty & Tree Probability Distributions • Record ${recordId}`}
+        breadcrumbs={
+          <>
+            <Link to="/records">Records</Link>
+            <span>/</span>
+            <span>Record {recordId} Beat #{currentBeatIdx}</span>
+          </>
+        }
+      >
+        <NotBundledCard />
+      </PageContainer>
     );
   }
 
@@ -533,7 +559,7 @@ export default function PredictionConfidence() {
                 paddingTop: '0.25rem',
               }}
             >
-              Probabilities represent normalized ensemble vote distributions across all 200 decision trees in the frozen Phase 8 Random Forest.
+              Probabilities are the average of the 200 trees' class probabilities.
             </div>
           </div>
         ) : (
@@ -554,7 +580,7 @@ export default function PredictionConfidence() {
       {/* 5. Model Provenance & Architecture Section */}
       <Card
         title="Model Provenance & Classification Engine"
-        subtitle="Frozen machine learning hyperparameters and feature specifications established in Phase 8."
+        subtitle="Frozen machine learning hyperparameters and feature specifications."
       >
         <div
           style={{
@@ -609,7 +635,7 @@ export default function PredictionConfidence() {
             <div className="stat-value font-mono" style={{ fontSize: '1.1rem', color: '#a855f7' }}>
               {modelInfo?.status || 'LOCKED_FOR_EVALUATION'}
             </div>
-            <div className="stat-sub">Phase 8 Locked Checkpoint</div>
+            <div className="stat-sub">Frozen Random Forest Checkpoint</div>
           </div>
         </div>
 
@@ -645,7 +671,7 @@ export default function PredictionConfidence() {
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
           <p>
-            • <strong>Ensemble Vote Aggregation:</strong> Each decision tree independently classifies the 209-D feature vector. Posterior probabilities reflect the proportion of the 200 trees that cast their vote for each respective diagnostic category.
+            • <strong>Ensemble Probability Aggregation:</strong> Confidence is the Random Forest's predicted probability: the average of the class probabilities given by its 200 trees. It reflects the model's certainty in the 209-feature space, not medical certainty.
           </p>
           <p>
             • <strong>Decision Margin:</strong> The gap between top-1 ({top1Prob.toFixed(4)}) and top-2 ({top2Prob.toFixed(4)}) probabilities ({decisionMargin.toFixed(4)}) quantifies separation clarity. High margins indicate robust agreement among ensemble estimators.

@@ -26,8 +26,27 @@ export default function Dashboard() {
     let active = true;
     setLoading(true);
 
+    const checkHealthWithRetry = async (retries = 3, gapMs = 2000) => {
+      let lastErr = null;
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        if (!active) return null;
+        try {
+          return await checkHealth();
+        } catch (err) {
+          lastErr = err;
+          if (attempt < retries) {
+            await new Promise((res) => setTimeout(res, gapMs));
+          }
+        }
+      }
+      throw lastErr;
+    };
+
     Promise.all([
-      checkHealth().catch(() => ({ status: 'unavailable', model_loaded: false })),
+      checkHealthWithRetry().catch((err) => {
+        if (active) setError(getErrorMessage(err));
+        return { status: 'unavailable', model_loaded: false };
+      }),
       listRecords().catch(() => ({ count: 0, records: [] })),
       getModelInfo().catch(() => null),
       getBenchmark().catch(() => null),
@@ -38,7 +57,6 @@ export default function Dashboard() {
         setRecords(r);
         setModelInfo(m);
         setBenchmark(b);
-        setError(null);
       })
       .catch((err) => {
         if (active) setError(getErrorMessage(err));
@@ -54,14 +72,17 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <LoadingState label="Connecting to ECG Analysis Engine and retrieving experimental benchmarks…" />
+      <LoadingState
+        label="Connecting to ECG Analysis Engine and retrieving experimental benchmarks…"
+        subtext="First load can take a few seconds while the server starts."
+      />
     );
   }
 
   if (error) {
     return (
       <PageContainer
-        title="ECG Signal Processing & Arrhythmia Detection"
+        title="ECG Signal Processing & Arrhythmia Classification"
         subtitle="Error connecting to system services."
       >
         <ErrorState message={error} onRetry={() => window.location.reload()} />
@@ -75,7 +96,7 @@ export default function Dashboard() {
 
   return (
     <PageContainer
-      title="ECG Signal Processing & Arrhythmia Detection"
+      title="ECG Signal Processing & Arrhythmia Classification"
       subtitle="Interactive ECG signal processing, beat-level analysis, and machine-learning evaluation using the MIT-BIH Arrhythmia Database."
       actions={
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
@@ -262,7 +283,7 @@ export default function Dashboard() {
               ⚖️ Why Balanced Accuracy (70.00%) Matters Over Raw Accuracy (90.93%)
             </div>
             <p style={{ margin: 0 }}>
-              Because Normal sinus beats (Class N) constitute <strong>89.04%</strong> of the test cohort, a naive baseline guessing "Normal" for every heartbeat would achieve ~89% overall accuracy while detecting zero arrhythmias. Therefore, <strong>Balanced Accuracy (70.00%)</strong> and <strong>Macro F1 (0.6403)</strong> are the true scientific metrics evaluating minority-class arrhythmia detection.
+              Because Normal sinus beats (Class N) constitute <strong>89.04%</strong> of the test cohort, a naive baseline guessing "Normal" for every heartbeat would achieve ~89% overall accuracy while identifying zero arrhythmias. Therefore, <strong>Balanced Accuracy (70.00%)</strong> and <strong>Macro F1 (0.6403)</strong> are the true scientific metrics evaluating minority-class arrhythmia detection.
             </p>
           </div>
 
@@ -272,7 +293,7 @@ export default function Dashboard() {
             </div>
             <p style={{ margin: 0 }}>
               • <strong>Class S Precision (38.45%):</strong> While recall is 75.64% (catching ~3 of 4 S-beats), premature atrial contractions frequently share morphologic similarity with normal QRS complexes, leading to false positives.<br />
-              • <strong>Class F Recall (24.74%):</strong> 96 of 388 fusion beats detected. In the DS2 cohort, <strong>93.3% of all fusion beats (362 of 388)</strong> originate from a single patient (Record 213), causing severe sampling concentration.
+              • <strong>Class F Recall (24.74%):</strong> 96 of 388 fusion beats correctly identified. In the DS2 cohort, <strong>93.3% of all fusion beats (362 of 388)</strong> originate from a single patient (Record 213), causing severe sampling concentration.
             </p>
           </div>
         </div>
@@ -547,7 +568,7 @@ export default function Dashboard() {
 
         <Card
           title="Model Configuration & Provenance"
-          subtitle="Details of the frozen Phase 8 Random Forest classifier."
+          subtitle="Details of the frozen Random Forest classifier."
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.4rem' }}>

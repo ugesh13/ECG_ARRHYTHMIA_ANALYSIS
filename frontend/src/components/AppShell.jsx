@@ -31,7 +31,7 @@ export default function AppShell({ children }) {
           >
             <span style={{ fontSize: '1.1rem' }}>⚠️</span>
             <span>
-              <strong>Academic &amp; Educational Viva Demonstration Only:</strong> This system classifies heartbeats located from expert reference annotations (<code>.atr</code>); it does not automatically detect heartbeat peaks from raw ECG signals and is not a certified medical diagnostic device.
+              <strong>Research demonstration only:</strong> This system classifies heartbeats located from expert reference annotations (<code>.atr</code>); it does not automatically detect heartbeat peaks from raw ECG signals and is not a certified medical diagnostic device.
             </span>
           </div>
           {children}

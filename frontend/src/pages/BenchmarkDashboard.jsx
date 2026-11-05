@@ -18,6 +18,7 @@ import {
   getGeneralization,
   getModelInfo,
   getRecordBreakdown,
+  listRecords,
 } from '../services/api.js';
 import { AAMI_CLASSES } from '../utils/aamiTaxonomy.js';
 import PageContainer from '../components/PageContainer.jsx';
@@ -80,6 +81,7 @@ export default function BenchmarkDashboard() {
   const [recordBreakdown, setRecordBreakdown] = useState(null);
   const [artifacts, setArtifacts] = useState(null);
   const [modelInfo, setModelInfo] = useState(null);
+  const [bundledRecords, setBundledRecords] = useState(['100', '101', '103', '105', '117', '200']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -105,8 +107,9 @@ export default function BenchmarkDashboard() {
       getRecordBreakdown().catch(() => null),
       getExperimentArtifacts().catch(() => null),
       getModelInfo().catch(() => null),
+      listRecords().catch(() => null),
     ])
-      .then(([bRes, gRes, dRes, rRes, aRes, mRes]) => {
+      .then(([bRes, gRes, dRes, rRes, aRes, mRes, recRes]) => {
         if (!active) return;
         setBenchmark(bRes);
         setGeneralization(gRes);
@@ -114,6 +117,9 @@ export default function BenchmarkDashboard() {
         setRecordBreakdown(rRes);
         setArtifacts(aRes);
         setModelInfo(mRes);
+        if (recRes?.records) {
+          setBundledRecords(recRes.records.map((r) => String(r.record_id)));
+        }
         setError(null);
       })
       .catch((err) => {
@@ -190,7 +196,7 @@ export default function BenchmarkDashboard() {
 
   if (loading) {
     return (
-      <LoadingState label="Loading frozen Phase 8 DS2 experimental benchmark metrics and locked results…" />
+      <LoadingState label="Loading saved DS2 experimental benchmark metrics and locked results…" />
     );
   }
 
@@ -349,7 +355,7 @@ export default function BenchmarkDashboard() {
           </div>
           <div style={{ color: 'var(--text-secondary)', lineHeight: 1.5 }}>
             • <strong>Class S Precision (38.45%):</strong> Diluted because even minor false positives from massive N influx create 2,222 false alarms despite 75.64% recall.<br />
-            • <strong>Class F Recall (24.74%):</strong> Severe real-world scarcity (388 total beats; 74% concentrated in Record 213) limits morphological generalizability.
+            • <strong>Class F Recall (24.74%):</strong> Severe real-world scarcity (388 total beats; 93.3% concentrated in Record 213) limits morphological generalizability.
           </div>
         </div>
       </div>
@@ -490,7 +496,7 @@ export default function BenchmarkDashboard() {
           </div>
         </div>
         <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-          Source: saved Phase 8 DS2 evaluation artifacts.
+          Source: saved DS2 evaluation artifacts.
         </div>
       </Card>
 
@@ -664,7 +670,7 @@ export default function BenchmarkDashboard() {
             </div>
           </div>
           <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-            Source: saved Phase 8 DS2 evaluation artifacts.
+            Source: saved DS2 evaluation artifacts.
           </div>
         </Card>
       )}
@@ -758,7 +764,7 @@ export default function BenchmarkDashboard() {
             </div>
           </div>
           <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-            Source: saved Phase 8 DS2 evaluation artifacts.
+            Source: saved DS2 evaluation artifacts.
           </div>
         </Card>
       )}
@@ -842,7 +848,7 @@ export default function BenchmarkDashboard() {
             </div>
           </div>
           <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-            Source: saved Phase 8 DS2 evaluation artifacts.
+            Source: saved DS2 evaluation artifacts.
           </div>
         </Card>
       )}
@@ -924,9 +930,26 @@ export default function BenchmarkDashboard() {
                       {r.f_recall !== null ? (r.f_recall * 100).toFixed(1) : '—'}% ({r.f_support})
                     </td>
                     <td style={{ textAlign: 'right' }}>
-                      <Link to={`/waveform/${r.record_id}`} className="btn btn-outline btn-sm">
-                        Waveform →
-                      </Link>
+                      {bundledRecords.includes(String(r.record_id)) ? (
+                        <Link to={`/waveform/${r.record_id}`} className="btn btn-outline btn-sm">
+                          Waveform →
+                        </Link>
+                      ) : (
+                        <span
+                          className="btn btn-sm"
+                          style={{
+                            opacity: 0.5,
+                            cursor: 'not-allowed',
+                            color: 'var(--text-muted)',
+                            border: '1px solid var(--border-subtle)',
+                            backgroundColor: 'transparent',
+                            display: 'inline-block',
+                          }}
+                          title="Waveform data for this record is not included in the hosted demo. Metrics come from the saved DS2 evaluation."
+                        >
+                          Not bundled in demo
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -934,7 +957,7 @@ export default function BenchmarkDashboard() {
             </table>
           </div>
           <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-            Source: saved Phase 8 DS2 evaluation artifacts.
+            Source: saved DS2 evaluation artifacts.
           </div>
         </Card>
       )}
@@ -943,7 +966,7 @@ export default function BenchmarkDashboard() {
       {artifacts?.artifacts && (
         <Card
           title="Experimental Artifact Provenance"
-          subtitle="Validated, locked Phase 8 evaluation outputs preserved in the backend."
+          subtitle="Validated, saved DS2 evaluation outputs preserved in the backend."
         >
           <div
             style={{
@@ -983,7 +1006,7 @@ export default function BenchmarkDashboard() {
       {/* 9. Academic Interpretation & Benchmark Limitations */}
       <Card
         title="Academic Interpretation & Benchmark Limitations"
-        subtitle="Key principles, metric rationale, and documented scientific boundaries for student presentation."
+        subtitle="Key principles, metric rationale and documented scientific boundaries."
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
           <p>
@@ -1011,7 +1034,7 @@ export default function BenchmarkDashboard() {
           }}
         >
           <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--accent-cyan)', marginBottom: '0.6rem' }}>
-            📋 Documented Project Limitations (School Presentation Reference)
+            📋 Documented Project Limitations
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
             <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-1)', borderRadius: 'var(--radius-sm)' }}>
@@ -1028,7 +1051,7 @@ export default function BenchmarkDashboard() {
             </div>
             <div style={{ padding: '0.5rem', backgroundColor: 'var(--bg-surface-1)', borderRadius: 'var(--radius-sm)' }}>
               <strong style={{ color: 'var(--text-primary)' }}>4. Fusion-Beat Scarcity:</strong>
-              <div style={{ marginTop: '0.2rem' }}>Class F has only 388 total beats in DS2, with 74% concentrated in a single patient (Record 213), limiting statistical generalization across patients.</div>
+              <div style={{ marginTop: '0.2rem' }}>Class F has only 388 total beats in DS2, with 93.3% (362 of 388) concentrated in a single patient (Record 213), limiting statistical generalization across patients.</div>
             </div>
           </div>
         </div>

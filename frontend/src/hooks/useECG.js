@@ -15,6 +15,7 @@ export default function useECG(
   const [annotations, setAnnotations] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [annotationsWarning, setAnnotationsWarning] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -24,6 +25,7 @@ export default function useECG(
     setSignal(null);
     setAnnotations(null);
     setError(null);
+    setNotFound(false);
     setAnnotationsWarning(null);
 
     if (!recordId) return;
@@ -34,7 +36,12 @@ export default function useECG(
         if (!cancelled) setMetadata(m);
       })
       .catch((e) => {
-        if (!cancelled) setError(getErrorMessage(e));
+        if (!cancelled) {
+          if (e?.response?.status === 404) {
+            setNotFound(true);
+          }
+          setError(getErrorMessage(e));
+        }
       });
 
     return () => {
@@ -69,6 +76,9 @@ export default function useECG(
         setSignal(signalResult.value);
         setError(null);
       } else {
+        if (signalResult.reason?.response?.status === 404) {
+          setNotFound(true);
+        }
         setError(getErrorMessage(signalResult.reason));
       }
 
@@ -96,6 +106,7 @@ export default function useECG(
     annotations,
     loading,
     error,
+    notFound,
     annotationsWarning,
     reload,
   };

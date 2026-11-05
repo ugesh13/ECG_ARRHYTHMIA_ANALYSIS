@@ -39,10 +39,7 @@ export default function Navbar({ onToggleSidebar, sidebarOpen }) {
               <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
             </svg>
           </div>
-          <span>ECG PulseAI</span>
-          <span className="badge badge-cyan" style={{ fontSize: '0.68rem', padding: '0.1rem 0.45rem' }}>
-            Phase 18
-          </span>
+          <span>ECG Arrhythmia Analysis</span>
         </div>
       </div>
 
@@ -50,7 +47,7 @@ export default function Navbar({ onToggleSidebar, sidebarOpen }) {
         {health?.model_loaded && (
           <span
             className="badge badge-success"
-            title="Frozen Phase 8 Random Forest (209 features)"
+            title="Frozen Random Forest (209 features)"
             style={{ fontSize: '0.75rem' }}
           >
             ✓ ML Model Ready (209-D)

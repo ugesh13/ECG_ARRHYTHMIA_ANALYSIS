@@ -17,6 +17,7 @@ import {
   getErrorMessage,
   getModelInfo,
   getRecordBreakdown,
+  listRecords,
 } from '../services/api.js';
 import { AAMI_CLASSES } from '../utils/aamiTaxonomy.js';
 import PageContainer from '../components/PageContainer.jsx';
@@ -65,6 +66,7 @@ export default function ErrorAnalysis() {
   const [recordBreakdown, setRecordBreakdown] = useState(null);
   const [datasetDist, setDatasetDist] = useState(null);
   const [modelInfo, setModelInfo] = useState(null);
+  const [bundledRecords, setBundledRecords] = useState(['100', '101', '103', '105', '117', '200']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -85,13 +87,17 @@ export default function ErrorAnalysis() {
       getRecordBreakdown().catch(() => null),
       getDatasetDistribution().catch(() => null),
       getModelInfo().catch(() => null),
+      listRecords().catch(() => null),
     ])
-      .then(([bRes, rRes, dRes, mRes]) => {
+      .then(([bRes, rRes, dRes, mRes, recRes]) => {
         if (!active) return;
         setBenchmark(bRes);
         setRecordBreakdown(rRes);
         setDatasetDist(dRes);
         setModelInfo(mRes);
+        if (recRes?.records) {
+          setBundledRecords(recRes.records.map((r) => String(r.record_id)));
+        }
         setError(null);
       })
       .catch((err) => {
@@ -932,7 +938,7 @@ export default function ErrorAnalysis() {
           </div>
         </div>
         <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-          Source: saved Phase 8 DS2 evaluation artifacts.
+          Source: saved DS2 evaluation artifacts.
         </div>
       </Card>
 
@@ -1063,9 +1069,26 @@ export default function ErrorAnalysis() {
                     F: {r.f_recall != null ? `${(r.f_recall * 100).toFixed(1)}%` : '—'}
                   </td>
                   <td>
-                    <Link to={`/waveform/${r.record_id}`} className="btn btn-outline btn-sm">
-                      Waveform →
-                    </Link>
+                    {bundledRecords.includes(String(r.record_id)) ? (
+                      <Link to={`/waveform/${r.record_id}`} className="btn btn-outline btn-sm">
+                        Waveform →
+                      </Link>
+                    ) : (
+                      <span
+                        className="btn btn-sm"
+                        style={{
+                          opacity: 0.5,
+                          cursor: 'not-allowed',
+                          color: 'var(--text-muted)',
+                          border: '1px solid var(--border-subtle)',
+                          backgroundColor: 'transparent',
+                          display: 'inline-block',
+                        }}
+                        title="Waveform data for this record is not included in the hosted demo. Metrics come from the saved DS2 evaluation."
+                      >
+                        Not bundled in demo
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -1105,15 +1128,15 @@ export default function ErrorAnalysis() {
             <Link to="/waveform/100" className="btn btn-secondary btn-sm">
               Open Waveform 100 →
             </Link>
-            <Link to="/waveform/212" className="btn btn-outline btn-sm">
-              Inspect High-Accuracy Record 212 →
+            <Link to="/waveform/117" className="btn btn-outline btn-sm">
+              Inspect High-Accuracy Record 117 →
             </Link>
-            <Link to="/waveform/232" className="btn btn-outline btn-sm">
-              Inspect Lower-Accuracy Record 232 →
+            <Link to="/waveform/200" className="btn btn-outline btn-sm">
+              Inspect Lower-Accuracy Record 200 →
             </Link>
           </div>
           <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'monospace' }}>
-            Source: saved Phase 8 DS2 evaluation artifacts.
+            Source: saved DS2 evaluation artifacts.
           </div>
         </div>
       </Card>

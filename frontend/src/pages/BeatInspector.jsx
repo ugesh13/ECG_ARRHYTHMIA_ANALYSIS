@@ -20,6 +20,7 @@ import ClassBadge from '../components/ClassBadge.jsx';
 import ECGLegend from '../components/ECGLegend.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
+import NotBundledCard from '../components/NotBundledCard.jsx';
 
 /** Custom Tooltip for Morphology Chart */
 function MorphologyTooltip({ active, payload, label }) {
@@ -62,6 +63,7 @@ export default function BeatInspector() {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [notFound, setNotFound] = useState(false);
   const [jumpInput, setJumpInput] = useState('');
 
   // 1. Fetch Beat Details
@@ -69,6 +71,7 @@ export default function BeatInspector() {
     let active = true;
     setLoading(true);
     setError(null);
+    setNotFound(false);
 
     getBeatDetail(recordId, currentBeatIdx)
       .then((res) => {
@@ -78,7 +81,12 @@ export default function BeatInspector() {
         }
       })
       .catch((err) => {
-        if (active) setError(getErrorMessage(err));
+        if (active) {
+          if (err?.response?.status === 404) {
+            setNotFound(true);
+          }
+          setError(getErrorMessage(err));
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -117,6 +125,24 @@ export default function BeatInspector() {
       <LoadingState
         label={`Fetching 209-D beat telemetry for Beat #${currentBeatIdx} in Record ${recordId}…`}
       />
+    );
+  }
+
+  if (notFound) {
+    return (
+      <PageContainer
+        title="Beat Inspector"
+        subtitle={`Morphology & RR Interval Telemetry • Record ${recordId}`}
+        breadcrumbs={
+          <>
+            <Link to="/records">Records</Link>
+            <span>/</span>
+            <span>Record {recordId} Beat #{currentBeatIdx}</span>
+          </>
+        }
+      >
+        <NotBundledCard />
+      </PageContainer>
     );
   }
 
@@ -362,7 +388,7 @@ export default function BeatInspector() {
             }}
           >
             <div style={{ fontSize: '0.75rem', fontWeight: 700, color: isEdge ? '#94a3b8' : 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Model Prediction (Phase 8 Random Forest)
+              Model Prediction (frozen Random Forest)
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginTop: '0.4rem' }}>
               {isEdge ? (
@@ -441,7 +467,7 @@ export default function BeatInspector() {
           }}
         >
           <div>
-            <strong style={{ color: 'var(--accent-cyan)' }}>⚠️ Understanding Model Confidence:</strong> Confidence is the model's posterior probability (the proportion of the 200 decision trees voting for the winning class). It represents <em>algorithmic decision certainty</em> within the 209-D feature space, <strong>not medical certainty or clinical truth</strong>.
+            <strong style={{ color: 'var(--accent-cyan)' }}>⚠️ Understanding Model Confidence:</strong> Confidence is the Random Forest's predicted probability: the average of the class probabilities given by its 200 trees. It reflects the model's certainty in the 209-feature space, not medical certainty.
           </div>
           <div>
             <strong style={{ color: '#f59e0b' }}>⏹️ Boundary Edge Beat Handling:</strong> The first and last beats in each recording lack either a preceding beat (for RR<sub>prev</sub>) or a subsequent beat (for RR<sub>next</sub>). Because the 9 RR features require bidirectional context, boundary beats are excluded from classification to preserve pipeline integrity rather than inventing artificial dummy intervals.
@@ -706,7 +732,7 @@ export default function BeatInspector() {
       {/* 5. 9 Canonical Bidirectional RR Features */}
       <Card
         title="Extracted Bidirectional RR Timing Features (9-D)"
-        subtitle="Exactly 9 canonical timing features in frozen order as defined in Phase 8 and evaluated in DS2."
+        subtitle="Exactly 9 canonical timing features in frozen order as evaluated in DS2."
       >
         {data?.rr_features ? (
           <div>
@@ -848,7 +874,7 @@ export default function BeatInspector() {
                 209 Dimensions
               </div>
               <div className="stat-sub">
-                Strictly matches the Phase 8 locked model input signature (n_features_in_ = 209).
+                Strictly matches the locked model input signature (n_features_in_ = 209).
               </div>
             </div>
           </div>

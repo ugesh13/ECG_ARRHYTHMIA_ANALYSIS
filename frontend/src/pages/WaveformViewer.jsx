@@ -11,6 +11,7 @@ import ClassBadge from '../components/ClassBadge.jsx';
 import ECGLegend from '../components/ECGLegend.jsx';
 import LoadingState from '../components/LoadingState.jsx';
 import ErrorState from '../components/ErrorState.jsx';
+import NotBundledCard from '../components/NotBundledCard.jsx';
 
 const WINDOW_PRESETS = [2, 5, 10, 20, 30];
 
@@ -36,6 +37,7 @@ export default function WaveformViewer() {
     annotations,
     loading,
     error,
+    notFound,
     annotationsWarning,
     reload,
   } = useECG(recordId, {
@@ -172,6 +174,24 @@ export default function WaveformViewer() {
 
   const selectedMeta = selectedAnnotation ? getAnnotationMeta(selectedAnnotation.symbol) : null;
 
+  if (notFound) {
+    return (
+      <PageContainer
+        title="ECG Signal Processing Studio"
+        subtitle={`Record ${recordId} Studio`}
+        breadcrumbs={
+          <>
+            <Link to="/records">Records</Link>
+            <span>/</span>
+            <span>Record {recordId} Studio</span>
+          </>
+        }
+      >
+        <NotBundledCard />
+      </PageContainer>
+    );
+  }
+
   return (
     <PageContainer
       title="ECG Signal Processing Studio"
@@ -205,15 +225,14 @@ export default function WaveformViewer() {
                 cursor: 'pointer',
               }}
             >
-              {availableRecords.length > 0 ? (
-                availableRecords.map((r) => (
-                  <option key={r} value={r}>
-                    Record {r}
-                  </option>
-                ))
-              ) : (
-                <option value={recordId}>Record {recordId}</option>
-              )}
+              {(availableRecords.includes(recordId)
+                ? availableRecords
+                : (recordId ? [recordId, ...availableRecords] : availableRecords)
+              ).map((r) => (
+                <option key={r} value={r}>
+                  Record {r}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -518,7 +537,7 @@ export default function WaveformViewer() {
 
       {/* 4. Interactive ECG Chart */}
       <Card
-        title={`Continuous ECG Telemetry (${currentStart.toFixed(1)}s — {currentEnd.toFixed(1)}s)`}
+        title={`Continuous ECG Telemetry (${currentStart.toFixed(1)}s – ${currentEnd.toFixed(1)}s)`}
         subtitle="Calibrated physical amplitude in millivolts (mV). Vertical markers indicate PhysioNet R-peak annotations."
         action={
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

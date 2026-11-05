@@ -184,7 +184,7 @@ export default function Sidebar() {
       <div className="sidebar-footer">
         <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>MIT-BIH Arrhythmia</div>
         <div>ANSI/AAMI EC57 Taxonomy</div>
-        <div style={{ marginTop: '0.25rem', color: 'var(--accent-cyan)' }}>Model: RF-200 (Phase 8)</div>
+        <div style={{ marginTop: '0.25rem', color: 'var(--accent-cyan)' }}>Model: RF-200 (frozen Random Forest)</div>
       </div>
     </aside>
   );

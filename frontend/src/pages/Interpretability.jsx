@@ -220,7 +220,7 @@ export default function Interpretability() {
               Random Forest Classifier • 209 Input Dimensions
             </div>
             <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginTop: '0.25rem', maxWidth: '840px' }}>
-              The model receives a 209-dimensional feature vector: <strong>200 normalized morphology features</strong> and <strong>9 bidirectional RR temporal features</strong>. The values shown reflect the frozen Phase 8 split-based Gini feature importance (Mean Decrease in Impurity).
+              The model receives a 209-dimensional feature vector: <strong>200 normalized morphology features</strong> and <strong>9 bidirectional RR temporal features</strong>. The values shown reflect the frozen Random Forest split-based Gini feature importance (Mean Decrease in Impurity).
             </p>
           </div>
 
@@ -337,10 +337,10 @@ export default function Interpretability() {
 
         <div style={{ marginTop: '0.75rem', fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.65rem' }}>
           <div>
-            <strong>Chart Explanation:</strong> Features are ranked by relative Gini impurity reduction across all 200 trees in the frozen Phase 8 model. Cyan bars denote temporal RR interval timing; amber bars denote local waveform voltage dimensions around the QRS apex.
+            <strong>Chart Explanation:</strong> Features are ranked by relative Gini impurity reduction across all 200 trees in the frozen Random Forest model. Cyan bars denote temporal RR interval timing; amber bars denote local waveform voltage dimensions around the QRS apex.
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Source: Saved Phase 8 DS2 evaluation artifacts (209 features).
+            Source: saved DS2 evaluation artifacts (209 features).
           </div>
         </div>
       </Card>
@@ -570,7 +570,7 @@ export default function Interpretability() {
       {/* 6. Complete Top 15 Feature Table with Search & Filter */}
       <Card
         title="Top 15 Model Features (Mean Decrease in Impurity)"
-        subtitle="Ranked list of top model predictors extracted from the frozen Phase 8 feature-importance artifact."
+        subtitle="Ranked list of top model predictors extracted from the saved feature-importance artifact."
         action={
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
             {/* Filter buttons */}
